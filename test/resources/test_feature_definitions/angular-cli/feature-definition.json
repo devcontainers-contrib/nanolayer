@@ -1,0 +1,29 @@
+{
+    "name": "Angular CLI (via npm)",
+    "id": "angular-cli",
+    "version": "1.2.1",
+    "description": "Angular CLI is a command-line interface tool that you use to initialize, develop, scaffold, and maintain Angular applications directly from a command shell.",
+    "documentationURL": "http://github.com/devcontainers-contrib/features/tree/main/src/angular-cli",
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/node:latest",
+        "ghcr.io/devcontainers-conrib/features/npm-package:latest"
+    ],
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": [
+                "latest"
+            ],
+            "default": "latest",
+            "description": "Select the version of Angular CLI to install."
+        }
+    },
+    "dependencies": {
+        "ghcr.io/devcontainers-contrib/features/npm-package:latest": {
+            "package": "@angular/cli",
+            "version": "$options.version"
+        }
+    },
+    "install_command": "echo 'Done'",
+    "test_command": "ng --help"
+}

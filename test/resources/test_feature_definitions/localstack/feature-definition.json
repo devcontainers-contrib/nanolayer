@@ -1,0 +1,32 @@
+{
+    "name": "Localstack (via pipx)",
+    "id": "localstack",
+    "version": "1.2.1",
+    "description": "Localstack is a fully functional local AWS cloud stack.",
+    "documentationURL": "http://github.com/devcontainers-contrib/features/tree/main/src/localstack",
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/python:latest",
+        "ghcr.io/devcontainers/features/node:latest"
+    ],
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": [
+                "latest"
+            ],
+            "default": "latest",
+            "description": "Select the version of Localstack to install."
+        }
+    },
+    "dependencies": {
+        "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+            "packages": "libsasl2-dev,g++"
+        },
+        "ghcr.io/devcontainers-contrib/features/pipx-package:latest": {
+            "package": "localstack[full]",
+            "version": "$options.version"
+        }
+    },
+    "install_command": "echo 'Done'",
+    "test_command": "localstack --version"
+}
