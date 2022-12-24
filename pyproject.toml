@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "devcontainer-contrib"
+version = "0.0.1"
+dynamic = ["dependencies", "optional-dependencies"]
+readme = "README.md"
+
+
+[tool.setuptools.packages.find]
+include = ["devcontainer_contrib*"]  
+
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {dev = {file = ["requirements-dev.txt"]}}
