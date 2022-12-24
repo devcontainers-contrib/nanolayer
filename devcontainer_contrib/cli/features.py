@@ -2,20 +2,19 @@ import typer
 from unittest import mock
 from pydantic import Extra
 import pathlib
-from typing import Optional, Dict, Union
-from devcontainer_contrib.lib.models.devcontainer_feature_definition import (
+from devcontainer_contrib.models.devcontainer_feature_definition import (
     FeatureDefinition,
 )
-from devcontainer_contrib.lib.models.devcontainer_feature import Feature
+from devcontainer_contrib.models.devcontainer_feature import Feature
 from enum import Enum
-from devcontainer_contrib.lib.features.file_generators.dependencies_sh import (
+from devcontainer_contrib.features.dependencies_sh import (
     DependenciesSH,
 )
-from devcontainer_contrib.lib.features.file_generators.install_command_sh import (
+from devcontainer_contrib.features.install_command_sh import (
     InstallCommandSH,
 )
-from devcontainer_contrib.lib.features.file_generators.install_sh import InstallSH
-from devcontainer_contrib.lib.features.file_generators.test_sh import TestSH
+from devcontainer_contrib.features.install_sh import InstallSH
+from devcontainer_contrib.features.test_sh import TestSH
 from easyfs import Directory, File
 
 app = typer.Typer(pretty_exceptions_show_locals=False, pretty_exceptions_short=False)
