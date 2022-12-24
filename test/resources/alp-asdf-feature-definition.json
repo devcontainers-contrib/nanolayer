@@ -16,19 +16,11 @@
             ],
             "default": "latest",
             "description": "Select the version of alp to install."
-        },
-        "hello": {
-            "type": "string",
-            "proposals": [
-                "latest"
-            ],
-            "default": "",
-            "description": "Select the version of alp to install."
         }
     },
     "dependencies": {
         "ghcr.io/devcontainers-contrib/features/asdf-package:latest": {
-            "package": "alp",
+            "plugin": "alp",
             "version": "$options.version"
         }
     },
