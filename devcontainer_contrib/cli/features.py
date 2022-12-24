@@ -54,7 +54,7 @@ def generate(
     elif output_type == OutputType.feature_dir:
         with mock.patch.object(Feature.Config, "extra", Extra.ignore):
             feature_json_file = Feature(**feature_definition_model.dict()).json(
-                indent=4
+                indent=4, exclude_none=True
             )
 
         test_file = TestSH(command=feature_definition_model.test_command or "").to_str()
