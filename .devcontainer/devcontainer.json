@@ -3,13 +3,13 @@
     "customizations": {
         "vscode": {
             "extensions": [
-				"mads-hartmann.bash-ide-vscode",
-				"samuelcolvin.jinjahtml",
-				"ms-python.python",
-				"ms-python.vscode-pylance",
-				"DavidAnson.vscode-markdownlint",
-				"ms-python.black-formatter"
-			]
+                "mads-hartmann.bash-ide-vscode",
+                "samuelcolvin.jinjahtml",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "DavidAnson.vscode-markdownlint",
+                "ms-python.black-formatter"
+            ]
         }
     },
     "features": {
