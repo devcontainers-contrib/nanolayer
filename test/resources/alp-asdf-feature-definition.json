@@ -27,7 +27,7 @@
         }
     },
     "dependencies": {
-        "ghcr.io/devcontainers-conrib/features/asdf-package:latest": {
+        "ghcr.io/devcontainers-contrib/features/asdf-package:latest": {
             "package": "alp",
             "version": "$options.version"
         }
