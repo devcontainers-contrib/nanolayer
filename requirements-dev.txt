@@ -1,3 +1,4 @@
 pytest
+pytest-shell-utilities
 black
 mypy
