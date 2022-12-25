@@ -33,60 +33,45 @@ def generate(
     output_type: OutputType = typer.Option(OutputType.feature_dir),
 ) -> None:
 
-    feature_definition_model = FeatureDefinition.parse_file(feature_definition)
+    definition_model = FeatureDefinition.parse_file(feature_definition)
+    feature_id = definition_model.id
+    virtual_dir = Directory()
 
     if output_type == OutputType.dependencies:
+        dependencies_sh = DependenciesSH(definition_model.dependencies, definition_model.options).to_str()
 
-        dependencies_file = DependenciesSH(
-            feature_definition_model.dependencies, feature_definition_model.options
-        ).to_str()
-        dir_obj = Directory()
-        dir_obj["dependencies.sh"] = File(dependencies_file.encode())
-        dir_obj.create(output_dir.as_posix())
+        # create virtual file systm directory using easyfs
+        virtual_dir["dependencies.sh"] = File(dependencies_sh.encode())
+
+        # manifesting the virtual directory into local filesystem
+        virtual_dir.create(output_dir.as_posix())
 
     elif output_type == OutputType.test:
-        test_file = TestSH(command=feature_definition_model.test_command or "").to_str()
-        dir_obj = Directory()
-        dir_obj["test.sh"] = File(test_file.encode())
-        dir_obj.create(output_dir.as_posix())
+        test_sh = TestSH(definition_model.test_command or "").to_str()
+        
+        # create virtual file systm directory using easyfs
+        virtual_dir["test.sh"] = File(test_sh.encode())
+
+        # manifesting the virtual directory into local filesystem
+        virtual_dir.create(output_dir.as_posix())
 
     elif output_type == OutputType.feature_dir:
-        with mock.patch.object(Feature.Config, "extra", Extra.ignore):
-            feature_json_file = Feature(**feature_definition_model.dict()).json(
-                indent=4, exclude_none=True
-            )
+        # create files as strings
+        feature_json = definition_model.to_feature_model().json(indent=4, exclude_none=True)
+        test_sh = TestSH(definition_model.test_command or "").to_str()
+        install_command_sh = InstallCommandSH(definition_model.install_command or "").to_str()
+        dependencies_sh = DependenciesSH(definition_model.dependencies, definition_model.options).to_str()
+        install_sh = InstallSH().to_str()
 
-        test_file = TestSH(command=feature_definition_model.test_command or "").to_str()
-
-        install_command_file = InstallCommandSH(
-            command=feature_definition_model.install_command or ""
-        ).to_str()
-
-        dependencies_file = DependenciesSH(
-            feature_definition_model.dependencies, feature_definition_model.options
-        ).to_str()
-
-        install_file = InstallSH().to_str()
-
-        dir_obj = Directory()
-        dir_obj[f"test/{feature_definition_model.id}/test.sh"] = File(
-            test_file.encode()
-        )
-        dir_obj[f"src/{feature_definition_model.id}/dependencies.sh"] = File(
-            dependencies_file.encode()
-        )
-        dir_obj[f"src/{feature_definition_model.id}/install_command.sh"] = File(
-            install_command_file.encode()
-        )
-        dir_obj[f"src/{feature_definition_model.id}/install.sh"] = File(
-            install_file.encode()
-        )
-
-        dir_obj[f"src/{feature_definition_model.id}/devcontainer-feature.json"] = File(
-            feature_json_file.encode()
-        )
-
-        dir_obj.create(output_dir.as_posix())
+        # create virtual file systm directory using easyfs
+        virtual_dir[f"src/{feature_id}/dependencies.sh"] = File(dependencies_sh.encode())
+        virtual_dir[f"src/{feature_id}/install_command.sh"] = File(install_command_sh.encode())
+        virtual_dir[f"src/{feature_id}/install.sh"] = File(install_sh.encode())
+        virtual_dir[f"src/{feature_id}/devcontainer-feature.json"] = File(feature_json.encode())
+        virtual_dir[f"test/{feature_id}/test.sh"] = File(test_sh.encode())
+        
+        # manifesting the virtual directory into local filesystem
+        virtual_dir.create(output_dir.as_posix())
 
     else:
         raise ValueError(f"invalid output type: {output_type}")
