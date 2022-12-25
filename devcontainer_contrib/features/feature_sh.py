@@ -17,4 +17,4 @@ class FeatureSH:
 
         stringified_envs = " ".join([f'{env}="{val}"' for env, val in envs.items()])
 
-        return f"{stringified_envs} source <(curl -s {FEATURE_INSTALLER_LINK}) {self.feature_oci}"
+        return f'{stringified_envs} source <(curl -s "{FEATURE_INSTALLER_LINK}") "{self.feature_oci}"'
