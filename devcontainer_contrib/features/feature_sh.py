@@ -15,6 +15,6 @@ class FeatureSH:
             else:
                 envs[param_name.upper()] = str(param_value).lower()
 
-        stringified_envs = " ".join([f"{env}={val}" for env, val in envs.items()])
+        stringified_envs = " ".join([f'{env}="{val}"' for env, val in envs.items()])
 
         return f"{stringified_envs} source <(curl -s {FEATURE_INSTALLER_LINK}) {self.feature_oci}"
