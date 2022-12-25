@@ -106,6 +106,35 @@ class FeatureDefinition(BaseModel):
     class Config:
         extra = Extra.forbid
 
+    id: str = Field(
+        ...,
+        description="ID of the Feature. The id should be unique in the context of the repository/published package where the feature exists and must match the name of the directory where the devcontainer-feature.json resides.",
+    )
+    version: str = Field(
+        ...,
+        description="The version of the Feature. Follows the semanatic versioning (semver) specification.",
+    )
+    name: Optional[str] = Field(None, description="Display name of the Feature.")
+    documentationURL: Optional[str] = Field(
+        None, description="URL to documentation for the Feature."
+    )
+
+    description: Optional[str] = Field(
+        None,
+        description="Description of the Feature. For the best appearance in an implementing tool, refrain from including markdown or HTML in the description.",
+    )
+    options: Optional[Dict[str, FeatureOption]] = Field(
+        None,
+        description="Possible user-configurable options for this Feature. The selected options will be passed as environment variables when installing the Feature into the container.",
+    )
+    customizations: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Tool-specific configuration. Each tool should use a JSON object subproperty with a unique name to group its customizations.",
+    )
+    installsAfter: Optional[List[str]] = Field(
+        None,
+        description="Array of ID's of Features that should execute before this one. Allows control for feature authors on soft dependencies between different Features.",
+    )
     capAdd: Optional[List[str]] = Field(
         None,
         description="Passes docker capabilities to include when creating the dev container.",
@@ -114,53 +143,29 @@ class FeatureDefinition(BaseModel):
     containerEnv: Optional[Dict[str, str]] = Field(
         None, description="Container environment variables."
     )
-    customizations: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Tool-specific configuration. Each tool should use a JSON object subproperty with a unique name to group its customizations.",
-    )
-    description: Optional[str] = Field(
-        None,
-        description="Description of the Feature. For the best appearance in an implementing tool, refrain from including markdown or HTML in the description.",
-    )
-    documentationURL: Optional[str] = Field(
-        None, description="URL to documentation for the Feature."
-    )
+
     entrypoint: Optional[str] = Field(
         None, description="Entrypoint script that should fire at container start up."
     )
-    id: str = Field(
-        ...,
-        description="ID of the Feature. The id should be unique in the context of the repository/published package where the feature exists and must match the name of the directory where the devcontainer-feature.json resides.",
-    )
+   
     init: Optional[bool] = Field(
         None,
         description="Adds the tiny init process to the container (--init) when the Feature is used.",
     )
-    installsAfter: Optional[List[str]] = Field(
-        None,
-        description="Array of ID's of Features that should execute before this one. Allows control for feature authors on soft dependencies between different Features.",
-    )
+
     licenseURL: Optional[str] = Field(
         None, description="URL to the license for the Feature."
     )
     mounts: Optional[List[Mount]] = Field(
         None, description="Mounts a volume or bind mount into the container."
     )
-    name: Optional[str] = Field(None, description="Display name of the Feature.")
-    options: Optional[Dict[str, FeatureOption]] = Field(
-        None,
-        description="Possible user-configurable options for this Feature. The selected options will be passed as environment variables when installing the Feature into the container.",
-    )
+
     privileged: Optional[bool] = Field(
         None, description="Sets privileged mode (--privileged) for the container."
     )
     securityOpt: Optional[List[str]] = Field(
         None,
         description="Sets container security options to include when creating the container.",
-    )
-    version: str = Field(
-        ...,
-        description="The version of the Feature. Follows the semanatic versioning (semver) specification.",
     )
 
     dependencies: Optional[FeatureDependencies] = Field(
