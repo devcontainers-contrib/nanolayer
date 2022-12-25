@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "devcontainer-contrib"
-version = "0.0.6"
+version = "0.0.7"
 dynamic = ["dependencies", "optional-dependencies"]
 readme = "README.md"
 
