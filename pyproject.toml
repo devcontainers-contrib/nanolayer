@@ -4,10 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "devcontainer-contrib"
-version = "0.0.7"
-dynamic = ["dependencies", "optional-dependencies"]
+dynamic = ["dependencies", "optional-dependencies", "version"]
 readme = "README.md"
-
 
 [tool.setuptools.packages.find]
 include = ["devcontainer_contrib*"]  
