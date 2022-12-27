@@ -18,12 +18,15 @@
             "description": "Select the version of Angular CLI to install."
         }
     },
-    "dependencies": {
-        "ghcr.io/devcontainers-contrib/features/npm-package:latest": {
-            "package": "@angular/cli",
-            "version": "$options.version"
+    "dependencies": [
+        {
+            "feature": "ghcr.io/devcontainers-contrib/features/npm-package:latest",
+            "options": {
+                "package": "@angular/cli",
+                "version": "$options.version"
+            }
         }
-    },
+    ],
     "install_command": "echo 'Done'",
     "test_command": "ng --help"
 }

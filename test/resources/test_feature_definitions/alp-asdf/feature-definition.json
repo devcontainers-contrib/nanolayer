@@ -18,12 +18,15 @@
             "description": "Select the version of alp to install."
         }
     },
-    "dependencies": {
-        "ghcr.io/devcontainers-contrib/features/asdf-package:latest": {
-            "plugin": "alp",
-            "version": "$options.version"
+    "dependencies": [
+        {
+            "feature": "ghcr.io/devcontainers-contrib/features/asdf-package:latest",
+            "options": {
+                "plugin": "alp",
+                "version": "$options.version"
+            }
         }
-    },
+    ],
     "install_command": "echo 'Done'",
     "test_command": "alp --version"
 }

@@ -18,15 +18,21 @@
             "description": "Select the version of Localstack to install."
         }
     },
-    "dependencies": {
-        "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
-            "packages": "libsasl2-dev,g++"
+    "dependencies": [
+        {
+            "feature": "ghcr.io/devcontainers-contrib/features/apt-package:1",
+            "options": {
+                "packages": "libsasl2-dev,g++"
+            }
         },
-        "ghcr.io/devcontainers-contrib/features/pipx-package:latest": {
-            "package": "localstack[full]",
-            "version": "$options.version"
+        {
+            "feature": "ghcr.io/devcontainers-contrib/features/pipx-package:latest",
+            "options": {
+                "package": "localstack[full]",
+                "version": "$options.version"
+            }
         }
-    },
+    ],
     "install_command": "echo 'Done'",
     "test_command": "localstack --version"
 }

@@ -6,21 +6,22 @@ from devcontainer_contrib.models.devcontainer_feature import Feature
 from pydantic import BaseModel, Extra, Field
 
 
+class FeatureDependency(BaseModel):
+    feature: str
+    options: Dict[str, Union[str, bool]]
+
+
 class FeatureDependencies(BaseModel):
-    __root__: Dict[str, Dict[str, Union[str, bool]]]
+    __root__: List[FeatureDependency]
 
     def __iter__(self):
         return iter(self.__root__)
-
-    def __getitem__(self, item):
-        return self.__root__[item]
 
     def __len__(self):
         return len(self.__root__)
 
     def __getattr__(self, k):
         return getattr(self.__root__, k)
-
 
 
 class FeatureDefinition(Feature):

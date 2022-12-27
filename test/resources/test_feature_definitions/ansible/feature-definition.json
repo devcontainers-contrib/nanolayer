@@ -18,13 +18,16 @@
             "description": "Select the version of Ansible to install."
         }
     },
-    "dependencies": {
-        "ghcr.io/devcontainers-contrib/features/pipx-package:latest": {
-            "package": "ansible-core",
-            "version": "$options.version",
-            "injections": "ansible"
+    "dependencies": [
+        {
+            "feature": "ghcr.io/devcontainers-contrib/features/pipx-package:latest",
+            "options": {
+                "package": "ansible-core",
+                "version": "$options.version",
+                "injections": "ansible"
+            }
         }
-    },
+    ],
     "install_command": "echo 'Done'",
     "test_command": "ansible --version"
 }
