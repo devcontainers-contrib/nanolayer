@@ -16,3 +16,7 @@ dependencies = {file = ["requirements.txt"]}
 optional-dependencies = {dev = {file = ["requirements-dev.txt"]}}
 
 [tool.setuptools_scm]
+
+[project.scripts]
+devcontainer-contrib = "devcontainer_contrib.__main__:main"
+
