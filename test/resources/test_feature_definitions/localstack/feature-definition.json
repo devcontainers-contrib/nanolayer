@@ -20,9 +20,9 @@
     },
     "dependencies": [
         {
-            "feature": "ghcr.io/devcontainers-contrib/features/apt-package:1",
+            "feature": "ghcr.io/devcontainers-contrib/features/apt-get-packages:1",
             "options": {
-                "packages": "libsasl2-dev,g++"
+                "packages": "libsasl2-dev g++"
             }
         },
         {
