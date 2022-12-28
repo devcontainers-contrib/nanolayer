@@ -17,6 +17,9 @@ FEATURE_DEFENITIONS = {
     "ansible": os.path.join(
         RESOURCE_DIR, "test_feature_definitions", "ansible", "feature-definition.json"
     ),
+    "elixir-asdf": os.path.join(
+        RESOURCE_DIR, "test_feature_definitions", "elixir-asdf", "feature-definition.json"
+    ),
     "localstack": os.path.join(
         RESOURCE_DIR,
         "test_feature_definitions",
