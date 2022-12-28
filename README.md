@@ -3,9 +3,8 @@
 
 ## Installation
 
-`pip install devcontainer-contrib`
 
-## Commands:
+`pip install devcontainer-contrib`
 
 
 ### Feature Generation:
@@ -29,7 +28,7 @@ Options:
 Input for feature generation is a `feature-definition.json` file
 This is an *extended* version of the [devcontainer-feature.json](https://containers.dev/implementors/features/#devcontainer-feature-json-properties) file with *additional fields*:
 
-```json
+```yaml
 {   
     ...
     regular devcontainer-json fields  like id, name, description etc
@@ -58,7 +57,7 @@ This is an *extended* version of the [devcontainer-feature.json](https://contain
 
 #### redirect input
 
-```json
+```yaml
 {
     ...
 
