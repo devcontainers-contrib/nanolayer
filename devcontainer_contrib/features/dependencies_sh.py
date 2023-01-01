@@ -1,4 +1,5 @@
 from typing import Optional, Dict, Union
+import shlex
 from devcontainer_contrib.models.devcontainer_feature import FeatureOption
 from devcontainer_contrib.models.devcontainer_feature_definition import (
     FeatureDependencies,
@@ -62,6 +63,10 @@ class DependenciesSH:
         self.options = options
 
     @staticmethod
+    def _escape_qoutes(value: str) -> str:
+        return value.replace('"', '\\"')
+
+    @staticmethod
     def is_param_ref(param_value: str) -> bool:
         return param_value.startswith(DependenciesSH.REF_PREFIX)
 
@@ -75,7 +80,7 @@ class DependenciesSH:
             else:
                 envs[param_name.upper()] = str(param_value).lower()
 
-        stringified_envs = " ".join([f'{env}="{val}"' for env, val in envs.items()])
+        stringified_envs = " ".join([f'{env}="{DependenciesSH._escape_qoutes(val)}"' for env, val in envs.items()])
 
         return SINGLE_DEPENDENCY.format(stringified_envs=stringified_envs,feature_oci=feature_oci)
 
