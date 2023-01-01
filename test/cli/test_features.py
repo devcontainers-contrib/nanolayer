@@ -4,39 +4,21 @@ from helpers import RESOURCE_DIR
 import pathlib
 import pytest
 
-FEATURE_DEFENITIONS = {
-    "alp-asdf": os.path.join(
-        RESOURCE_DIR, "test_feature_definitions", "alp-asdf", "feature-definition.json"
-    ),
-    "angular-cli": os.path.join(
-        RESOURCE_DIR,
-        "test_feature_definitions",
-        "angular-cli",
-        "feature-definition.json",
-    ),
-    "ansible": os.path.join(
-        RESOURCE_DIR, "test_feature_definitions", "ansible", "feature-definition.json"
-    ),
-    "elixir-asdf": os.path.join(
-        RESOURCE_DIR, "test_feature_definitions", "elixir-asdf", "feature-definition.json"
-    ),
-    "localstack": os.path.join(
-        RESOURCE_DIR,
-        "test_feature_definitions",
-        "localstack",
-        "feature-definition.json",
-    ),
-}
+FEATURE_DEFINITION_DIR = os.path.join(
+        RESOURCE_DIR, "test_feature_definitions")
+
 
 TEST_IMAGE = "mcr.microsoft.com/devcontainers/base:debian"
 
 
 @pytest.mark.parametrize(
-    "feature_id,feature_definition", [(k, v) for k, v in FEATURE_DEFENITIONS.items()]
+    "feature_id,feature_definition_dir", [(v, os.path.join(FEATURE_DEFINITION_DIR, v)) for v in os.listdir(FEATURE_DEFINITION_DIR)]
 )
 def test_features_generate_dependencies(
-    tmp_path: str, feature_id: str, feature_definition: str
+    tmp_path: str, feature_id: str, feature_definition_dir: str
 ) -> None:
+
+    feature_definition = os.path.join(feature_definition_dir, "feature-definition.json")
     generate(
         feature_definition=feature_definition,
         output_dir=tmp_path,
@@ -47,11 +29,13 @@ def test_features_generate_dependencies(
 
 
 @pytest.mark.parametrize(
-    "feature_id,feature_definition", [(k, v) for k, v in FEATURE_DEFENITIONS.items()]
+    "feature_id,feature_definition_dir", [(v, os.path.join(FEATURE_DEFINITION_DIR, v)) for v in os.listdir(FEATURE_DEFINITION_DIR)]
 )
 def test_feature_generate_test(
-    tmp_path: str, feature_id: str, feature_definition: str
+    tmp_path: str, feature_id: str, feature_definition_dir: str
 ) -> None:
+    feature_definition = os.path.join(feature_definition_dir, "feature-definition.json")
+
     generate(
         feature_definition=feature_definition,
         output_dir=tmp_path,
@@ -62,11 +46,13 @@ def test_feature_generate_test(
 
 
 @pytest.mark.parametrize(
-    "feature_id,feature_definition", [(k, v) for k, v in FEATURE_DEFENITIONS.items()]
+    "feature_id,feature_definition_dir", [(v, os.path.join(FEATURE_DEFINITION_DIR, v)) for v in os.listdir(FEATURE_DEFINITION_DIR)]
 )
 def test_feature_generate_feature_dir(
-    shell, tmp_path: pathlib.Path, feature_id: str, feature_definition: str
+    shell, tmp_path: pathlib.Path, feature_id: str, feature_definition_dir: str
 ) -> None:
+    feature_definition = os.path.join(feature_definition_dir, "feature-definition.json")
+
     tmp_path_str = tmp_path.as_posix()
     generate(
         feature_definition=feature_definition,
