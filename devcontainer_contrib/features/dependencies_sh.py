@@ -5,7 +5,10 @@ from devcontainer_contrib.models.devcontainer_feature_definition import (
     FeatureDependencies,
     FeatureDependency,
 )
-FEATMAKE_LINK = "https://github.com/devcontainers-contrib/cli/releases/download/v0.0.9/featmake"
+
+FEATMAKE_LINK = (
+    "https://github.com/devcontainers-contrib/cli/releases/download/v0.0.9/featmake"
+)
 CHECKSUM_LINK = "https://github.com/devcontainers-contrib/cli/releases/download/v0.0.9/checksums.txt"
 
 HEADER = """#!/usr/bin/env bash
@@ -42,6 +45,9 @@ ensure_featmake () {{
 ensure_curl
 
 ensure_featmake
+
+# refresh PATH 
+PS1='\\s-\\v\\$' source /etc/profile
 
 {dependency_installation_lines}
 """
@@ -80,9 +86,16 @@ class DependenciesSH:
             else:
                 envs[param_name.upper()] = str(param_value).lower()
 
-        stringified_envs = " ".join([f'{env}="{DependenciesSH._escape_qoutes(val)}"' for env, val in envs.items()])
+        stringified_envs = " ".join(
+            [
+                f'{env}="{DependenciesSH._escape_qoutes(val)}"'
+                for env, val in envs.items()
+            ]
+        )
 
-        return SINGLE_DEPENDENCY.format(stringified_envs=stringified_envs,feature_oci=feature_oci)
+        return SINGLE_DEPENDENCY.format(
+            stringified_envs=stringified_envs, feature_oci=feature_oci
+        )
 
     @staticmethod
     def resolve_param_ref(
@@ -123,7 +136,9 @@ class DependenciesSH:
             )
 
         return HEADER.format(
-            dependency_installation_lines="\n\n".join(installation_lines),
+            dependency_installation_lines="\n# refresh PATH\nPS1='\\s-\\v\\$' source /etc/profile\n".join(
+                installation_lines
+            ),
             featmake_link=FEATMAKE_LINK,
-            checksums_link=CHECKSUM_LINK
+            checksums_link=CHECKSUM_LINK,
         )
