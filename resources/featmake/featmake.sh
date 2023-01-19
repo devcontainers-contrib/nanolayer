@@ -4,7 +4,9 @@
 
 set -e
 
-FEATURE_OCI=$1
+_featmake_feature_oci=$1
+_featmake_all_arguments=("$@")
+_featmake_env_arguments=("${_featmake_all_arguments[@]:1}")
 
 if [ "$(id -u)" -ne 0 ]; then
 	echo -e 'Must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
@@ -49,29 +51,49 @@ ensure_curl () {
     fi 
 }
 
+
 set_envs () {
-    # Sets up the default values the devcontainer-feature.json has declared for each option
+    # Sets up the argument given as env variables
+    # for example 
+    #    -hello world -SOME message 
+    # is being parsed as 
+    #     hello=world  SOME=message
+    # For args which are not given, it sets up the default values the 
+    # devcontainer-feature.json has declared for each option
+
     # This is part of the devconainer-contrib cli 
     # For more information: https://github.com/devcontainers-contrib/cli 
-
     FILE_NAME=$1
-    OPTION_NAMES=($(cat $FILE_NAME | jq -cr '.options | keys[]' |  awk '{ print toupper($0) }'))
-    
+    shift;
+
+    options_by_arguments=()
+    until [ $# -eq 0 ]
+    do
+        name=${1:1}; shift;
+        if [[ -z "$1" || $1 == -* ]] ; then 
+            echo "Bad argument: '$name'" && exit 1; 
+        else 
+            export "$name"="$1"
+            echo "setting $name to $1"
+            options_by_arguments+=("$name")
+            shift; 
+        fi  
+    done
     # we do this in order to account for empty string values
     OPTION_DEFAULT_VALUES=()
     while read -r line; do 
         OPTION_DEFAULT_VALUES+=("$line") 
     done <<< "$(cat $FILE_NAME | jq -cr '.options[].default')"
 
+    OPTION_NAMES=($(cat $FILE_NAME | jq -cr '.options | keys[]' |  awk '{ print toupper($0) }'))
     arraylength="${#OPTION_NAMES[@]}"
-
     for (( i=0; i<${arraylength}; i++ )); do
         current_option=${OPTION_NAMES[i]}
         current_default_value=${DEFAULT_VALUES[i]}
-
-        # setting defaults only if not explicitely given
-        if [ -z "${!current_option}" ] ; then
+        if [[ ! ${options_by_arguments[*]} =~ ${current_option} ]]; then
+            # setting defaults only if not explicitely given
             export $current_option=$current_default_value
+            echo "$current_option was not explicitely given, setting to $current_default_value"
         fi
     done
 } 
@@ -104,13 +126,14 @@ set_remote_user () {
     echo "resolved remote username: $_REMOTE_USER , with home dir: $_REMOTE_USER_HOME"
 }
 
+
 ensure_alpine_compatible
 set_remote_user
 ensure_curl
 ensure_oras
 
 temp_dir=$(mktemp -d)
-oras pull "$FEATURE_OCI" --output $temp_dir/
+oras pull "$_featmake_feature_oci" --output $temp_dir/
 tar -xf $temp_dir/*.tgz -C $temp_dir/
-( cd $temp_dir ; set_envs "devcontainer-feature.json" ;  source ./install.sh )
+( cd $temp_dir ; set_envs "devcontainer-feature.json" "${_featmake_env_arguments[@]}"  ;  source ./install.sh )
 rm -rf $temp_dir
