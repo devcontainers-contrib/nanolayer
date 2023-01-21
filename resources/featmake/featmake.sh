@@ -21,9 +21,9 @@ clean_up () {
 } 
 trap clean_up EXIT
 
+
 ensure_alpine_compatible() {
-    . /etc/os-release
-    if [ "${ID}" = "alpine" ]; then
+	if cat /etc/os-release | grep  "ID_LIKE\|ID=.*alpine.*" ; then
         apk add --no-cache bash libc6-compat
     fi
 }
