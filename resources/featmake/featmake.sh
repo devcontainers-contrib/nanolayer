@@ -66,12 +66,22 @@ set_envs () {
     FILE_NAME=$1
     shift;
 
+    if ! [ $(($# % 2)) -eq 0 ];
+    then
+        echo "Bad argument number" && exit 1; 
+    fi
+
     options_by_arguments=()
     until [ $# -eq 0 ]
     do
+        if ! [[  $1 == -* ]] ; then 
+            echo "Bad argument: '$1'" && exit 1; 
+        fi
+
         name=${1:1}; shift;
-        if [[ -z "$1" || $1 == -* ]] ; then 
-            echo "Bad argument: '$name'" && exit 1; 
+
+        if [[ $1 == -* ]] ; then 
+            echo "Bad arguments: '$name' '$1'" && exit 1; 
         else 
             export "$name"="$1"
             echo "setting $name to $1"
