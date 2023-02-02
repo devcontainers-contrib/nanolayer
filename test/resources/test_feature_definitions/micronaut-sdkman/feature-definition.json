@@ -66,5 +66,15 @@
         }
     ],
     "install_command": "echo 'Done!'",
-    "test_command": "mn --help"
+
+    "test_scenarios": [
+        {
+            "name": "test_defaults",
+            "image": "mcr.microsoft.com/devcontainers/base:debian",
+            "test_commands": [
+                "mn --help"
+            ],
+            "options": {}
+        }
+    ]
 }

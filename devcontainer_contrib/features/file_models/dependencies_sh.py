@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Union
-
 from devcontainer_contrib.models.devcontainer_feature import FeatureOption
+from easyfs import File
 from devcontainer_contrib.models.devcontainer_feature_definition import (
     FeatureDependencies,
     FeatureDependency,
@@ -56,7 +56,7 @@ featmake "{feature_oci}" {stringified_envs_args}
 """
 
 
-class DependenciesSH:
+class DependenciesSH(File):
     REF_PREFIX = "$options."
 
     def __init__(
@@ -66,6 +66,7 @@ class DependenciesSH:
     ) -> None:
         self.dependencies = dependencies
         self.options = options
+        super().__init__(content=self.to_str().encode())
 
     @staticmethod
     def _escape_qoutes(value: str) -> str:

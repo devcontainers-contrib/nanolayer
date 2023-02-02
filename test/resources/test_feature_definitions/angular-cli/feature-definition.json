@@ -28,5 +28,14 @@
         }
     ],
     "install_command": "echo 'Done'",
-    "test_command": "ng --help"
+    "test_scenarios": [
+        {
+            "name": "test_defaults",
+            "image": "mcr.microsoft.com/devcontainers/base:debian",
+            "test_commands": [
+                "ng --help"
+            ],
+            "options": {}
+        }
+    ]
 }
