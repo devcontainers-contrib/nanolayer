@@ -89,6 +89,7 @@ class Mount(BaseModel):
 class Feature(BaseModel):
     class Config:
         extra = Extra.forbid
+
     id: str = Field(
         ...,
         description="ID of the Feature. The id should be unique in the context of the repository/published package where the feature exists and must match the name of the directory where the devcontainer-feature.json resides.",
@@ -130,7 +131,7 @@ class Feature(BaseModel):
     entrypoint: Optional[str] = Field(
         None, description="Entrypoint script that should fire at container start up."
     )
-   
+
     init: Optional[bool] = Field(
         None,
         description="Adds the tiny init process to the container (--init) when the Feature is used.",
@@ -150,7 +151,6 @@ class Feature(BaseModel):
         None,
         description="Sets container security options to include when creating the container.",
     )
-
 
 
 class DevelopmentContainerFeatureMetadata(BaseModel):

@@ -11,6 +11,13 @@ class FeatureDependency(BaseModel):
     options: Dict[str, Union[str, bool]]
 
 
+class TestScenario(BaseModel):
+    name: str
+    image: str
+    test_commands: List[str]
+    options: Dict[str, Union[str, bool]]
+
+
 class FeatureDependencies(BaseModel):
     __root__: List[FeatureDependency]
 
@@ -38,9 +45,9 @@ class FeatureDefinition(Feature):
         description="This command will be run after dependencies are all installed",
     )
 
-    test_command: Optional[str] = Field(
+    test_scenarios: List[TestScenario] = Field(
         None,
-        description="This command will be used as a test, it should return 0 in case he feature has installed correctly using its default params",
+        description="List of test scenarios to prepare testing different use cases",
     )
 
     def to_feature_model(self) -> Feature:

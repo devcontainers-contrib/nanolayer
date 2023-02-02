@@ -19,8 +19,6 @@ Arguments:
   OUTPUT_DIR          [required]
 
 Options:
-  --output-type [feature_dir|dependencies|test]
-                                  [default: OutputType.feature_dir]
   --help                          Show this message and exit.
 ```
 
@@ -47,11 +45,20 @@ This is an *extended* version of the [devcontainer-feature.json](https://contain
         }
     ],
 
-    # this command will be executed after the dependency feature list has been installed
+    # This command will be executed after the dependency feature list has been installed
     "install_command": "echo 'Done'",
 
-    # this command will serve as the default test command (should exit wth code `0` if your feature is installed correctly)
-    "test_command": "act --version"
+    # this example test scenario checks the default options (empty options dict), each test_command should exit wth code `0` if your feature is installed correctly.
+    "test_scenarios": [
+        {
+            "name": "test_defaults",
+            "image": "mcr.microsoft.com/devcontainers/base:debian",
+            "test_commands": [
+                "act --version"
+            ],
+            "options": {}
+        }
+    ]
 }
 ```
 
@@ -96,5 +103,5 @@ git clone https://github.com/devcontainers-contrib/cli --depth 1
 cd cli
 
 
-devcontainer-contrib features generate "./test/resources/test_feature_definitions/elixir-asdf/feature-definition.json" "./output_dir" --output-type=feature_dir
+devcontainer-contrib features generate "./test/resources/test_feature_definitions/elixir-asdf/feature-definition.json" "./output_dir"
 ```
