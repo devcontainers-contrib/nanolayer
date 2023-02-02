@@ -4,8 +4,8 @@ from devcontainer_contrib.models.devcontainer_feature_definition import TestScen
 from devcontainer_contrib.models.devcontainer_feature_definition import (
     FeatureDefinition,
 )
-from devcontainer_contrib.features.file_models.scenarios_sh import (
-    ScenariosSH,
+from devcontainer_contrib.features.file_models.scenarios_json import (
+    ScenariosJson,
 )
 from devcontainer_contrib.features.file_models.test_sh import (
     TestSH,
@@ -21,7 +21,7 @@ class TestDir(Directory):
         virtual_dir[f"{feature_id}/test.sh"] = TestSH(
             commands=["echo 'see scenarios.sh for detailed test suite'"]
         )
-        virtual_dir[f"{feature_id}/scenarios.sh"] = ScenariosSH(
+        virtual_dir[f"{feature_id}/scenarios.json"] = ScenariosJson(
             feature_id=feature_id, test_scenarios=test_scenarios
         )
         for test_scenario in test_scenarios:

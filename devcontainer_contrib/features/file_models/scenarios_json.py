@@ -4,13 +4,13 @@ from easyfs import File
 import json
 
 
-class ScenariosSH(File):
+class ScenariosJson(File):
     def __init__(self, feature_id: str, test_scenarios: List[TestScenario]) -> None:
         scenarios = {}
         for test_scenario in test_scenarios:
             scenarios[test_scenario.name] = {
-                "image": "test_scenario",
+                "image": test_scenario.image,
                 "features": {feature_id: test_scenario.options or {}},
             }
 
-        super().__init__(json.dumps(scenarios).encode())
+        super().__init__(json.dumps(scenarios, indent=4).encode())
