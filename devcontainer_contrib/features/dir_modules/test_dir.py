@@ -18,9 +18,6 @@ class TestDir(Directory):
         feature_id = definition_model.id
         test_scenarios: TestScenario = definition_model.test_scenarios
         virtual_dir = {}
-        virtual_dir[f"{feature_id}/test.sh"] = TestSH(
-            commands=["echo 'see scenarios.sh for detailed test suite'"]
-        )
         virtual_dir[f"{feature_id}/scenarios.json"] = ScenariosJson(
             feature_id=feature_id, test_scenarios=test_scenarios
         )
