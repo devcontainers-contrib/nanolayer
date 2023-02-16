@@ -19,7 +19,7 @@ set -e
 
 ensure_curl () {{
     if ! type curl >/dev/null 2>&1; then
-        apt-get update -y && apt-get -y install --no-install-recommends curl
+        apt-get update -y && apt-get -y install --no-install-recommends curl ca-certificates
     fi 
 }}
 
