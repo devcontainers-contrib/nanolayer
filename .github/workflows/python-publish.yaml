@@ -37,8 +37,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip 
         python -m pip install pyoxidizer
-
-        pyoxidizer build --path $github_workspace/pyoxidizer-devcontainer-contrib --release --var DEVCONTAINER_CONTRIB_WHEEL_LOCATION $(ls dist | grep .whl)
+        pyoxidizer build --path $GITHUB_WORKSPACE/cli/pyoxidizer-devcontainer-contrib --release --var DEVCONTAINER_CONTRIB_WHEEL_LOCATION $(ls dist | grep .whl)
 
 
 
