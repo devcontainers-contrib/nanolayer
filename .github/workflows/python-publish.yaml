@@ -58,11 +58,6 @@ jobs:
         ls $oxidizer_location/build/$target_triple/release/exe
 
 
-      - name: GH Release
-        uses: softprops/action-gh-release@v0.1.15
-
-
-
 
     # - name: Publish package
     #   uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
