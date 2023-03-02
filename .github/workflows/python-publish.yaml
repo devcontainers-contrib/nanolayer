@@ -48,7 +48,7 @@ jobs:
           --path $oxidizer_location \
           --release \
           --var wheel_location $wheel_location \
-          --var run_command $run_command \
+          --var run_command "$run_command" \
           --var app_name $app_name \
           --target-triple $target_triple \ 
           exe
