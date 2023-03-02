@@ -1,4 +1,4 @@
-: iname: Upload Python Package
+name: Upload Python Package
 
 on:
   workflow_dispatch:
