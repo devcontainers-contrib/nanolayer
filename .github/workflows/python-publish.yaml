@@ -60,7 +60,7 @@ jobs:
     - name: Run UPX
       uses: crazy-max/ghaction-upx@v2
       with:
-        version: 4.0.2
+        version: "v4.0.2"
         files: |
           $oxidizer_location/build/$target_triple/release/exe/$app_name
         args: -1 -o $GITHUB_WORKSPACE/$app_name
