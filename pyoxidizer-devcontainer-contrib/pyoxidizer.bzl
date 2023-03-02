@@ -211,7 +211,7 @@ def make_exe():
     # python_config.write_modules_directory_env = "/tmp/oxidized/loaded_modules"
 
     # Evaluate a string as Python code when the interpreter starts.
-    python_config.run_command = run_commad
+    python_config.run_command = run_command
 
     # Run a Python module as __main__ when the interpreter starts.
     # python_config.run_module = "<module>"
@@ -233,7 +233,7 @@ def make_exe():
         config=python_config,
     )
 
-    for resource in exe.pip_install([devcontainer_contrib_wheel_location, "--no-binary","pydantic"], {}):
+    for resource in exe.pip_install([wheel_location, "--no-binary","pydantic"], {}):
         resource.add_location = "in-memory"
         exe.add_python_resource(resource)
 
