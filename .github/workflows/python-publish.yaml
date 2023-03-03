@@ -17,6 +17,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: stable
+          override: true
+
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
@@ -30,13 +36,7 @@ jobs:
     - name: Build package
       run: python -m build --wheel
 
-    - name: Install rust
-      uses: actions-rs/toolchain@v1
-      with:
-          toolchain: stable
-          override: true
-
-    - name: run pyoxidizer
+    - name: Build Binary using Pyoxidizer
       id: run_pyoxidizer
 
       run: |
@@ -62,8 +62,11 @@ jobs:
         mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/$binary_name
 
         echo "binary_location=$GITHUB_WORKSPACE/$binary_name" >> "$GITHUB_OUTPUT"
+      
+    - name: Strip Binary
+      run: strip --strip-all ${{ steps.run_pyoxidizer.outputs.binary_location }}
 
-    - name: Run UPX
+    - name: Compress Binary using UPX
       uses: crazy-max/ghaction-upx@v2
       with:
         version: "v4.0.2"
@@ -72,7 +75,7 @@ jobs:
 
         args: -1
 
-    - name: create checksum
+    - name: Create Binary checksum 
       id: create_checksum
 
       run: |
@@ -81,7 +84,7 @@ jobs:
         echo "checksum_location=$GITHUB_WORKSPACE/checksums.txt" >> "$GITHUB_OUTPUT"
 
 
-    - name: GH Release
+    - name: Create GH Release and upload Binary and checksum
       uses: softprops/action-gh-release@v0.1.15
       with:
           files: |
