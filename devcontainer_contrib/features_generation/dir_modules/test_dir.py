@@ -4,10 +4,10 @@ from devcontainer_contrib.models.devcontainer_feature_definition import TestScen
 from devcontainer_contrib.models.devcontainer_feature_definition import (
     FeatureDefinition,
 )
-from devcontainer_contrib.features.file_models.scenarios_json import (
+from devcontainer_contrib.features_generation.file_models.scenarios_json import (
     ScenariosJson,
 )
-from devcontainer_contrib.features.file_models.test_sh import (
+from devcontainer_contrib.features_generation.file_models.test_sh import (
     TestSH,
 )
 

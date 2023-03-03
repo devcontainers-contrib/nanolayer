@@ -1,3 +1,2 @@
-easyfs==0.0.3
 pydantic==1.10.5
 typer
