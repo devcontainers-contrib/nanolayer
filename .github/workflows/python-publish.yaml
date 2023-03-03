@@ -36,6 +36,8 @@ jobs:
           override: true
 
     - name: run pyoxidizer
+      id: run_pyoxidizer
+
       run: |
         python -m pip install --upgrade pip 
         python -m pip install pyoxidizer
@@ -57,13 +59,17 @@ jobs:
           --target-triple $target_triple 
 
         mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/$binary_name
+
+        echo "binary_location=$GITHUB_WORKSPACE/$binary_name" >> "$GITHUB_OUTPUT"
+
     - name: Run UPX
       uses: crazy-max/ghaction-upx@v2
       with:
         version: "v4.0.2"
         files: |
-          $GITHUB_WORKSPACE/$binary_name
-        args: -1 -o $GITHUB_WORKSPACE/$binary_name
+          ${{ steps.run_pyoxidizer.outputs.binary_location }}
+
+        args: -1
 
     - name: create checksum
       run: |
