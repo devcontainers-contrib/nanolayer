@@ -73,7 +73,7 @@ jobs:
         files: |
           ${{ steps.run_pyoxidizer.outputs.binary_location }}
 
-        args: -1
+        args: --best
 
     - name: Create Binary checksum 
       id: create_checksum
