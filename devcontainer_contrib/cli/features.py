@@ -1,14 +1,11 @@
 import typer
-
+import logging
 import pathlib
 from devcontainer_contrib.models.devcontainer_feature_definition import (
     FeatureDefinition,
 )
 
-from devcontainer_contrib.features.dir_modules.test_dir import TestDir
-from devcontainer_contrib.features.dir_modules.src_dir import SrcDir
-
-from easyfs import Directory
+logger = logging.getLogger(__name__)
 
 app = typer.Typer(pretty_exceptions_show_locals=False, pretty_exceptions_short=False)
 
@@ -18,6 +15,13 @@ def generate(
     feature_definition: pathlib.Path,
     output_dir: pathlib.Path,
 ) -> None:
+    try:
+        from devcontainer_contrib.features_generation.dir_modules.test_dir import TestDir
+        from devcontainer_contrib.features_generation.dir_modules.src_dir import SrcDir
+        from easyfs import Directory
+    except ImportError:
+        logger.error("Some imports required for feature generation are missing.\nMake sure you have included the generate extras during installation.\n eg. 'pip install devcontainer-contrib[generate]'")
+        raise typer.Exit(code=1)
 
     definition_model = FeatureDefinition.parse_file(feature_definition)
     feature_id = definition_model.id

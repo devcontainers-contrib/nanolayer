@@ -4,26 +4,95 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  discussions: write
 
 jobs:
   deploy:
+    env:
+      binary_name: devcontainer-contrib
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: stable
+          override: true
+
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
         python-version: '3.x'
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip 
         python -m pip install --upgrade build setuptools wheel  setuptools-scm
-    - name: Build package
+
+    - name: Build Python Package
       run: python -m build --wheel
-    - name: Publish package
+
+    - name: Build Binary using Pyoxidizer
+      id: run_pyoxidizer
+
+      run: |
+        python -m pip install --upgrade pip 
+        python -m pip install pyoxidizer
+
+        oxidizer_location=$GITHUB_WORKSPACE/pyoxidizer-devcontainer-contrib
+        wheel_location=./dist/$(ls dist | grep .whl)
+        target_triple="x86_64-unknown-linux-gnu"
+        run_command="from devcontainer_contrib.__main__ import main; main()"
+        python_version="3.10"
+
+
+        pyoxidizer build exe \
+          --path $oxidizer_location \
+          --release \
+          --var wheel_location $wheel_location \
+          --var run_command "$run_command" \
+          --var python_version $python_version \
+          --var app_name $binary_name \
+          --target-triple $target_triple 
+
+        mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/$binary_name
+
+        echo "binary_location=$GITHUB_WORKSPACE/$binary_name" >> "$GITHUB_OUTPUT"
+      
+    - name: Strip Binary
+      run: strip --strip-all ${{ steps.run_pyoxidizer.outputs.binary_location }}
+
+    - name: Compress Binary using UPX
+      uses: crazy-max/ghaction-upx@v2
+      with:
+        version: "v4.0.2"
+        files: |
+          ${{ steps.run_pyoxidizer.outputs.binary_location }}
+
+        args: --best
+
+    - name: Create Binary checksum 
+      id: create_checksum
+
+      run: |
+        sha256sum ${{ steps.run_pyoxidizer.outputs.binary_location }} > $GITHUB_WORKSPACE/checksums.txt
+        sha256sum -c $GITHUB_WORKSPACE/checksums.txt
+        echo "checksum_location=$GITHUB_WORKSPACE/checksums.txt" >> "$GITHUB_OUTPUT"
+
+
+    - name: Create GH Release and upload Binary and checksum
+      uses: softprops/action-gh-release@v0.1.15
+      with:
+          files: |
+            ${{ steps.run_pyoxidizer.outputs.binary_location }}
+            ${{ steps.create_checksum.outputs.checksum_location }}
+
+
+    - name: Publish Python Package
       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
       with:
         user: __token__

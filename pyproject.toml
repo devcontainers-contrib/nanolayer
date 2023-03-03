@@ -13,7 +13,7 @@ include = ["devcontainer_contrib*"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
-optional-dependencies = {dev = {file = ["requirements-dev.txt"]}}
+optional-dependencies={dev = {file = ["requirements-dev.txt"]},generate = {file = ["requirements-generate.txt"]}}
 
 [tool.setuptools_scm]
 

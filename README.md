@@ -4,7 +4,7 @@
 ## Installation
 
 
-`pip install devcontainer-contrib`
+`pip install devcontainer-contrib[generate]`
 
 
 ### Feature Generation:
