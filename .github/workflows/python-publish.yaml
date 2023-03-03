@@ -72,16 +72,20 @@ jobs:
         args: -1
 
     - name: create checksum
+      id: create_checksum
+
       run: |
-        sha256sum $GITHUB_WORKSPACE/$binary_name > $GITHUB_WORKSPACE/checksums.txt
+        sha256sum ${{ steps.run_pyoxidizer.outputs.binary_location }} > $GITHUB_WORKSPACE/checksums.txt
         sha256sum -c $GITHUB_WORKSPACE/checksums.txt
+        echo "checksum_location=$GITHUB_WORKSPACE/checksums.txt" >> "$GITHUB_OUTPUT"
+
 
     - name: GH Release
       uses: softprops/action-gh-release@v0.1.15
       with:
           files: |
-            $GITHUB_WORKSPACE/$binary_name
-            $GITHUB_WORKSPACE/checksums.txt
+            ${{ steps.run_pyoxidizer.outputs.binary_location }}
+            ${{ steps.create_checksum.outputs.checksum_location }}
 
     # - name: Publish package
     #   uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
