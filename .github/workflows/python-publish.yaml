@@ -43,7 +43,7 @@ jobs:
         python -m pip install --upgrade pip 
         python -m pip install pyoxidizer
 
-        oxidizer_location=$GITHUB_WORKSPACE/pyoxidizer-devcontainer-contrib
+        oxidizer_location=$GITHUB_WORKSPACE
         wheel_location=./dist/$(ls dist | grep .whl)
         target_triple="x86_64-unknown-linux-gnu"
         run_command="from devcontainer_contrib.__main__ import main; main()"
