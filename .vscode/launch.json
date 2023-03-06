@@ -12,6 +12,33 @@
             "console": "integratedTerminal",
             "justMyCode": false
         },
+ 
+        {
+            "name": "debug feature download",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/devcontainer_contrib/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "feature",
+                "download",
+                "ghcr.io/lukewiwa/features/shellcheck:0",
+            ]
+        },
+        {
+            "name": "debug feature inspect",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/devcontainer_contrib/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "feature",
+                "inspect",
+                "ghcr.io/lukewiwa/features/shellcheck:0",
+            ]
+        },
         {
             "name": "Debug Tests",
             "type": "python",
