@@ -1,5 +1,5 @@
 import os
-from devcontainer_contrib.cli.features import generate
+from devcontainer_contrib.cli.feature import generate
 from helpers import RESOURCE_DIR
 import pathlib
 import pytest

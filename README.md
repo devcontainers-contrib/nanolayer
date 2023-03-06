@@ -10,7 +10,7 @@
 ### Feature Generation:
 
 ```
-Usage: python -m devcontainer_contrib features generate [OPTIONS]
+Usage: python -m devcontainer_contrib feature generate [OPTIONS]
                                                         FEATURE_DEFINITION
                                                         OUTPUT_DIR
 
@@ -103,5 +103,5 @@ git clone https://github.com/devcontainers-contrib/cli --depth 1
 cd cli
 
 
-devcontainer-contrib features generate "./test/resources/test_feature_definitions/elixir-asdf/feature-definition.json" "./output_dir"
+devcontainer-contrib feature generate "./test/resources/test_feature_definitions/elixir-asdf/feature-definition.json" "./output_dir"
 ```
