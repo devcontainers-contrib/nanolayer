@@ -1,10 +1,11 @@
 import dxf
-from typing import Union, cast, Dict, Any
+from typing import Union, cast
 from pathlib import Path
 import json 
 import tempfile
 import tarfile
 import os
+from devcontainer_contrib.models.devcontainer_feature import Feature
 
 
 class FeatureOCI:
@@ -36,12 +37,12 @@ class FeatureOCI:
         path = f"{namespace}/{_id}"
 
         return (_id,
-		version,
-		owner,
-		namespace,
-		registry,
-		resource,
-		path)
+                version,
+                owner,
+                namespace,
+                registry,
+                resource,
+                path)
     
 
     def __init__(self, path: str) -> None:
@@ -88,12 +89,9 @@ class FeatureOCI:
             with tarfile.open(feature_targz_location, "r") as tar:
                 tar.extractall(output_dir)
 
-    def get_devcontainer_feature_obj(self)-> Dict[str, Any]:
+    def get_devcontainer_feature_obj(self)-> Feature:
 
         with tempfile.TemporaryDirectory() as extraction_dir:
             self.download_and_extract(extraction_dir)
 
-            with open(os.path.join(extraction_dir, "devcontainer-feature.json") ,"rb") as f:
-                return json.load(f)
-
-
+            return Feature.parse_file(os.path.join(extraction_dir, "devcontainer-feature.json"))

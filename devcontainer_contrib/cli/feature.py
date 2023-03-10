@@ -4,7 +4,9 @@ import pathlib
 from typing import List, Optional
 import json
 from devcontainer_contrib.cli.download.download_feature import download_feature
-from devcontainer_contrib.cli.inspect.extract_devcontainer_feature_obj import extract_devcontainer_feature_obj
+from devcontainer_contrib.cli.inspect.extract_devcontainer_feature_dict import extract_devcontainer_feature_dict
+from devcontainer_contrib.cli.install.install_feature import install_feature
+
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +42,6 @@ def download(
     feature: str,
 ) -> None:
     download_location = download_feature(feature)
-
     print(f"feature downloaded to {download_location}")
 
 
@@ -48,8 +49,15 @@ def download(
 def inspect(
     feature: str,
 ) -> None:
-    devcontainer_feature_obj = extract_devcontainer_feature_obj(feature)
+    devcontainer_feature_dict = extract_devcontainer_feature_dict(feature)
+    print(json.dumps(devcontainer_feature_dict, indent=4))
 
-    print(json.dumps(devcontainer_feature_obj, indent=4))
 
+@app.command("install")
+def install(
+    feature: str,
+    option: Optional[List[str]] = typer.Option(None, callback=_validate_args)
+) -> None:
+    options_dict = {argument.split("=")[0]: argument.split("=")[1] for argument in option}
+    install_feature(feature, options_dict)
 

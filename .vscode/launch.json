@@ -26,6 +26,20 @@
                 "ghcr.io/lukewiwa/features/shellcheck:0",
             ]
         },
+        
+        {
+            "name": "debug feature install",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/devcontainer_contrib/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "feature",
+                "install",
+                "ghcr.io/lukewiwa/features/shellcheck:0",
+            ]
+        },
         {
             "name": "debug feature inspect",
             "type": "python",
