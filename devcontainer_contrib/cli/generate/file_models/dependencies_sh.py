@@ -29,13 +29,13 @@ ensure_featmake () {{
         temp_dir=/tmp/featmake-download
         mkdir -p $temp_dir
 
-        curl -sSL -o $temp_dir/featmake {featmake_link} 
+        curl -sSL -o $temp_dir/devcontainer-contrib {featmake_link} 
         curl -sSL -o $temp_dir/checksums.txt {checksums_link}
 
         (cd $temp_dir ; sha256sum --check --strict $temp_dir/checksums.txt)
 
-        chmod a+x $temp_dir/featmake
-        mv -f $temp_dir/featmake /usr/local/bin/featmake
+        chmod a+x $temp_dir/devcontainer-contrib
+        mv -f $temp_dir/devcontainer-contrib /usr/local/bin/devcontainer-contrib
 
         rm -rf $temp_dir
     fi
@@ -52,7 +52,7 @@ PS1='\\s-\\v\\$' source /etc/profile
 """
 
 SINGLE_DEPENDENCY = """# installing {feature_oci}
-featmake "{feature_oci}" {stringified_envs_args} 
+devcontainer-contrib feature install "{feature_oci}" {stringified_envs_args} 
 """
 
 
@@ -79,17 +79,11 @@ class DependenciesSH(File):
     def create_install_command(
         self, feature_oci: str, params: Dict[str, Union[str, bool]]
     ) -> str:
-        envs = {}
-        for param_name, param_value in params.items():
-            if isinstance(param_value, str):
-                envs[param_name.upper()] = param_value
-            else:
-                envs[param_name.upper()] = str(param_value).lower()
 
         stringified_envs_args = " ".join(
             [
-                f'-{env} "{DependenciesSH._escape_qoutes(val)}"'
-                for env, val in envs.items()
+                f'--option "{env}={DependenciesSH._escape_qoutes(str(val))}"'
+                for env, val in params.items()
             ]
         )
 

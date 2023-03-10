@@ -25,7 +25,7 @@ def test_feature_dir_generation(
         output_dir=tmp_path,
     )
 
-    assert os.path.isfile(os.path.join(tmp_path_str, "test", feature_id, "test.sh"))
+    assert os.path.isfile(os.path.join(tmp_path_str, "test", feature_id, "scenarios.json"))
     assert os.path.isfile(
         os.path.join(tmp_path_str, "src", feature_id, "dependencies.sh")
     )
