@@ -1,4 +1,4 @@
-from devcontainer_contrib.utils.feature_oci import FeatureOCI
+from devcontainer_contrib.utils.oci_feature import OCIFeature
 from devcontainer_contrib.models.devcontainer_feature import Feature
 from typing import Optional, Dict, Union
 import pwd
@@ -12,7 +12,7 @@ import invoke
 logger = logging.getLogger(__name__)
 
 
-class FeatureOCIInstaller:
+class OCIFeatureInstaller:
     
     class FeatureInstallationException(Exception):
         pass
@@ -27,7 +27,7 @@ class FeatureOCIInstaller:
     _FEATURE_ENTRYPOINT = "install.sh"
             
     @classmethod
-    def install(cls, feature_oci: FeatureOCI, options: Optional[Dict[str, Union[str, bool]]] = None, remote_user_name: Optional[str] = None) -> None:
+    def install(cls, feature_oci: OCIFeature, options: Optional[Dict[str, Union[str, bool]]] = None, remote_user_name: Optional[str] = None) -> None:
         if options is None:
             options = {}
         options = cls._resolve_options(feature_obj = feature_oci.get_devcontainer_feature_obj(), options=options)
@@ -48,7 +48,7 @@ class FeatureOCIInstaller:
 
     
     @classmethod
-    def _install_feature(cls, feature_oci: FeatureOCI, envs: Dict[str, str]) -> None:
+    def _install_feature(cls, feature_oci: OCIFeature, envs: Dict[str, str]) -> None:
         env_variables_cmd = " ".join([f"{env_name}={env_value}" for env_name, env_value in envs.items()])
 
         with tempfile.TemporaryDirectory() as tempdir:
@@ -58,7 +58,7 @@ class FeatureOCIInstaller:
                                 sudo {env_variables_cmd} bash -i ./{cls._FEATURE_ENTRYPOINT}")
 
             if not response.ok:
-                raise FeatureOCIInstaller.FeatureInstallationException(f"feature {feature_oci.path} failed to install. return_code: {response.return_code}. see logs for error reason.")
+                raise OCIFeatureInstaller.FeatureInstallationException(f"feature {feature_oci.path} failed to install. return_code: {response.return_code}. see logs for error reason.")
             
 
     @classmethod

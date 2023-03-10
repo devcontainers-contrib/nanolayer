@@ -1,5 +1,5 @@
 import os
-from devcontainer_contrib.utils.feature_oci import FeatureOCI
+from devcontainer_contrib.utils.oci_feature import OCIFeature
 
 import logging
 logger = logging.getLogger(__name__)
@@ -8,4 +8,4 @@ logger = logging.getLogger(__name__)
 def download_feature(
     feature: str,
 ) -> None:
-    return FeatureOCI(feature).download(os.getcwd())
+    return OCIFeature(feature).download(os.getcwd())
