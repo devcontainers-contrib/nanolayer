@@ -13,8 +13,10 @@ jobs:
   release-publish:
     env:
       binary_name: devcontainer-contrib
+      binary_name_uncompressed: devcontainer-contrib-uncompressed
 
-    runs-on: ubuntu-latest
+
+    runs-on: ubuntu-18.04  # critical - glibc from host is leaking into the pyoxidizer binary, see https://pyoxidizer.readthedocs.io/en/stable/pyoxidizer_distributing_linux.html#built-application-dependencies
 
     steps:
     - uses: actions/checkout@v3
@@ -49,7 +51,6 @@ jobs:
         run_command="from devcontainer_contrib.__main__ import main; main()"
         python_version="3.10"
 
-
         pyoxidizer build exe \
           --path $oxidizer_location \
           --release \
@@ -59,10 +60,14 @@ jobs:
           --var app_name $binary_name \
           --target-triple $target_triple 
 
+        pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
+
         mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/$binary_name
+        cp $GITHUB_WORKSPACE/$binary_name $GITHUB_WORKSPACE/$binary_name_uncompressed
 
         echo "binary_location=$GITHUB_WORKSPACE/$binary_name" >> "$GITHUB_OUTPUT"
-      
+        echo "binary_location_uncompressed=$GITHUB_WORKSPACE/$binary_name_uncompressed" >> "$GITHUB_OUTPUT"
+
     - name: Strip Binary
       run: strip --strip-all ${{ steps.run_pyoxidizer.outputs.binary_location }}
 
@@ -80,7 +85,7 @@ jobs:
 
       run: |
         cd $(dirname ${{ steps.run_pyoxidizer.outputs.binary_location }})
-        sha256sum $binary_name > checksums.txt
+        sha256sum $binary_name $binary_name_uncompressed > checksums.txt
         sha256sum -c checksums.txt
         echo "checksum_location=$pwd/checksums.txt" >> "$GITHUB_OUTPUT"
 
@@ -89,4 +94,5 @@ jobs:
       with:
           files: |
             ${{ steps.run_pyoxidizer.outputs.binary_location }}
+            ${{ steps.run_pyoxidizer.outputs.binary_location_uncompressed }}
             ${{ steps.create_checksum.outputs.checksum_location }}
