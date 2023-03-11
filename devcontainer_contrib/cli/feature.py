@@ -31,7 +31,7 @@ def generate_command(
         )
         raise typer.Exit(code=1) from e
 
-    generate(feature_definition, output_dir)
+    generate(feature_definition.as_posix(), output_dir.as_posix())
 
 
 def _validate_args(value: Optional[List[str]]):

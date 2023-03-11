@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+import logging
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Extra, Field
+from pydantic import BaseModel, Extra, Field, root_validator
+
+logger = logging.getLogger(__name__)
 
 
 class FeatureOptionItem(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     default: bool = Field(
         ...,
@@ -26,7 +29,7 @@ class FeatureOptionItem(BaseModel):
 
 class FeatureOptionItem1(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     default: str = Field(
         ...,
@@ -48,7 +51,7 @@ class FeatureOptionItem1(BaseModel):
 
 class FeatureOptionItem2(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     default: str = Field(
         ...,
@@ -79,7 +82,7 @@ class Type(Enum):
 
 class Mount(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     source: str = Field(..., description="Mount source.")
     target: str = Field(..., description="Mount target.")
@@ -87,8 +90,17 @@ class Mount(BaseModel):
 
 
 class Feature(BaseModel):
+    @root_validator
+    def __warn_extra_field__(cls, values: Any) -> Any:
+        extra_fields = values.keys() - cls.__fields__.keys()
+
+        if extra_fields:
+            logger.warn(f"extra undocumented fields were found: {extra_fields}")
+
+        return values
+
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     id: str = Field(
         ...,

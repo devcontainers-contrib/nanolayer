@@ -1,4 +1,5 @@
 import pathlib
+from typing import Union
 
 from easyfs import Directory
 
@@ -10,8 +11,8 @@ from devcontainer_contrib.models.devcontainer_feature_definition import (
 
 
 def generate(
-    feature_definition: pathlib.Path,
-    output_dir: pathlib.Path,
+    feature_definition: str,
+    output_dir: str,
 ) -> None:
     definition_model = FeatureDefinition.parse_file(feature_definition)
     # create virtual file systm directory using easyfs
@@ -20,4 +21,4 @@ def generate(
     virtual_dir["test"] = TestDir.from_definition_model(definition_model)
 
     # manifesting the virtual directory into local filesystem
-    virtual_dir.create(output_dir.as_posix())
+    virtual_dir.create(output_dir)

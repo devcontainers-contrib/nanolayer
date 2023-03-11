@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 from unittest import mock
 
 from pydantic import BaseModel, Extra, Field
@@ -35,7 +35,7 @@ class FeatureDependencies(BaseModel):
 
 class FeatureDefinition(Feature):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     dependencies: Optional[FeatureDependencies] = Field(
         None,
