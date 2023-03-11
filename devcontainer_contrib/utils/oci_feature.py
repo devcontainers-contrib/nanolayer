@@ -1,8 +1,9 @@
-from typing import Union
-from pathlib import Path
-import tempfile
-import tarfile
 import os
+import tarfile
+import tempfile
+from pathlib import Path
+from typing import Union
+
 from devcontainer_contrib.models.devcontainer_feature import Feature
 from devcontainer_contrib.utils.oci_registry import OCIRegistry
 
@@ -20,20 +21,22 @@ class OCIFeature:
 
         if output_dir.is_file():
             raise ValueError("output_dir is a file")
-            
+
         output_dir.parent.mkdir(parents=True, exist_ok=True)
 
-        manifest = OCIRegistry.get_manifest(self.oci_feature_ref) 
+        manifest = OCIRegistry.get_manifest(self.oci_feature_ref)
 
-        assert len(manifest['layers']) == 1, "feature oci should have 1 layer only"
+        assert len(manifest["layers"]) == 1, "feature oci should have 1 layer only"
 
-        blob_digest = manifest['layers'][0]['digest']
-        file_name = manifest['layers'][0]['annotations']['org.opencontainers.image.title']
+        blob_digest = manifest["layers"][0]["digest"]
+        file_name = manifest["layers"][0]["annotations"][
+            "org.opencontainers.image.title"
+        ]
 
         file_location = output_dir.joinpath(file_name)
         with open(file_location, "wb") as f:
             f.write(OCIRegistry.get_blob(self.oci_feature_ref, blob_digest))
-        
+
         return file_location.as_posix()
 
     def download_and_extract(self, output_dir: Union[str, Path]) -> None:
@@ -47,14 +50,14 @@ class OCIFeature:
             raise ValueError(f"{output_dir} is not empty ")
 
         with tempfile.TemporaryDirectory() as download_dir:
-
             feature_targz_location = self.download(download_dir)
             with tarfile.open(feature_targz_location, "r") as tar:
                 tar.extractall(output_dir)
 
-    def get_devcontainer_feature_obj(self)-> Feature:
-
+    def get_devcontainer_feature_obj(self) -> Feature:
         with tempfile.TemporaryDirectory() as extraction_dir:
             self.download_and_extract(extraction_dir)
 
-            return Feature.parse_file(os.path.join(extraction_dir, "devcontainer-feature.json"))
+            return Feature.parse_file(
+                os.path.join(extraction_dir, "devcontainer-feature.json")
+            )

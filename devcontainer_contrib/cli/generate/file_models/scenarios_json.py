@@ -1,7 +1,9 @@
-from typing import List
-from devcontainer_contrib.models.devcontainer_feature_definition import TestScenario
-from easyfs import File
 import json
+from typing import List
+
+from easyfs import File
+
+from devcontainer_contrib.models.devcontainer_feature_definition import TestScenario
 
 
 class ScenariosJson(File):

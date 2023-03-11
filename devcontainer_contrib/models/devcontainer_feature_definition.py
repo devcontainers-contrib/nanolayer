@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from unittest import mock
 from typing import Any, Dict, List, Optional, Union
-from devcontainer_contrib.models.devcontainer_feature import Feature
+from unittest import mock
+
 from pydantic import BaseModel, Extra, Field
+
+from devcontainer_contrib.models.devcontainer_feature import Feature
 
 
 class FeatureDependency(BaseModel):

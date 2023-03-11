@@ -1,4 +1,5 @@
 import typer
+
 from devcontainer_contrib.cli.feature import app as feature_app
 
 app = typer.Typer(pretty_exceptions_show_locals=False, pretty_exceptions_short=False)
