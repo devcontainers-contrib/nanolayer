@@ -34,6 +34,7 @@ class OCIFeatureInstaller:
         feature_oci: OCIFeature,
         options: Optional[Dict[str, Union[str, bool]]] = None,
         remote_user_name: Optional[str] = None,
+        verbose: bool = False
     ) -> None:
         if options is None:
             options = {}
@@ -53,14 +54,14 @@ class OCIFeatureInstaller:
                 option_value = "true" if option_value else "false"
             env_variables[option_name.upper()] = option_value
 
-        cls._install_feature(feature_oci=feature_oci, envs=env_variables)
+        cls._install_feature(feature_oci=feature_oci, envs=env_variables, verbose=verbose)
 
     @classmethod
     def _escape_quotes(cls, value: str) -> str:
         return value.replace('"', '\\"')
     
     @classmethod
-    def _install_feature(cls, feature_oci: OCIFeature, envs: Dict[str, str]) -> None:
+    def _install_feature(cls, feature_oci: OCIFeature, envs: Dict[str, str], verbose: bool = False) -> None:
         env_variables_cmd = " ".join(
             [f'{env_name}="{cls._escape_quotes(env_value)}"' for env_name, env_value in envs.items()]
         )
@@ -73,8 +74,8 @@ class OCIFeatureInstaller:
             
             response = invoke.run(
                 f"cd {tempdir} && \
-                chmod +x ./{cls._FEATURE_ENTRYPOINT} && \
-                sudo {env_variables_cmd} bash -i ./{cls._FEATURE_ENTRYPOINT}",
+                chmod +x -R . && \
+                sudo {env_variables_cmd} bash -i {'-x' if verbose else ''} ./{cls._FEATURE_ENTRYPOINT}",
                 out_stream=sys.stdout,
                 err_stream=sys.stderr,
             )
@@ -91,7 +92,7 @@ class OCIFeatureInstaller:
         options_definitions = feature_obj.options or {}
 
         for option_name, option_obj in options_definitions.items():
-            if option_name not in options:
+            if (option_name not in options) or (options[option_name] == ""):
                 options[option_name] = option_obj.__root__.default
         return options
 

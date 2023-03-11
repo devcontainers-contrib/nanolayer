@@ -63,10 +63,11 @@ def inspect_command(
 def install_command(
     feature: str,
     option: Optional[List[str]] = typer.Option(None, callback=_validate_args),
+    verbose: bool = False
 ) -> None:
     if option is None:
         option = []
     options_dict = {
         argument.split("=")[0]: argument.split("=")[1] for argument in option
     }
-    install_feature(feature, options_dict)
+    install_feature(feature=feature, options=options_dict, verbose=verbose)

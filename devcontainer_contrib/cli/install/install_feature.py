@@ -11,5 +11,6 @@ def install_feature(
     feature: str,
     options: Optional[Dict[str, str]] = None,
     remote_user: Optional[str] = None,
+    verbose: bool = False
 ) -> None:
-    OCIFeatureInstaller.install(OCIFeature(feature), options, remote_user)
+    OCIFeatureInstaller.install(OCIFeature(feature), options, remote_user, verbose)
