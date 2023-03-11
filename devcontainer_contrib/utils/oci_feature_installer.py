@@ -55,9 +55,13 @@ class OCIFeatureInstaller:
         cls._install_feature(feature_oci=feature_oci, envs=env_variables)
 
     @classmethod
+    def _escape_quotes(cls, value: str) -> str:
+        return value.replace('"', '\\"')
+    
+    @classmethod
     def _install_feature(cls, feature_oci: OCIFeature, envs: Dict[str, str]) -> None:
         env_variables_cmd = " ".join(
-            [f"{env_name}={env_value}" for env_name, env_value in envs.items()]
+            [f'{env_name}="{cls._escape_quotes(env_value)}"' for env_name, env_value in envs.items()]
         )
 
         with tempfile.TemporaryDirectory() as tempdir:
