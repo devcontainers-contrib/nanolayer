@@ -3,6 +3,7 @@ import os
 import pwd
 import tempfile
 from typing import Dict, Optional, Union
+import sys
 
 import invoke
 
@@ -66,10 +67,16 @@ class OCIFeatureInstaller:
 
         with tempfile.TemporaryDirectory() as tempdir:
             feature_oci.download_and_extract(tempdir)
+
+            sys.stdout.reconfigure(encoding='utf-8')  # some processes will print in utf-8 while original stdout accept only ascii, causing a "UnicodeEncodeError: 'ascii' codec can't encode characters" error
+            sys.stderr.reconfigure(encoding='utf-8')  # some processes will print in utf-8 while original stdout accept only ascii, causing a "UnicodeEncodeError: 'ascii' codec can't encode characters" error
+            
             response = invoke.run(
                 f"cd {tempdir} && \
-                                chmod +x ./{cls._FEATURE_ENTRYPOINT} && \
-                                sudo {env_variables_cmd} bash -i ./{cls._FEATURE_ENTRYPOINT}"
+                chmod +x ./{cls._FEATURE_ENTRYPOINT} && \
+                sudo {env_variables_cmd} bash -i ./{cls._FEATURE_ENTRYPOINT}",
+                out_stream=sys.stdout,
+                err_stream=sys.stderr,
             )
 
             if not response.ok:
