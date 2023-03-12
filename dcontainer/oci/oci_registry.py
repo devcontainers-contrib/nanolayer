@@ -103,9 +103,12 @@ class OCIRegistry:
     @staticmethod
     def _generate_token(raw_response_header: str) -> str:
         www_authenticate = OCIRegistry._parse_www_authenticate(raw_response_header)
-        response = urllib.request.urlopen(
-            f"{www_authenticate.realm}?service={www_authenticate.service}&scope={www_authenticate.scope}"
-        )
+
+        token_request_link = f"{www_authenticate.realm}?service={www_authenticate.service}&scope={www_authenticate.scope}"
+        if not token_request_link.startswith('http'):
+            raise ValueError("only http/https links are permited")
+        
+        response = urllib.request.urlopen(token_request_link)  # nosec
         token = json.loads(response.read())["token"]
         return token
 
@@ -113,22 +116,28 @@ class OCIRegistry:
     def _attempt_request(
         url: str, headers: Optional[Dict[str, str]] = None
     ) -> http.client.HTTPResponse:
+
+        if not url.startswith('http'):
+            raise ValueError("only http/https links are permited")
+            
+
         if headers is None:
             headers = {}
 
         if "User-Agent" not in headers:
             headers["User-Agent"] = "dcontainer"
 
+     
         request = urllib.request.Request(url=url, headers=headers)
 
         try:
-            response = urllib.request.urlopen(request)
+            response = urllib.request.urlopen(request)  # nosec
             return response
 
         except urllib.error.HTTPError as e:
             token = OCIRegistry._generate_token(e.headers.as_string())
             request.add_header("Authorization", f"Bearer {token}")
-            return urllib.request.urlopen(request)
+            return urllib.request.urlopen(request)  # nosec
 
     @staticmethod
     def get_manifest(oci_input: str) -> Dict[str, Any]:
