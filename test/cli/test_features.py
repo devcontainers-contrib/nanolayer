@@ -1,18 +1,23 @@
 import os
-from dcontainer.cli.generate.generate_feature import generate
-from helpers import RESOURCE_DIR
 import pathlib
-import pytest
 
-FEATURE_DEFINITION_DIR = os.path.join(
-        RESOURCE_DIR, "test_feature_definitions")
+import pytest
+from helpers import RESOURCE_DIR
+
+from dcontainer.cli.generate.generate_feature import generate
+
+FEATURE_DEFINITION_DIR = os.path.join(RESOURCE_DIR, "test_feature_definitions")
 
 
 TEST_IMAGE = "mcr.microsoft.com/devcontainers/base:debian"
 
 
 @pytest.mark.parametrize(
-    "feature_id,feature_definition_dir", [(v, os.path.join(FEATURE_DEFINITION_DIR, v)) for v in os.listdir(FEATURE_DEFINITION_DIR)]
+    "feature_id,feature_definition_dir",
+    [
+        (v, os.path.join(FEATURE_DEFINITION_DIR, v))
+        for v in os.listdir(FEATURE_DEFINITION_DIR)
+    ],
 )
 def test_feature_dir_generation(
     shell, tmp_path: pathlib.Path, feature_id: str, feature_definition_dir: str
@@ -25,7 +30,9 @@ def test_feature_dir_generation(
         output_dir=tmp_path,
     )
 
-    assert os.path.isfile(os.path.join(tmp_path_str, "test", feature_id, "scenarios.json"))
+    assert os.path.isfile(
+        os.path.join(tmp_path_str, "test", feature_id, "scenarios.json")
+    )
     assert os.path.isfile(
         os.path.join(tmp_path_str, "src", feature_id, "dependencies.sh")
     )
@@ -36,11 +43,14 @@ def test_feature_dir_generation(
     assert os.path.isfile(
         os.path.join(tmp_path_str, "src", feature_id, "install_command.sh")
     )
-    
 
 
 @pytest.mark.parametrize(
-    "feature_id,feature_definition_dir", [(v, os.path.join(FEATURE_DEFINITION_DIR, v)) for v in os.listdir(FEATURE_DEFINITION_DIR)]
+    "feature_id,feature_definition_dir",
+    [
+        (v, os.path.join(FEATURE_DEFINITION_DIR, v))
+        for v in os.listdir(FEATURE_DEFINITION_DIR)
+    ],
 )
 def test_feature_dir_generation_and_run_devcontainer_tests(
     shell, tmp_path: pathlib.Path, feature_id: str, feature_definition_dir: str

@@ -7,8 +7,8 @@ from dcontainer.models.devcontainer_feature_definition import (
     FeatureDependencies,
     FeatureDependency,
 )
-from dcontainer.utils.version import resolve_own_release_version
 from dcontainer.settings import ENV_CLI_LOCATION, ENV_FORCE_CLI_INSTALLATION
+from dcontainer.utils.version import resolve_own_release_version
 
 RELEASE_VERSION = resolve_own_release_version()
 
@@ -64,7 +64,9 @@ fi
 
 """
 
-SINGLE_DEPENDENCY = """$dcontainer_location feature install "{feature_oci}" {stringified_envs_args} """
+SINGLE_DEPENDENCY = (
+    """$dcontainer_location feature install "{feature_oci}" {stringified_envs_args} """
+)
 
 
 class DependenciesSH(File):
@@ -139,11 +141,9 @@ class DependenciesSH(File):
             )
 
         return HEADER.format(
-            dependency_installation_lines="\n\n".join(
-                installation_lines
-            ),
+            dependency_installation_lines="\n\n".join(installation_lines),
             dcontainer_link=DCONTAINER_LINK,
             checksums_link=CHECKSUM_LINK,
             force_cli_installation_env=ENV_FORCE_CLI_INSTALLATION,
-            cli_location_env=ENV_CLI_LOCATION
+            cli_location_env=ENV_CLI_LOCATION,
         )

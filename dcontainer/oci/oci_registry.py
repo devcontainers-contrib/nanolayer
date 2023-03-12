@@ -105,9 +105,9 @@ class OCIRegistry:
         www_authenticate = OCIRegistry._parse_www_authenticate(raw_response_header)
 
         token_request_link = f"{www_authenticate.realm}?service={www_authenticate.service}&scope={www_authenticate.scope}"
-        if not token_request_link.startswith('http'):
+        if not token_request_link.startswith("http"):
             raise ValueError("only http/https links are permited")
-        
+
         response = urllib.request.urlopen(token_request_link)  # nosec
         token = json.loads(response.read())["token"]
         return token
@@ -116,10 +116,8 @@ class OCIRegistry:
     def _attempt_request(
         url: str, headers: Optional[Dict[str, str]] = None
     ) -> http.client.HTTPResponse:
-
-        if not url.startswith('http'):
+        if not url.startswith("http"):
             raise ValueError("only http/https links are permited")
-            
 
         if headers is None:
             headers = {}
@@ -127,7 +125,6 @@ class OCIRegistry:
         if "User-Agent" not in headers:
             headers["User-Agent"] = "dcontainer"
 
-     
         request = urllib.request.Request(url=url, headers=headers)
 
         try:

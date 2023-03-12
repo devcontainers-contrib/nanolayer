@@ -1,6 +1,6 @@
 import os
-import pytest
 
+import pytest
 
 print(f"_PYTEST_RAISE: {os.getenv('_PYTEST_RAISE', '0')}", flush=True)
 if os.getenv("_PYTEST_RAISE", "0") != "0":

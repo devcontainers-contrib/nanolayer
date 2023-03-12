@@ -5,9 +5,7 @@ from easyfs import Directory
 
 from dcontainer.cli.generate.dir_models.src_dir import SrcDir
 from dcontainer.cli.generate.dir_models.test_dir import TestDir
-from dcontainer.models.devcontainer_feature_definition import (
-    FeatureDefinition,
-)
+from dcontainer.models.devcontainer_feature_definition import FeatureDefinition
 
 
 def generate(

@@ -34,7 +34,7 @@ class FeatureOptionItem1(BaseModel):
     default: Optional[str] = Field(
         "",
         description="Default value if the user omits this option from their configuration.",
-    ) # todo: remove Optional state after SDKMAN feature is fixed
+    )  # todo: remove Optional state after SDKMAN feature is fixed
     description: Optional[str] = Field(
         None,
         description="A description of the option displayed to the user by a supporting tool.",

@@ -66,27 +66,27 @@ def install_command(
     verbose: bool = False,
 ) -> None:
     def _strip_if_wrapped_around(value: str, char: str) -> str:
-
         if len(char) > 1:
-            raise ValueError("For clarity sake, will only strip one character at a time")
-        
+            raise ValueError(
+                "For clarity sake, will only strip one character at a time"
+            )
+
         if len(value) >= 2 and value[0] == char and value[-1] == char:
             return value.strip(char)
         return value
-
 
     if option is None:
         options = []
     else:
         options = option
-    
+
     options_dict = {}
     for single_option in options:
         single_option = _strip_if_wrapped_around(single_option, '"')
 
         option_name = single_option.split("=")[0]
 
-        option_value = single_option[len(option_name)+1:]
+        option_value = single_option[len(option_name) + 1 :]
         option_value = _strip_if_wrapped_around(option_value, '"')
 
         options_dict[option_name] = option_value

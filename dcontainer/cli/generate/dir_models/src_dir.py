@@ -4,13 +4,9 @@ from dcontainer.cli.generate.file_models.dependencies_sh import DependenciesSH
 from dcontainer.cli.generate.file_models.devcontainer_feature_json import (
     DevcontainerFeatureJson,
 )
-from dcontainer.cli.generate.file_models.install_command_sh import (
-    InstallCommandSH,
-)
+from dcontainer.cli.generate.file_models.install_command_sh import InstallCommandSH
 from dcontainer.cli.generate.file_models.install_sh import InstallSH
-from dcontainer.models.devcontainer_feature_definition import (
-    FeatureDefinition,
-)
+from dcontainer.models.devcontainer_feature_definition import FeatureDefinition
 
 
 class SrcDir(Directory):

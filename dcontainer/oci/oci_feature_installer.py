@@ -1,16 +1,22 @@
 import logging
 import os
 import pwd
-import tempfile
-from typing import Dict, Optional, Union
 import sys
-import os
+import tempfile
 from pathlib import Path
+from typing import Dict, Optional, Union
+
 import invoke
 
 from dcontainer.models.devcontainer_feature import Feature
 from dcontainer.oci.oci_feature import OCIFeature
-from dcontainer.settings import DContainerSettings, ENV_CLI_LOCATION, ENV_PROPAGATE_CLI_LOCATION,  ENV_FORCE_CLI_INSTALLATION, ENV_VERBOSE
+from dcontainer.settings import (
+    ENV_CLI_LOCATION,
+    ENV_FORCE_CLI_INSTALLATION,
+    ENV_PROPAGATE_CLI_LOCATION,
+    ENV_VERBOSE,
+    DContainerSettings,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -43,14 +49,12 @@ class OCIFeatureInstaller:
     ) -> None:
         if options is None:
             options = {}
-        
+
         if envs is None:
             envs = {}
-        feature_obj=feature_oci.get_devcontainer_feature_obj()
+        feature_obj = feature_oci.get_devcontainer_feature_obj()
 
-        options = cls._resolve_options(
-            feature_obj=feature_obj, options=options
-        )
+        options = cls._resolve_options(feature_obj=feature_obj, options=options)
         logger.info("resolved options: %s", str(options))
 
         remote_user = cls._resolve_remote_user(remote_user_name)
@@ -67,7 +71,7 @@ class OCIFeatureInstaller:
             settings = DContainerSettings()
 
             if settings.verbose == "1":
-                verbose = True 
+                verbose = True
 
             envs[ENV_VERBOSE] = settings.verbose
             envs[ENV_FORCE_CLI_INSTALLATION] = settings.force_cli_installation
@@ -76,26 +80,32 @@ class OCIFeatureInstaller:
             if settings.propagate_cli_location == "1":
                 if settings.cli_location != "":
                     envs[ENV_CLI_LOCATION] = settings.cli_location
-                elif getattr(sys, 'frozen', False):
+                elif getattr(sys, "frozen", False):
                     envs[ENV_CLI_LOCATION] = sys.executable
             else:
-                # override it with empty string in case it already exists 
+                # override it with empty string in case it already exists
                 envs[ENV_CLI_LOCATION] = ""
-            
+
         except Exception as e:
             logger.warning(f"could not create settings: {str(e)}")
-            
+
         env_variables_cmd = " ".join(
-            [f'{env_name}="{cls._escape_quotes(env_value)}"' for env_name, env_value in envs.items()]
+            [
+                f'{env_name}="{cls._escape_quotes(env_value)}"'
+                for env_name, env_value in envs.items()
+            ]
         )
-        
-    
+
         with tempfile.TemporaryDirectory() as tempdir:
             feature_oci.download_and_extract(tempdir)
 
-            sys.stdout.reconfigure(encoding='utf-8')  # some processes will print in utf-8 while original stdout accept only ascii, causing a "UnicodeEncodeError: 'ascii' codec can't encode characters" error
-            sys.stderr.reconfigure(encoding='utf-8')  # some processes will print in utf-8 while original stdout accept only ascii, causing a "UnicodeEncodeError: 'ascii' codec can't encode characters" error
-            
+            sys.stdout.reconfigure(
+                encoding="utf-8"
+            )  # some processes will print in utf-8 while original stdout accept only ascii, causing a "UnicodeEncodeError: 'ascii' codec can't encode characters" error
+            sys.stderr.reconfigure(
+                encoding="utf-8"
+            )  # some processes will print in utf-8 while original stdout accept only ascii, causing a "UnicodeEncodeError: 'ascii' codec can't encode characters" error
+
             response = invoke.run(
                 f"cd {tempdir} && \
                 chmod +x -R . && \
@@ -108,9 +118,9 @@ class OCIFeatureInstaller:
                 raise OCIFeatureInstaller.FeatureInstallationException(
                     f"feature {feature_oci.path} failed to install. return_code: {response.return_code}. see logs for error reason."
                 )
-            
+
             cls._set_permanent_envs(feature_obj)
-        
+
     @classmethod
     def _set_permanent_envs(cls, feature: Feature) -> None:
         if feature.containerEnv is None:
@@ -118,7 +128,9 @@ class OCIFeatureInstaller:
 
         feature_profile_dir = Path(cls._PROFILE_DIR)
         feature_profile_dir.mkdir(exist_ok=True, parents=True)
-        feature_profile_file = feature_profile_dir.joinpath(f"dcontainer-{feature.id}.sh")
+        feature_profile_file = feature_profile_dir.joinpath(
+            f"dcontainer-{feature.id}.sh"
+        )
 
         if not feature_profile_file.exists():
             feature_profile_file.touch()
@@ -130,19 +142,17 @@ class OCIFeatureInstaller:
         for env_name, env_value in feature.containerEnv.items():
             statement = f"export {env_name}={env_value}"
             if statement not in current_content:
-                current_content += f"\n{statement}" 
-            
+                current_content += f"\n{statement}"
+
                 modified = True
-        
+
         if modified:
             with open(feature_profile_file, "w") as f:
                 f.write(current_content)
 
-
     @classmethod
     def _escape_quotes(cls, value: str) -> str:
         return value.replace('"', '\\"')
-    
 
     @classmethod
     def _resolve_options(
