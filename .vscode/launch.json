@@ -50,7 +50,7 @@
             "args": [
                 "feature",
                 "inspect",
-                "ghcr.io/lukewiwa/features/shellcheck:0",
+                "ghcr.io/devcontainers/features/python:1.0.18",
             ]
         },
         {
