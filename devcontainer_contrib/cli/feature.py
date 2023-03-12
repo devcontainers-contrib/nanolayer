@@ -65,6 +65,15 @@ def install_command(
     option: Optional[List[str]] = typer.Option(None, callback=_validate_args),
     verbose: bool = False
 ) -> None:
+    def _strip_if_wrapped_around(value: str, char: str) -> str:
+        if len(char) > 1:
+            raise ValueError("For clarity sake, will only strip one character at a time")
+        
+        if value[0] == char and value[-1] == char:
+            return value.strip(char)
+        return value
+
+
     if option is None:
         options = []
     else:
@@ -72,8 +81,13 @@ def install_command(
     
     options_dict = {}
     for single_option in options:
+        single_option = _strip_if_wrapped_around(single_option, '"')
+
         option_name = single_option.split("=")[0]
-        option_value = single_option.removeprefix(f"{option_name}=").strip('"')
+
+        option_value = single_option.removeprefix(f"{option_name}=")
+        option_value = _strip_if_wrapped_around(option_value, '"')
+        
         options_dict[option_name] = option_value
 
     install_feature(feature=feature, options=options_dict, verbose=verbose)
