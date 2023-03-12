@@ -38,7 +38,7 @@ def _validate_args(value: Optional[List[str]]):
     if value is not None:
         for arg in value:
             splitted_arg = arg.split("=")
-            if len(splitted_arg) != 2 or len(splitted_arg[0]) == 0:
+            if len(splitted_arg) < 2 or len(splitted_arg[0]) == 0:
                 raise typer.BadParameter("Must be formatted as 'key=value'")
     return value
 
@@ -66,8 +66,14 @@ def install_command(
     verbose: bool = False
 ) -> None:
     if option is None:
-        option = []
-    options_dict = {
-        argument.split("=")[0]: argument.split("=")[1] for argument in option
-    }
+        options = []
+    else:
+        options = option
+    
+    options_dict = {}
+    for single_option in options:
+        option_name = single_option.split("=")[0]
+        option_value = single_option.removeprefix(f"{option_name}=").strip('"')
+        options_dict[option_name] = option_value
+
     install_feature(feature=feature, options=options_dict, verbose=verbose)
