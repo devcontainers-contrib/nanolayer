@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Union
 
 from dcontainer.models.devcontainer_feature import Feature
-from dcontainer.utils.oci_registry import OCIRegistry
+from dcontainer.oci.oci_registry import OCIRegistry
 
 
 class OCIFeature:

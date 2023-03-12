@@ -7,6 +7,8 @@ from dcontainer.models.devcontainer_feature_definition import (
     FeatureDependencies,
     FeatureDependency,
 )
+from dcontainer.settings import ENV_CLI_LOCATION, ENV_REUSE_CLI_LOCATION
+
 
 DCONTAINER_LINK = "https://github.com/devcontainers-contrib/cli/releases/download/v0.0.27beta15/dcontainer"
 CHECKSUM_LINK = "https://github.com/devcontainers-contrib/cli/releases/download/v0.0.27beta15/checksums.txt"
@@ -17,15 +19,7 @@ HEADER = """#!/usr/bin/env bash
 
 set -e
 
-tmp_dir=$(mktemp -d -t dcontainer-XXXXXXXXXX)
 
-clean_up () {{
-    ARG=$?
-    rm -rf $tmp_dir
-    exit $ARG
-}}
-
-trap clean_up EXIT
 
 # Ensure curl available
 if ! type curl >/dev/null 2>&1; then
@@ -33,16 +27,40 @@ if ! type curl >/dev/null 2>&1; then
 fi 
 
 # Download the dcontainer cli program
-curl -sSL -o $tmp_dir/dcontainer {dcontainer_link} 
-curl -sSL -o $tmp_dir/checksums.txt {checksums_link}
-(cd $tmp_dir ; sha256sum --check --strict --ignore-missing $tmp_dir/checksums.txt)
-chmod a+x $tmp_dir/dcontainer
+dcontainer_location=""
+if [[ -z "${{{reuse_cli_location_env}}}" ]]; then
+    if [[ -z "${{{cli_location_env}}}" ]]; then
+        if type dcontainer >/dev/null 2>&1; then
+            dcontainer_location=dcontainer
+        fi
+    elif [ -f "${{{cli_location_env}}}" ] && [ -x "${{{cli_location_env}}}" ] ; then
+        dcontainer_location=${{{cli_location_env}}}
+    fi
+fi
+
+if [[ -z "${{dcontainer_location}}" ]]; then
+    tmp_dir=$(mktemp -d -t dcontainer-XXXXXXXXXX)
+
+    clean_up () {{
+        ARG=$?
+        rm -rf $tmp_dir
+        exit $ARG
+    }}
+
+    trap clean_up EXIT
+
+    curl -sSL -o $tmp_dir/dcontainer {dcontainer_link} 
+    curl -sSL -o $tmp_dir/checksums.txt {checksums_link}
+    (cd $tmp_dir ; sha256sum --check --strict --ignore-missing $tmp_dir/checksums.txt)
+    chmod a+x $tmp_dir/dcontainer
+    dcontainer_location=$tmp_dir/dcontainer
+fi
 
 {dependency_installation_lines}
 
 """
 
-SINGLE_DEPENDENCY = """$tmp_dir/dcontainer feature install "{feature_oci}" {stringified_envs_args} """
+SINGLE_DEPENDENCY = """$dcontainer_location feature install "{feature_oci}" {stringified_envs_args} """
 
 
 class DependenciesSH(File):
@@ -103,7 +121,6 @@ class DependenciesSH(File):
 
         installation_lines = []
         for feature_dependency in self.dependencies:
-            feature_dependency: FeatureDependency
             resolved_params = {}
             for param_name, param_value in feature_dependency.options.items():
                 if isinstance(param_value, str):
@@ -123,4 +140,6 @@ class DependenciesSH(File):
             ),
             dcontainer_link=DCONTAINER_LINK,
             checksums_link=CHECKSUM_LINK,
+            reuse_cli_location_env=ENV_REUSE_CLI_LOCATION,
+            cli_location_env=ENV_CLI_LOCATION
         )

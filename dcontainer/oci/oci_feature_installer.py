@@ -4,11 +4,12 @@ import pwd
 import tempfile
 from typing import Dict, Optional, Union
 import sys
-
+import os
 import invoke
 
 from dcontainer.models.devcontainer_feature import Feature
-from dcontainer.utils.oci_feature import OCIFeature
+from dcontainer.oci.oci_feature import OCIFeature
+from dcontainer.settings import DContainerSettings, ENV_CLI_LOCATION, ENV_PROPAGATE_CLI_LOCATION,  ENV_REUSE_CLI_LOCATION
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class OCIFeatureInstaller:
         feature_oci: OCIFeature,
         options: Optional[Dict[str, Union[str, bool]]] = None,
         remote_user_name: Optional[str] = None,
-        verbose: bool = False
+        verbose: bool = False,
     ) -> None:
         if options is None:
             options = {}
@@ -54,6 +55,25 @@ class OCIFeatureInstaller:
                 option_value = "true" if option_value else "false"
             env_variables[option_name.upper()] = option_value
 
+        try:
+            settings = DContainerSettings()
+
+            if settings.verbose is not None:
+                verbose = settings.verbose
+
+            env_variables[ENV_REUSE_CLI_LOCATION] = str(settings.reuse_cli_location)
+            env_variables[ENV_PROPAGATE_CLI_LOCATION] = str(settings.propagate_cli_location)
+
+            if settings.propagate_cli_location and getattr(sys, 'frozen', False):
+                env_variables[ENV_CLI_LOCATION] = sys.executable
+            else:
+                # override it with empty string in case it already exists 
+                env_variables[ENV_CLI_LOCATION] = ""
+            
+        except Exception as e:
+            logger.warning(f"could not create settings: {str(e)}")
+            
+
         cls._install_feature(feature_oci=feature_oci, envs=env_variables, verbose=verbose)
 
     @classmethod
@@ -61,11 +81,15 @@ class OCIFeatureInstaller:
         return value.replace('"', '\\"')
     
     @classmethod
-    def _install_feature(cls, feature_oci: OCIFeature, envs: Dict[str, str], verbose: bool = False) -> None:
+    def _install_feature(cls, 
+                         feature_oci: OCIFeature, 
+                         envs: Dict[str, str], 
+                         verbose: bool = False) -> None:
         env_variables_cmd = " ".join(
             [f'{env_name}="{cls._escape_quotes(env_value)}"' for env_name, env_value in envs.items()]
         )
-
+    
+    
         with tempfile.TemporaryDirectory() as tempdir:
             feature_oci.download_and_extract(tempdir)
 

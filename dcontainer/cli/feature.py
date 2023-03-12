@@ -63,13 +63,14 @@ def inspect_command(
 def install_command(
     feature: str,
     option: Optional[List[str]] = typer.Option(None, callback=_validate_args),
-    verbose: bool = False
+    verbose: bool = False,
 ) -> None:
     def _strip_if_wrapped_around(value: str, char: str) -> str:
+
         if len(char) > 1:
             raise ValueError("For clarity sake, will only strip one character at a time")
         
-        if value[0] == char and value[-1] == char:
+        if len(value) >= 2 and value[0] == char and value[-1] == char:
             return value.strip(char)
         return value
 
