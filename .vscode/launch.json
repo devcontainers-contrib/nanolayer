@@ -26,7 +26,30 @@
                 "ghcr.io/lukewiwa/features/shellcheck:0",
             ]
         },
-        
+        {
+            "name": "debug --release-version",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--release-version",
+                
+            ] 
+        },
+        {
+            "name": "debug --version",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--version",
+                
+            ] 
+        },
         {
             "name": "debug feature install",
             "type": "python",
