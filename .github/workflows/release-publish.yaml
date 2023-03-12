@@ -63,8 +63,7 @@ jobs:
         pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
 
         mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/$binary_name
-        cp $GITHUB_WORKSPACE/$binary_name $GITHUB_WORKSPACE/$binary_name_nonupx
-        tar -zcvf $GITHUB_WORKSPACE/$binary_name_nonupx $GITHUB_WORKSPACE/$binary_name_nonupx
+        tar -zcvf $GITHUB_WORKSPACE/$binary_name_nonupx $GITHUB_WORKSPACE/$binary_name
 
         echo "binary_location=$GITHUB_WORKSPACE/$binary_name" >> "$GITHUB_OUTPUT"
         echo "binary_location_nonupx=$GITHUB_WORKSPACE/$binary_name_nonupx" >> "$GITHUB_OUTPUT"
