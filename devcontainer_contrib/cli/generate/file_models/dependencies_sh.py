@@ -17,43 +17,32 @@ HEADER = """#!/usr/bin/env bash
 
 set -e
 
-ensure_curl () {{
-    if ! type curl >/dev/null 2>&1; then
-        apt-get update -y && apt-get -y install --no-install-recommends curl ca-certificates
-    fi 
+tmp_dir=$(mktemp -d -t dcontainer-XXXXXXXXXX)
+
+clean_up () {{
+    ARG=$?
+    rm -rf $tmp_dir
+    exit $ARG
 }}
 
+trap clean_up EXIT
 
-ensure_featmake () {{
-    if ! type devcontainer-contrib > /dev/null 2>&1; then
-        temp_dir=/tmp/devcontainer-contrib-download
-        mkdir -p $temp_dir
+# ensure curl available
+if ! type curl >/dev/null 2>&1; then
+    apt-get update -y && apt-get -y install --no-install-recommends curl ca-certificates
+fi 
 
-        curl -sSL -o $temp_dir/devcontainer-contrib {featmake_link} 
-        # curl -sSL -o $temp_dir/checksums.txt {checksums_link}
-
-        # (cd $temp_dir ; sha256sum --check --strict $temp_dir/checksums.txt)
-
-        chmod a+x $temp_dir/devcontainer-contrib
-        mv -f $temp_dir/devcontainer-contrib /usr/local/bin/devcontainer-contrib
-
-        rm -rf $temp_dir
-    fi
-}}
-
-ensure_curl
-
-ensure_featmake
-
-# refresh PATH 
-PS1='\\s-\\v\\$' source /etc/profile
+# download devcontainer-contrib cli program
+curl -sSL -o $tmp_dir/devcontainer-contrib {featmake_link} 
+curl -sSL -o $tmp_dir/checksums.txt {checksums_link}
+(cd $tmp_dir ; sha256sum --check --strict --ignore-missing $tmp_dir/checksums.txt)
+chmod a+x $tmp_dir/devcontainer-contrib
 
 {dependency_installation_lines}
+
 """
 
-SINGLE_DEPENDENCY = """# installing {feature_oci}
-devcontainer-contrib feature install "{feature_oci}" {stringified_envs_args} 
-"""
+SINGLE_DEPENDENCY = """$tmp_dir/devcontainer-contrib feature install "{feature_oci}" {stringified_envs_args} """
 
 
 class DependenciesSH(File):
@@ -129,7 +118,7 @@ class DependenciesSH(File):
             )
 
         return HEADER.format(
-            dependency_installation_lines="\n# refresh PATH\nPS1='\\s-\\v\\$' source /etc/profile\n".join(
+            dependency_installation_lines="\n".join(
                 installation_lines
             ),
             featmake_link=FEATMAKE_LINK,
