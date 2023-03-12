@@ -85,9 +85,9 @@ def install_command(
 
         option_name = single_option.split("=")[0]
 
-        option_value = single_option.removeprefix(f"{option_name}=")
+        option_value = single_option[len(option_name)+1:]
         option_value = _strip_if_wrapped_around(option_value, '"')
-        
+
         options_dict[option_name] = option_value
 
     install_feature(feature=feature, options=options_dict, verbose=verbose)
