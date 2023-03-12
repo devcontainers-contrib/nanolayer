@@ -30,7 +30,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: '3.8'
+        python-version: '3.10'
 
     - name: Build Python Package
       run: |
@@ -49,7 +49,7 @@ jobs:
         wheel_location=./dist/$(ls dist | grep .whl)
         target_triple="x86_64-unknown-linux-gnu"
         run_command="from devcontainer_contrib.__main__ import main; main()"
-        python_version="3.8"
+        python_version="3.10"
 
         pyoxidizer build exe \
           --path $oxidizer_location \
