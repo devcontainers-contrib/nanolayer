@@ -7,11 +7,12 @@ class DContainerSettings(BaseSettings):
     class Config:
         env_prefix = "DCONTAINER_"
 
-    cli_location: Optional[str] = ""
-    propagate_cli_location: Optional[bool] = True
-    reuse_cli_location: Optional[bool] = True
-    verbose: Optional[bool] = None
+    cli_location: str = ""
+    propagate_cli_location: str = "1"
+    force_cli_installation: str = ""
+    verbose: str = ""
 
 ENV_CLI_LOCATION = f"{DContainerSettings.Config.env_prefix}CLI_LOCATION"
 ENV_PROPAGATE_CLI_LOCATION = f"{DContainerSettings.Config.env_prefix}PROPAGATE_CLI_LOCATION"
-ENV_REUSE_CLI_LOCATION = f"{DContainerSettings.Config.env_prefix}REUSE_CLI_LOCATION"
+ENV_FORCE_CLI_INSTALLATION = f"{DContainerSettings.Config.env_prefix}FORCE_CLI_INSTALLATION"
+ENV_VERBOSE = f"{DContainerSettings.Config.env_prefix}VERBOSE"

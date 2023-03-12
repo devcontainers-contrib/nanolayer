@@ -9,7 +9,7 @@ import invoke
 
 from dcontainer.models.devcontainer_feature import Feature
 from dcontainer.oci.oci_feature import OCIFeature
-from dcontainer.settings import DContainerSettings, ENV_CLI_LOCATION, ENV_PROPAGATE_CLI_LOCATION,  ENV_REUSE_CLI_LOCATION
+from dcontainer.settings import DContainerSettings, ENV_CLI_LOCATION, ENV_PROPAGATE_CLI_LOCATION,  ENV_FORCE_CLI_INSTALLATION, ENV_VERBOSE
 
 logger = logging.getLogger(__name__)
 
@@ -58,14 +58,18 @@ class OCIFeatureInstaller:
         try:
             settings = DContainerSettings()
 
-            if settings.verbose is not None:
-                verbose = settings.verbose
+            if settings.verbose == "1":
+                verbose = True 
 
-            env_variables[ENV_REUSE_CLI_LOCATION] = str(settings.reuse_cli_location)
-            env_variables[ENV_PROPAGATE_CLI_LOCATION] = str(settings.propagate_cli_location)
+            env_variables[ENV_VERBOSE] = settings.verbose
+            env_variables[ENV_FORCE_CLI_INSTALLATION] = settings.force_cli_installation
+            env_variables[ENV_PROPAGATE_CLI_LOCATION] = settings.propagate_cli_location
 
-            if settings.propagate_cli_location and getattr(sys, 'frozen', False):
-                env_variables[ENV_CLI_LOCATION] = sys.executable
+            if settings.propagate_cli_location == "1":
+                if settings.cli_location != "":
+                    env_variables[ENV_CLI_LOCATION] = settings.cli_location
+                elif getattr(sys, 'frozen', False):
+                    env_variables[ENV_CLI_LOCATION] = sys.executable
             else:
                 # override it with empty string in case it already exists 
                 env_variables[ENV_CLI_LOCATION] = ""

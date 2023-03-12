@@ -7,7 +7,7 @@ from dcontainer.models.devcontainer_feature_definition import (
     FeatureDependencies,
     FeatureDependency,
 )
-from dcontainer.settings import ENV_CLI_LOCATION, ENV_REUSE_CLI_LOCATION
+from dcontainer.settings import ENV_CLI_LOCATION, ENV_FORCE_CLI_INSTALLATION
 
 
 DCONTAINER_LINK = "https://github.com/devcontainers-contrib/cli/releases/download/v0.0.27beta15/dcontainer"
@@ -27,8 +27,10 @@ if ! type curl >/dev/null 2>&1; then
 fi 
 
 # Download the dcontainer cli program
+
+
 dcontainer_location=""
-if [[ -z "${{{reuse_cli_location_env}}}" ]]; then
+if [[ -z "${{{force_cli_installation_env}}}" ]]; then
     if [[ -z "${{{cli_location_env}}}" ]]; then
         if type dcontainer >/dev/null 2>&1; then
             dcontainer_location=dcontainer
@@ -140,6 +142,6 @@ class DependenciesSH(File):
             ),
             dcontainer_link=DCONTAINER_LINK,
             checksums_link=CHECKSUM_LINK,
-            reuse_cli_location_env=ENV_REUSE_CLI_LOCATION,
+            force_cli_installation_env=ENV_FORCE_CLI_INSTALLATION,
             cli_location_env=ENV_CLI_LOCATION
         )
