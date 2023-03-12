@@ -61,8 +61,8 @@ class FeatureOptionItem2(BaseModel):
         None,
         description="A description of the option displayed to the user by a supporting tool.",
     )
-    proposals: List[str] = Field(
-        ...,
+    proposals: Optional[List[str]] = Field(
+        None,
         description="Suggested values for this option.  Unlike 'enum', the 'proposals' attribute indicates the installation script can handle arbitrary values provided by the user.",
     )
     type: str = Field(
