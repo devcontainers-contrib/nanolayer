@@ -1,16 +1,16 @@
-# Devcontainers Contrib CLI
+# Dcontainer CLI
 
 
 ## Installation
 
 
-`pip install devcontainer-contrib[generate]`
+`pip install dcontainer[generate]`
 
 
 ### Feature Generation:
 
 ```
-Usage: python -m devcontainer_contrib feature generate [OPTIONS]
+Usage: python -m dcontainer feature generate [OPTIONS]
                                                         FEATURE_DEFINITION
                                                         OUTPUT_DIR
 
@@ -96,12 +96,12 @@ This is an *extended* version of the [devcontainer-feature.json](https://contain
 
 
 this will generate the Elixir feature 
-It assumes you have the devcontainer-contrib cli already installed
+It assumes you have the dcontainer cli already installed
 
 ```sh
 git clone https://github.com/devcontainers-contrib/cli --depth 1
 cd cli
 
 
-devcontainer-contrib feature generate "./test/resources/test_feature_definitions/elixir-asdf/feature-definition.json" "./output_dir"
+dcontainer feature generate "./test/resources/test_feature_definitions/elixir-asdf/feature-definition.json" "./output_dir"
 ```
