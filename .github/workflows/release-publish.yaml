@@ -62,11 +62,11 @@ jobs:
 
         pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
 
-        mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/$binary_name
-        tar -zcvf $GITHUB_WORKSPACE/$binary_name_nonupx $GITHUB_WORKSPACE/$binary_name
+        mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/build/$binary_name
+        tar -zcvf $GITHUB_WORKSPACE/build/$binary_name_nonupx $GITHUB_WORKSPACE/build/$binary_name
 
-        echo "binary_location=$GITHUB_WORKSPACE/$binary_name" >> "$GITHUB_OUTPUT"
-        echo "binary_location_nonupx=$GITHUB_WORKSPACE/$binary_name_nonupx" >> "$GITHUB_OUTPUT"
+        echo "binary_location=$GITHUB_WORKSPACE/build/$binary_name" >> "$GITHUB_OUTPUT"
+        echo "binary_location_nonupx=$GITHUB_WORKSPACE/build/$binary_name_nonupx" >> "$GITHUB_OUTPUT"
 
     - name: Strip Binary
       run: strip --strip-all ${{ steps.run_pyoxidizer.outputs.binary_location }}
