@@ -1,7 +1,7 @@
 import logging
 import os
 
-from devcontainer_contrib.utils.oci_feature import OCIFeature
+from dcontainer.utils.oci_feature import OCIFeature
 
 logger = logging.getLogger(__name__)
 

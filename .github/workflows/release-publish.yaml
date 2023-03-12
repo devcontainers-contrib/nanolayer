@@ -12,8 +12,8 @@ permissions:
 jobs:
   release-publish:
     env:
-      binary_name: devcontainer-contrib
-      binary_name_nonupx: devcontainer-contrib.tgz
+      binary_name: dcontainer
+      binary_name_nonupx: dcontainer.tgz
 
 
     runs-on: ubuntu-18.04  # critical - glibc from host is leaking into the pyoxidizer binary, see https://pyoxidizer.readthedocs.io/en/stable/pyoxidizer_distributing_linux.html#built-application-dependencies
@@ -48,7 +48,7 @@ jobs:
         oxidizer_location=$GITHUB_WORKSPACE
         wheel_location=./dist/$(ls dist | grep .whl)
         target_triple="x86_64-unknown-linux-gnu"
-        run_command="from devcontainer_contrib.__main__ import main; main()"
+        run_command="from dcontainer.__main__ import main; main()"
         python_version="3.10"
 
         pyoxidizer build exe \

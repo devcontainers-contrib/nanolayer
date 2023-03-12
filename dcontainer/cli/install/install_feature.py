@@ -1,8 +1,8 @@
 import logging
 from typing import Dict, Optional
 
-from devcontainer_contrib.utils.oci_feature import OCIFeature
-from devcontainer_contrib.utils.oci_feature_installer import OCIFeatureInstaller
+from dcontainer.utils.oci_feature import OCIFeature
+from dcontainer.utils.oci_feature_installer import OCIFeatureInstaller
 
 logger = logging.getLogger(__name__)
 

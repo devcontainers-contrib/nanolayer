@@ -4,8 +4,8 @@ import tempfile
 from pathlib import Path
 from typing import Union
 
-from devcontainer_contrib.models.devcontainer_feature import Feature
-from devcontainer_contrib.utils.oci_registry import OCIRegistry
+from dcontainer.models.devcontainer_feature import Feature
+from dcontainer.utils.oci_registry import OCIRegistry
 
 
 class OCIFeature:

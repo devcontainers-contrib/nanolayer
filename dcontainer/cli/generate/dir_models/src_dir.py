@@ -1,14 +1,14 @@
 from easyfs import Directory, File
 
-from devcontainer_contrib.cli.generate.file_models.dependencies_sh import DependenciesSH
-from devcontainer_contrib.cli.generate.file_models.devcontainer_feature_json import (
+from dcontainer.cli.generate.file_models.dependencies_sh import DependenciesSH
+from dcontainer.cli.generate.file_models.devcontainer_feature_json import (
     DevcontainerFeatureJson,
 )
-from devcontainer_contrib.cli.generate.file_models.install_command_sh import (
+from dcontainer.cli.generate.file_models.install_command_sh import (
     InstallCommandSH,
 )
-from devcontainer_contrib.cli.generate.file_models.install_sh import InstallSH
-from devcontainer_contrib.models.devcontainer_feature_definition import (
+from dcontainer.cli.generate.file_models.install_sh import InstallSH
+from dcontainer.models.devcontainer_feature_definition import (
     FeatureDefinition,
 )
 

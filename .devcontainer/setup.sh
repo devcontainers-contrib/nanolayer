@@ -3,4 +3,4 @@
 npm install -g @devcontainers/cli
 
 
-pip install -e .[dev]
+pip install -e .[dev,generate]

@@ -7,8 +7,8 @@ import sys
 
 import invoke
 
-from devcontainer_contrib.models.devcontainer_feature import Feature
-from devcontainer_contrib.utils.oci_feature import OCIFeature
+from dcontainer.models.devcontainer_feature import Feature
+from dcontainer.utils.oci_feature import OCIFeature
 
 logger = logging.getLogger(__name__)
 

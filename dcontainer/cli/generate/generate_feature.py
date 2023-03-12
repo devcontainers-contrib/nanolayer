@@ -3,9 +3,9 @@ from typing import Union
 
 from easyfs import Directory
 
-from devcontainer_contrib.cli.generate.dir_models.src_dir import SrcDir
-from devcontainer_contrib.cli.generate.dir_models.test_dir import TestDir
-from devcontainer_contrib.models.devcontainer_feature_definition import (
+from dcontainer.cli.generate.dir_models.src_dir import SrcDir
+from dcontainer.cli.generate.dir_models.test_dir import TestDir
+from dcontainer.models.devcontainer_feature_definition import (
     FeatureDefinition,
 )
 

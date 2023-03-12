@@ -5,11 +5,11 @@ from typing import List, Optional
 
 import typer
 
-from devcontainer_contrib.cli.download.download_feature import download_feature
-from devcontainer_contrib.cli.inspect.extract_devcontainer_feature_dict import (
+from dcontainer.cli.download.download_feature import download_feature
+from dcontainer.cli.inspect.extract_devcontainer_feature_dict import (
     extract_devcontainer_feature_dict,
 )
-from devcontainer_contrib.cli.install.install_feature import install_feature
+from dcontainer.cli.install.install_feature import install_feature
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +24,10 @@ def generate_command(
     output_dir: pathlib.Path,
 ) -> None:
     try:
-        from devcontainer_contrib.cli.generate.generate_feature import generate
+        from dcontainer.cli.generate.generate_feature import generate
     except ImportError as e:
         logger.error(
-            "Some imports required for feature generation are missing.\nMake sure you have included the generate extras during installation.\n eg. 'pip install devcontainer-contrib[generate]'"
+            "Some imports required for feature generation are missing.\nMake sure you have included the generate extras during installation.\n eg. 'pip install dcontainer[generate]'"
         )
         raise typer.Exit(code=1) from e
 
