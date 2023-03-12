@@ -5,6 +5,7 @@ import tempfile
 from typing import Dict, Optional, Union
 import sys
 import os
+from pathlib import Path
 import invoke
 
 from dcontainer.models.devcontainer_feature import Feature
@@ -29,31 +30,38 @@ class OCIFeatureInstaller:
 
     _FEATURE_ENTRYPOINT = "install.sh"
 
+    _PROFILE_DIR = "/etc/profile.d"
+
     @classmethod
     def install(
         cls,
         feature_oci: OCIFeature,
         options: Optional[Dict[str, Union[str, bool]]] = None,
+        envs: Optional[Dict[str, str]] = None,
         remote_user_name: Optional[str] = None,
         verbose: bool = False,
     ) -> None:
         if options is None:
             options = {}
+        
+        if envs is None:
+            envs = {}
+        feature_obj=feature_oci.get_devcontainer_feature_obj()
+
         options = cls._resolve_options(
-            feature_obj=feature_oci.get_devcontainer_feature_obj(), options=options
+            feature_obj=feature_obj, options=options
         )
         logger.info("resolved options: %s", str(options))
 
         remote_user = cls._resolve_remote_user(remote_user_name)
         logger.info("resolved remote user: %s", remote_user)
 
-        env_variables = {}
-        env_variables[cls._REMOTE_USER_ENV] = remote_user.pw_name
-        env_variables[cls._REMOTE_USER_HOME_ENV] = remote_user.pw_dir
+        envs[cls._REMOTE_USER_ENV] = remote_user.pw_name
+        envs[cls._REMOTE_USER_HOME_ENV] = remote_user.pw_dir
         for option_name, option_value in options.items():
             if isinstance(option_value, bool):
                 option_value = "true" if option_value else "false"
-            env_variables[option_name.upper()] = option_value
+            envs[option_name.upper()] = option_value
 
         try:
             settings = DContainerSettings()
@@ -61,38 +69,26 @@ class OCIFeatureInstaller:
             if settings.verbose == "1":
                 verbose = True 
 
-            env_variables[ENV_VERBOSE] = settings.verbose
-            env_variables[ENV_FORCE_CLI_INSTALLATION] = settings.force_cli_installation
-            env_variables[ENV_PROPAGATE_CLI_LOCATION] = settings.propagate_cli_location
+            envs[ENV_VERBOSE] = settings.verbose
+            envs[ENV_FORCE_CLI_INSTALLATION] = settings.force_cli_installation
+            envs[ENV_PROPAGATE_CLI_LOCATION] = settings.propagate_cli_location
 
             if settings.propagate_cli_location == "1":
                 if settings.cli_location != "":
-                    env_variables[ENV_CLI_LOCATION] = settings.cli_location
+                    envs[ENV_CLI_LOCATION] = settings.cli_location
                 elif getattr(sys, 'frozen', False):
-                    env_variables[ENV_CLI_LOCATION] = sys.executable
+                    envs[ENV_CLI_LOCATION] = sys.executable
             else:
                 # override it with empty string in case it already exists 
-                env_variables[ENV_CLI_LOCATION] = ""
+                envs[ENV_CLI_LOCATION] = ""
             
         except Exception as e:
             logger.warning(f"could not create settings: {str(e)}")
             
-
-        cls._install_feature(feature_oci=feature_oci, envs=env_variables, verbose=verbose)
-
-    @classmethod
-    def _escape_quotes(cls, value: str) -> str:
-        return value.replace('"', '\\"')
-    
-    @classmethod
-    def _install_feature(cls, 
-                         feature_oci: OCIFeature, 
-                         envs: Dict[str, str], 
-                         verbose: bool = False) -> None:
         env_variables_cmd = " ".join(
             [f'{env_name}="{cls._escape_quotes(env_value)}"' for env_name, env_value in envs.items()]
         )
-    
+        
     
         with tempfile.TemporaryDirectory() as tempdir:
             feature_oci.download_and_extract(tempdir)
@@ -112,6 +108,41 @@ class OCIFeatureInstaller:
                 raise OCIFeatureInstaller.FeatureInstallationException(
                     f"feature {feature_oci.path} failed to install. return_code: {response.return_code}. see logs for error reason."
                 )
+            
+            cls._set_permanent_envs(feature_obj)
+        
+    @classmethod
+    def _set_permanent_envs(cls, feature: Feature) -> None:
+        if feature.containerEnv is None:
+            return
+
+        feature_profile_dir = Path(cls._PROFILE_DIR)
+        feature_profile_dir.mkdir(exist_ok=True, parents=True)
+        feature_profile_file = feature_profile_dir.joinpath(f"dcontainer-{feature.id}.sh")
+
+        if not feature_profile_file.exists():
+            feature_profile_file.touch()
+
+        with open(feature_profile_file, "r") as f:
+            current_content = f.read()
+
+        modified = False
+        for env_name, env_value in feature.containerEnv.items():
+            statement = f"export {env_name}={env_value}"
+            if statement not in current_content:
+                current_content += f"\n{statement}" 
+            
+                modified = True
+        
+        if modified:
+            with open(feature_profile_file, "w") as f:
+                f.write(current_content)
+
+
+    @classmethod
+    def _escape_quotes(cls, value: str) -> str:
+        return value.replace('"', '\\"')
+    
 
     @classmethod
     def _resolve_options(
