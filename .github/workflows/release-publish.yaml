@@ -1,0 +1,98 @@
+name: Create Github Release
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: write
+  discussions: write
+
+
+jobs:
+  release-publish:
+    env:
+      binary_name: dcontainer
+      binary_name_nonupx: dcontainer.tgz
+
+
+    runs-on: ubuntu-18.04  # critical - glibc from host is leaking into the pyoxidizer binary, see https://pyoxidizer.readthedocs.io/en/stable/pyoxidizer_distributing_linux.html#built-application-dependencies
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: stable
+          override: true
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+
+    - name: Build Python Package
+      run: |
+        python -m pip install --upgrade pip 
+        python -m pip install --upgrade build setuptools wheel  setuptools-scm
+        python -m build --wheel
+
+    - name: Build Binary using Pyoxidizer
+      id: run_pyoxidizer
+
+      run: |
+        python -m pip install --upgrade pip 
+        python -m pip install pyoxidizer
+
+        oxidizer_location=$GITHUB_WORKSPACE
+        wheel_location=./dist/$(ls dist | grep .whl)
+        target_triple="x86_64-unknown-linux-gnu"
+        run_command="from dcontainer.__main__ import main; main()"
+        python_version="3.10"
+
+        pyoxidizer build exe \
+          --path $oxidizer_location \
+          --release \
+          --var wheel_location $wheel_location \
+          --var run_command "$run_command" \
+          --var python_version $python_version \
+          --var app_name $binary_name \
+          --target-triple $target_triple 
+
+        pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
+
+        mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/build/$binary_name
+        tar -zcvf $GITHUB_WORKSPACE/build/$binary_name_nonupx $GITHUB_WORKSPACE/build/$binary_name
+
+        echo "binary_location=$GITHUB_WORKSPACE/build/$binary_name" >> "$GITHUB_OUTPUT"
+        echo "binary_location_nonupx=$GITHUB_WORKSPACE/build/$binary_name_nonupx" >> "$GITHUB_OUTPUT"
+
+    - name: Strip Binary
+      run: strip --strip-all ${{ steps.run_pyoxidizer.outputs.binary_location }}
+
+    - name: Compress Binary using UPX
+      uses: crazy-max/ghaction-upx@v2
+      with:
+        version: "v4.0.2"
+        files: |
+          ${{ steps.run_pyoxidizer.outputs.binary_location }}
+
+        args: --best
+
+    - name: Create Binary checksum 
+      id: create_checksum
+
+      run: |
+        cd $(dirname ${{ steps.run_pyoxidizer.outputs.binary_location }})
+        sha256sum $binary_name $binary_name_nonupx > checksums.txt
+        sha256sum -c checksums.txt
+        echo "checksum_location=$(dirname ${{ steps.run_pyoxidizer.outputs.binary_location }})/checksums.txt" >> "$GITHUB_OUTPUT"
+
+    - name: Create GH Release and upload Binary and checksum
+      uses: softprops/action-gh-release@v0.1.15
+      with:
+          files: |
+            ${{ steps.run_pyoxidizer.outputs.binary_location }}
+            ${{ steps.run_pyoxidizer.outputs.binary_location_nonupx }}
+            ${{ steps.create_checksum.outputs.checksum_location }}

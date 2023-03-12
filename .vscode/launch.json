@@ -12,6 +12,49 @@
             "console": "integratedTerminal",
             "justMyCode": false
         },
+ 
+        {
+            "name": "debug feature download",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "feature",
+                "download",
+                "ghcr.io/lukewiwa/features/shellcheck:0",
+            ]
+        },
+        
+        {
+            "name": "debug feature install",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "feature",
+                "install",
+                "ghcr.io/devcontainers-contrib/features/bash-command:1.0.0",
+                "--option",
+                "command=\"pip3 install packaging==21.3\""
+            ] 
+        },
+        {
+            "name": "debug feature inspect",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "feature",
+                "inspect",
+                "ghcr.io/ebaskoro/devcontainer-features/sdkman:1.0.0",
+            ]
+        },
         {
             "name": "Debug Tests",
             "type": "python",

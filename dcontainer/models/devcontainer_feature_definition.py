@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from typing import Dict, List, Optional, Union
 from unittest import mock
-from typing import Any, Dict, List, Optional, Union
-from devcontainer_contrib.models.devcontainer_feature import Feature
+
 from pydantic import BaseModel, Extra, Field
+
+from dcontainer.models.devcontainer_feature import Feature
 
 
 class FeatureDependency(BaseModel):
@@ -33,7 +35,7 @@ class FeatureDependencies(BaseModel):
 
 class FeatureDefinition(Feature):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     dependencies: Optional[FeatureDependencies] = Field(
         None,

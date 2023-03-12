@@ -3,12 +3,12 @@ requires = ["setuptools", "setuptools-scm[toml]"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "devcontainer-contrib"
+name = "dcontainer"
 dynamic = ["dependencies", "optional-dependencies", "version"]
 readme = "README.md"
 
 [tool.setuptools.packages.find]
-include = ["devcontainer_contrib*"]  
+include = ["dcontainer*"]  
 
 
 [tool.setuptools.dynamic]
@@ -18,5 +18,5 @@ optional-dependencies={dev = {file = ["requirements-dev.txt"]},generate = {file 
 [tool.setuptools_scm]
 
 [project.scripts]
-devcontainer-contrib = "devcontainer_contrib.__main__:main"
+dcontainer = "dcontainer.__main__:main"
 

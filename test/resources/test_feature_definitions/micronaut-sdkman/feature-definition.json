@@ -70,7 +70,7 @@
     "test_scenarios": [
         {
             "name": "test_defaults",
-            "image": "mcr.microsoft.com/devcontainers/base:debian",
+            "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
             "test_commands": [
                 "mn --help"
             ],
