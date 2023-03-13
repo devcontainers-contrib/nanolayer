@@ -22,6 +22,7 @@ app.command()
 def generate_command(
     feature_definition: pathlib.Path,
     output_dir: pathlib.Path,
+    release_version: Optional[str] = None
 ) -> None:
     try:
         from dcontainer.cli.generate.generate_feature import generate
@@ -31,7 +32,9 @@ def generate_command(
         )
         raise typer.Exit(code=1) from e
 
-    generate(feature_definition.as_posix(), output_dir.as_posix())
+    generate(feature_definition=feature_definition.as_posix(), 
+             output_dir=output_dir.as_posix(), 
+             release_version=release_version)
 
 
 def _validate_args(value: Optional[List[str]]):
