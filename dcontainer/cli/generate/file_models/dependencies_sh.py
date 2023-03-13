@@ -1,5 +1,5 @@
 from typing import Dict, Optional, Union
-
+import logging
 from easyfs import File
 
 from dcontainer.models.devcontainer_feature import FeatureOption
@@ -8,9 +8,14 @@ from dcontainer.models.devcontainer_feature_definition import (
     FeatureDependency,
 )
 from dcontainer.settings import ENV_CLI_LOCATION, ENV_FORCE_CLI_INSTALLATION
-from dcontainer.utils.version import resolve_own_release_version
+from dcontainer.utils.version import resolve_own_release_version, resolve_own_package_version
 
-RELEASE_VERSION = resolve_own_release_version()
+logger = logging.getLogger(__name__)
+try:
+    RELEASE_VERSION = resolve_own_release_version()
+except Exception as e:
+    logger.warning("could not resolve release version because of error: %s \n fallback to package version", str(e))
+    RELEASE_VERSION = resolve_own_package_version()
 
 DCONTAINER_LINK = f"https://github.com/devcontainers-contrib/cli/releases/download/{RELEASE_VERSION}/dcontainer"
 CHECKSUM_LINK = f"https://github.com/devcontainers-contrib/cli/releases/download/{RELEASE_VERSION}/checksums.txt"
@@ -23,49 +28,68 @@ set -e
 
 
 
-# Ensure curl available
-if ! type curl >/dev/null 2>&1; then
-    apt-get update -y && apt-get -y install --no-install-recommends curl ca-certificates
-fi 
+ensure_curl() {{
+    # Ensure curl available
+    if ! type curl >/dev/null 2>&1; then
+        apt-get update -y && apt-get -y install --no-install-recommends curl ca-certificates
+    fi 
+}}
 
-# Download the dcontainer cli program
 
+ensure_dcontainer() {{
+    # Ensure existance of the dcontainer cli program
+    local variable_name=$1
+    local dcontainer_location=""
 
-dcontainer_location=""
-if [[ -z "${{{force_cli_installation_env}}}" ]]; then
-    if [[ -z "${{{cli_location_env}}}" ]]; then
-        if type dcontainer >/dev/null 2>&1; then
-            dcontainer_location=dcontainer
+    # If possible - try to use an already installed dcontainer
+    if [[ -z "${{{force_cli_installation_env}}}" ]]; then
+        if [[ -z "${{{cli_location_env}}}" ]]; then
+            if type dcontainer >/dev/null 2>&1; then
+                dcontainer_location=dcontainer
+            fi
+        elif [ -f "${{{cli_location_env}}}" ] && [ -x "${{{cli_location_env}}}" ] ; then
+            dcontainer_location=${{{cli_location_env}}}
         fi
-    elif [ -f "${{{cli_location_env}}}" ] && [ -x "${{{cli_location_env}}}" ] ; then
-        dcontainer_location=${{{cli_location_env}}}
     fi
-fi
 
-if [[ -z "${{dcontainer_location}}" ]]; then
-    tmp_dir=$(mktemp -d -t dcontainer-XXXXXXXXXX)
+    # If not previuse installation found, download it temporarly and delete at the end of the script 
+    if [[ -z "${{dcontainer_location}}" ]]; then
+        tmp_dir=$(mktemp -d -t dcontainer-XXXXXXXXXX)
 
-    clean_up () {{
-        ARG=$?
-        rm -rf $tmp_dir
-        exit $ARG
-    }}
+        clean_up () {{
+            ARG=$?
+            rm -rf $tmp_dir
+            exit $ARG
+        }}
 
-    trap clean_up EXIT
+        trap clean_up EXIT
 
-    curl -sSL -o $tmp_dir/dcontainer {dcontainer_link} 
-    curl -sSL -o $tmp_dir/checksums.txt {checksums_link}
-    (cd $tmp_dir ; sha256sum --check --strict --ignore-missing $tmp_dir/checksums.txt)
-    chmod a+x $tmp_dir/dcontainer
-    dcontainer_location=$tmp_dir/dcontainer
-fi
+        curl -sSL -o $tmp_dir/dcontainer {dcontainer_link} 
+        curl -sSL -o $tmp_dir/checksums.txt {checksums_link}
+        (cd $tmp_dir ; sha256sum --check --strict --ignore-missing $tmp_dir/checksums.txt)
+        chmod a+x $tmp_dir/dcontainer
+        dcontainer_location=$tmp_dir/dcontainer
+    fi
+
+    # Expose outside the resolved location
+    declare -g ${{variable_name}}=$dcontainer_location
+
+}}
+
+ensure_curl
+
+ensure_dcontainer dcontainer_location
 
 {dependency_installation_lines}
 
 """
 
 SINGLE_DEPENDENCY = (
-    """$dcontainer_location feature install "{feature_oci}" {stringified_envs_args} """
+    """$dcontainer_location \\
+    feature install \\
+    "{feature_oci}" \\
+    {stringified_envs_args}
+"""
 )
 
 
@@ -94,7 +118,7 @@ class DependenciesSH(File):
     ) -> str:
         stringified_envs_args = " ".join(
             [
-                f'--option {env}="{DependenciesSH._escape_qoutes(str(val))}"'
+                f'--option {env}="{DependenciesSH._escape_qoutes(str(val))}" \\'
                 for env, val in params.items()
             ]
         )
