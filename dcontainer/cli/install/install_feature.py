@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 def install_feature(
     feature: str,
     options: Optional[Dict[str, str]] = None,
+    envs: Optional[Dict[str, str]] = None,
     remote_user: Optional[str] = None,
     verbose: bool = False,
 ) -> None:
-    OCIFeatureInstaller.install(OCIFeature(feature), options, remote_user, verbose)
+    OCIFeatureInstaller.install(feature_oci=OCIFeature(feature), envs=envs, options=options, remote_user=remote_user, verbose=verbose)

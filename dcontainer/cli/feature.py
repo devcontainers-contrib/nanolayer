@@ -1,7 +1,7 @@
 import json
 import logging
 import pathlib
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 import typer
 
@@ -63,8 +63,24 @@ def inspect_command(
 def install_command(
     feature: str,
     option: Optional[List[str]] = typer.Option(None, callback=_validate_args),
+    remote_user: Optional[str] = typer.Option(None, callback=_validate_args),
+    env: Optional[List[str]] = typer.Option(None, callback=_validate_args),
     verbose: bool = False,
 ) -> None:
+    
+    def _key_val_arg_to_dict(args: Optional[List[str]]) -> Dict[str,str]:
+        if args is None:
+            return {}
+        
+        args_dict = {}
+        for single_arg in args:
+            single_arg = _strip_if_wrapped_around(single_arg, '"')
+            arg_name = single_arg.split("=")[0]
+            arg_value = single_arg[len(arg_name) + 1 :]
+            arg_value = _strip_if_wrapped_around(arg_value, '"')
+            args_dict[arg_name] = arg_value
+        return args_dict
+
     def _strip_if_wrapped_around(value: str, char: str) -> str:
         if len(char) > 1:
             raise ValueError(
@@ -75,20 +91,7 @@ def install_command(
             return value.strip(char)
         return value
 
-    if option is None:
-        options = []
-    else:
-        options = option
+    options_dict = _key_val_arg_to_dict(option)
+    envs_dict = _key_val_arg_to_dict(env)
 
-    options_dict = {}
-    for single_option in options:
-        single_option = _strip_if_wrapped_around(single_option, '"')
-
-        option_name = single_option.split("=")[0]
-
-        option_value = single_option[len(option_name) + 1 :]
-        option_value = _strip_if_wrapped_around(option_value, '"')
-
-        options_dict[option_name] = option_value
-
-    install_feature(feature=feature, options=options_dict, verbose=verbose)
+    install_feature(feature=feature, options=options_dict, envs=envs_dict, verbose=verbose,remote_user=remote_user)

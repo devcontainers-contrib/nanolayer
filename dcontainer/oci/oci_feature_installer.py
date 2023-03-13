@@ -44,7 +44,7 @@ class OCIFeatureInstaller:
         feature_oci: OCIFeature,
         options: Optional[Dict[str, Union[str, bool]]] = None,
         envs: Optional[Dict[str, str]] = None,
-        remote_user_name: Optional[str] = None,
+        remote_user: Optional[str] = None,
         verbose: bool = False,
     ) -> None:
         if options is None:
@@ -57,7 +57,7 @@ class OCIFeatureInstaller:
         options = cls._resolve_options(feature_obj=feature_obj, options=options)
         logger.info("resolved options: %s", str(options))
 
-        remote_user = cls._resolve_remote_user(remote_user_name)
+        remote_user = cls._resolve_remote_user(remote_user)
         logger.info("resolved remote user: %s", remote_user)
 
         envs[cls._REMOTE_USER_ENV] = remote_user.pw_name
