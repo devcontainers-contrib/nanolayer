@@ -81,8 +81,6 @@ jobs:
         #   pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
         # fi
 
-        $oxidizer_location/build/$target_triple/release/exe/$binary_name --help
-
         mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/build/$binary_name-$target_triple
         tar -zcvf $GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz $GITHUB_WORKSPACE/build/$binary_name-$target_triple
 
