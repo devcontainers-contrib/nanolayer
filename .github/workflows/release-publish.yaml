@@ -99,13 +99,21 @@ jobs:
     #       ${{ steps.run_pyoxidizer.outputs.binary_location }}
     #     args: --best
     
-    - name: Save to cache
-      uses: actions/cache@v3
+    # - name: Save to cache
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: |
+    #       ${{ steps.run_pyoxidizer.outputs.binary_location }}
+    #       ${{ steps.run_pyoxidizer.outputs.binary_location_nonupx }}
+        
+    #     key: ${{ matrix.config.trippletargets }}
+    - name: Create GH Release and upload Binary and checksum
+      uses: softprops/action-gh-release@v0.1.15
       with:
-        path: |
-          ${{ steps.run_pyoxidizer.outputs.binary_location }}_${{ matrix.config.trippletargets }}
-          ${{ steps.run_pyoxidizer.outputs.binary_location_nonupx }}_${{ matrix.config.trippletargets }}
-        key: ${{ matrix.config.trippletargets }}
+          files: |
+            ${{ steps.run_pyoxidizer.outputs.binary_location }}
+            ${{ steps.run_pyoxidizer.outputs.binary_location_nonupx }}
+
 
   release-publish2:
     env:
