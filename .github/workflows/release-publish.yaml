@@ -79,7 +79,7 @@ jobs:
       run: strip ${{ steps.run_pyoxidizer.outputs.binary_location }}
 
     - name: Compress Binary using UPX
-      if: matrix.trippletargets == "x86_64-unknown-linux-gnu"
+      if: ${{ matrix.trippletargets }} == "x86_64-unknown-linux-gnu"
       uses: crazy-max/ghaction-upx@v2
       with:
         version: "v4.0.2"
