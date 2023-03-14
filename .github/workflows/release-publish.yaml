@@ -108,6 +108,8 @@ jobs:
         key: ${{ matrix.config.trippletargets }}
 
   release-publish2:
+    needs: [ release-publish]
+
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
