@@ -112,6 +112,7 @@ class OCIFeatureInstaller:
                 sudo {env_variables_cmd} bash -i {'-x' if verbose else ''} ./{cls._FEATURE_ENTRYPOINT}",
                 out_stream=sys.stdout,
                 err_stream=sys.stderr,
+                pty=True
             )
 
             if not response.ok:
