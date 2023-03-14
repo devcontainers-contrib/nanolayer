@@ -77,15 +77,6 @@ jobs:
     - name: Strip Binary
       run: strip ${{ steps.run_pyoxidizer.outputs.binary_location }}
 
-    - name: Compress Binary using UPX
-      uses: crazy-max/ghaction-upx@v2
-      with:
-        version: "v4.0.2"
-        files: |
-          ${{ steps.run_pyoxidizer.outputs.binary_location }}
-
-        args: --best
-
     - name: Create Binary checksum 
       id: create_checksum
 
