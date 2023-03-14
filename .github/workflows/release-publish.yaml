@@ -14,11 +14,12 @@ jobs:
     env:
       binary_name: dcontainer
 
-
-    runs-on: ubuntu-18.04  # critical - glibc from host is leaking into the pyoxidizer binary, see https://pyoxidizer.readthedocs.io/en/stable/pyoxidizer_distributing_linux.html#built-application-dependencies
+    # runs-on: ubuntu-18.04  # critical - glibc from host is leaking into the pyoxidizer binary, see https://pyoxidizer.readthedocs.io/en/stable/pyoxidizer_distributing_linux.html#built-application-dependencies
+    runs-on: macos-12  # critical - glibc from host is leaking into the pyoxidizer binary, see https://pyoxidizer.readthedocs.io/en/stable/pyoxidizer_distributing_linux.html#built-application-dependencies
+    
     strategy:
       matrix:
-        trippletargets:  [x86_64-unknown-linux-gnu, aarch64-unknown-linux-gnu]
+        trippletargets:  [x86_64-apple-darwin]
 
     steps:
     - uses: actions/checkout@v3
