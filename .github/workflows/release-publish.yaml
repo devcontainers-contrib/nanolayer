@@ -33,6 +33,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: test
+      if: matrix.config.trippletargets == 'x86_64-unknown-linux-gnu'
+      run: echo ${{ matrix.config.trippletargets }}
+
+
     - name: Set up Rust
       uses: actions-rs/toolchain@v1
       with:
