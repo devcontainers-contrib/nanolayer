@@ -19,17 +19,10 @@ jobs:
     
     strategy:
       matrix:
-        trippletargets:  [aarch64-apple-darwin]
+        trippletargets:  [x86_64-unknown-linux-gnu, x86_64-apple-darwin]
 
     steps:
     - uses: actions/checkout@v3
-    - name: Setup Docker on macOS
-      uses: douglascamata/setup-docker-macos-action@v1-alpha
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-      with:
-        platforms: arm64
 
     - name: Set up Rust
       uses: actions-rs/toolchain@v1
@@ -70,10 +63,11 @@ jobs:
           --var app_name $binary_name \
           --target-triple $target_triple 
 
-        # pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
-        set +e
+        if [ "${{ matrix.trippletargets }}" == "x86_64-unknown-linux-gnu" ]; then
+          pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
+        fi
+
         $oxidizer_location/build/$target_triple/release/exe/$binary_name --help
-        set -e
 
         mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/build/$binary_name-$target_triple
         tar -zcvf $GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz $GITHUB_WORKSPACE/build/$binary_name-$target_triple
@@ -84,6 +78,15 @@ jobs:
     - name: Strip Binary
       run: strip ${{ steps.run_pyoxidizer.outputs.binary_location }}
 
+    - name: Compress Binary using UPX
+      if: matrix.trippletargets == "x86_64-unknown-linux-gnu"
+      uses: crazy-max/ghaction-upx@v2
+      with:
+        version: "v4.0.2"
+        files: |
+          ${{ steps.run_pyoxidizer.outputs.binary_location }}
+        args: --best
+      
     - name: Create Binary checksum 
       id: create_checksum
 
