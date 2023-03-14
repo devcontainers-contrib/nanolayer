@@ -84,8 +84,8 @@ jobs:
         mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/build/$binary_name-$target_triple
         tar -zcvf $GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz $GITHUB_WORKSPACE/build/$binary_name-$target_triple
 
-        echo "binary_location=$GITHUB_WORKSPACE/build/$binary_name-$target_triple" >> "$GITHUB_OUTPUT"
-        echo "binary_location_nonupx=$GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz" >> "$GITHUB_OUTPUT"
+        echo "binary_location_$target_triple=$GITHUB_WORKSPACE/build/$binary_name-$target_triple" >> "$GITHUB_OUTPUT"
+        echo "binary_location_nonupx_$target_triple=$GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz" >> "$GITHUB_OUTPUT"
 
     # - name: Strip Binary
     #   run: strip ${{ steps.run_pyoxidizer.outputs.binary_location }}
@@ -103,11 +103,15 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          ${{ steps.run_pyoxidizer.outputs.binary_location }}
-          ${{ steps.run_pyoxidizer.outputs.binary_location_nonupx }}
+          ${{ steps.run_pyoxidizer.outputs.binary_location }}_${{ matrix.config.trippletargets }}
+          ${{ steps.run_pyoxidizer.outputs.binary_location_nonupx }}_${{ matrix.config.trippletargets }}
         key: ${{ matrix.config.trippletargets }}
 
   release-publish2:
+    env:
+      binary_name: dcontainer
+
+
     needs: [ release-publish]
 
     runs-on: ubuntu-latest
@@ -117,11 +121,13 @@ jobs:
 
     - uses: actions/cache@v3
       with:
+        paths: |
+          $GITHUB_WORKSPACE/build/$binary_name_"x86_64-unknown-linux-gnu"
         key: "x86_64-unknown-linux-gnu"
 
-    - uses: actions/cache@v3
-      with:
-        key: "x86_64-apple-darwin"
+    # - uses: actions/cache@v3
+    #   with:
+    #     key: "x86_64-apple-darwin"
 
     - name: test
       run: |
