@@ -53,6 +53,7 @@ ensure_pipx() {{
 
     # If no pipx - install it
     if ! pipx >/dev/null 2>&1; then
+    	echo "installing pipx"
         pip3 install pipx
     fi
 }}
@@ -74,9 +75,11 @@ ensure_dcontainer() {{
     if [[ -z "${{{force_cli_installation_env}}}" ]]; then
         if [[ -z "${{{cli_location_env}}}" ]]; then
             if type dcontainer >/dev/null 2>&1; then
+                echo "Using a pre-existing dcontainer"
                 dcontainer_location=dcontainer
             fi
         elif [ -f "${{{cli_location_env}}}" ] && [ -x "${{{cli_location_env}}}" ] ; then
+            echo "Using a pre-existing dcontainer which were given in env varialbe"
             dcontainer_location=${{{cli_location_env}}}
         fi
     fi
@@ -85,7 +88,7 @@ ensure_dcontainer() {{
     if [[ -z "${{dcontainer_location}}" ]]; then
 
         if [ "$(uname -sm)" != "Linux x86_64" ]; then
-            # No binaries compiled for non linux x*^ yet, therefor we fallback to install through python
+            echo "No binaries compiled for non-x86-linux architectures yet, such as ARM and Apple silicon. Therefore we fallback to python based installation."
 
             ensure_pipx
             ensure_jq
