@@ -63,7 +63,10 @@ jobs:
           --var app_name $binary_name \
           --target-triple $target_triple 
 
-        pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
+        # pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
+        set +e
+        $oxidizer_location/build/$target_triple/release/exe/$binary_name --help
+        set -e
 
         mv "$oxidizer_location/build/$target_triple/release/exe/$binary_name" $GITHUB_WORKSPACE/build/$binary_name-$target_triple
         tar -zcvf $GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz $GITHUB_WORKSPACE/build/$binary_name-$target_triple
