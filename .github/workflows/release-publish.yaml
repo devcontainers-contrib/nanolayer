@@ -115,46 +115,46 @@ jobs:
             ${{ steps.run_pyoxidizer.outputs.binary_location_nonupx }}
 
 
-  release-publish2:
-    env:
-      binary_name: dcontainer
+  # release-publish2:
+  #   env:
+  #     binary_name: dcontainer
 
 
-    needs: [ release-publish]
+  #   needs: [ release-publish]
 
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-
-    - uses: actions/cache@v3
-      with:
-        path: |
-          $GITHUB_WORKSPACE/build/$binary_name_"x86_64-unknown-linux-gnu"
-        key: "x86_64-unknown-linux-gnu"
-
-    # - uses: actions/cache@v3
-    #   with:
-    #     key: "x86_64-apple-darwin"
-
-    - name: test
-      run: |
-        ls $GITHUB_WORKSPACE/build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
 
 
-    # - name: Create Binary checksum 
-    #   id: create_checksum
+  #   - uses: actions/cache@v3
+  #     with:
+  #       path: |
+  #         $GITHUB_WORKSPACE/build/$binary_name_"x86_64-unknown-linux-gnu"
+  #       key: "x86_64-unknown-linux-gnu"
 
-    #   run: |
-    #     cd $(dirname ${{ steps.run_pyoxidizer.outputs.binary_location }})
-    #     sha256sum $binary_name-${{ matrix.config.trippletargets }} $binary_name-${{ matrix.config.trippletargets }}.tgz > checksums.txt
-    #     sha256sum -c checksums.txt
-    #     echo "checksum_location=$(dirname ${{ steps.run_pyoxidizer.outputs.binary_location }})/checksums.txt" >> "$GITHUB_OUTPUT"
+  #   # - uses: actions/cache@v3
+  #   #   with:
+  #   #     key: "x86_64-apple-darwin"
 
-    # - name: Create GH Release and upload Binary and checksum
-    #   uses: softprops/action-gh-release@v0.1.15
-    #   with:
-    #       files: |
-    #         ${{ steps.run_pyoxidizer.outputs.binary_location }}
-    #         ${{ steps.run_pyoxidizer.outputs.binary_location_nonupx }}
-    #         ${{ steps.create_checksum.outputs.checksum_location }}
+  #   - name: test
+  #     run: |
+  #       ls $GITHUB_WORKSPACE/build
+
+
+  #   # - name: Create Binary checksum 
+  #   #   id: create_checksum
+
+  #   #   run: |
+  #   #     cd $(dirname ${{ steps.run_pyoxidizer.outputs.binary_location }})
+  #   #     sha256sum $binary_name-${{ matrix.config.trippletargets }} $binary_name-${{ matrix.config.trippletargets }}.tgz > checksums.txt
+  #   #     sha256sum -c checksums.txt
+  #   #     echo "checksum_location=$(dirname ${{ steps.run_pyoxidizer.outputs.binary_location }})/checksums.txt" >> "$GITHUB_OUTPUT"
+
+  #   # - name: Create GH Release and upload Binary and checksum
+  #   #   uses: softprops/action-gh-release@v0.1.15
+  #   #   with:
+  #   #       files: |
+  #   #         ${{ steps.run_pyoxidizer.outputs.binary_location }}
+  #   #         ${{ steps.run_pyoxidizer.outputs.binary_location_nonupx }}
+  #   #         ${{ steps.create_checksum.outputs.checksum_location }}
