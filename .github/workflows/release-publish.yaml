@@ -19,7 +19,7 @@ jobs:
     
     strategy:
       matrix:
-        trippletargets:  [x86_64-apple-darwin]
+        trippletargets:  [aarch64-apple-darwin]
 
     steps:
     - uses: actions/checkout@v3
