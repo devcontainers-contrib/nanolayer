@@ -75,7 +75,7 @@ jobs:
         echo "binary_location_nonupx=$GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz" >> "$GITHUB_OUTPUT"
 
     - name: Strip Binary
-      run: strip --strip-all ${{ steps.run_pyoxidizer.outputs.binary_location }}
+      run: strip ${{ steps.run_pyoxidizer.outputs.binary_location }}
 
     - name: Compress Binary using UPX
       uses: crazy-max/ghaction-upx@v2
