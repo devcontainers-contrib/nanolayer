@@ -8,7 +8,6 @@ from dcontainer.oci.oci_registry import OCIRegistry
 
 
 class OCIFeature:
-
     DEVCONTAINER_JSON_FILENAME = "devcontainer-feature.json"
     DEVCONTAINER_FILE_NAME_ANNOTATION = "org.opencontainers.image.title"
 
@@ -32,18 +31,28 @@ class OCIFeature:
 
         file_location = output_dir.joinpath(file_name)
 
-        OCIRegistry.download_layer(oci_input=oci_feature_ref, layer_num=0, output_file=file_location, )
+        OCIRegistry.download_layer(
+            oci_input=oci_feature_ref,
+            layer_num=0,
+            output_file=file_location,
+        )
 
         return file_location.as_posix()
 
     @staticmethod
-    def download_and_extract(oci_feature_ref: str, output_dir: Union[str, Path]) -> None:
-        OCIRegistry.download_and_extract_layer(oci_input=oci_feature_ref, layer_num=0, output_dir=output_dir)
+    def download_and_extract(
+        oci_feature_ref: str, output_dir: Union[str, Path]
+    ) -> None:
+        OCIRegistry.download_and_extract_layer(
+            oci_input=oci_feature_ref, layer_num=0, output_dir=output_dir
+        )
 
     @staticmethod
     def get_devcontainer_feature_obj(oci_feature_ref: str) -> Feature:
         with tempfile.TemporaryDirectory() as extraction_dir:
-            OCIFeature.download_and_extract(oci_feature_ref=oci_feature_ref, output_dir=extraction_dir)
+            OCIFeature.download_and_extract(
+                oci_feature_ref=oci_feature_ref, output_dir=extraction_dir
+            )
 
             return Feature.parse_file(
                 os.path.join(extraction_dir, OCIFeature.DEVCONTAINER_JSON_FILENAME)

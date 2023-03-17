@@ -12,20 +12,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         },
- 
-        {
-            "name": "debug feature download",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/dcontainer/__main__.py",
-            "console": "integratedTerminal",
-            "justMyCode": false,
-            "args": [
-                "feature",
-                "download",
-                "ghcr.io/lukewiwa/features/shellcheck:0",
-            ]
-        },
+
         {
             "name": "debug --release-version",
             "type": "python",
@@ -35,6 +22,18 @@
             "justMyCode": false,
             "args": [
                 "--release-version",
+                
+            ] 
+        },
+        {
+            "name": "debug --help",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--help",
                 
             ] 
         },
@@ -58,26 +57,42 @@
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
-                "feature",
                 "install",
+                "devcontainer-feature",
                 "ghcr.io/devcontainers-contrib/features/bash-command:1.0.0",
                 "--option",
                 "command=\"pip3 install packaging==21.3\""
             ] 
         },
         {
-            "name": "debug feature inspect",
+            "name": "debug apt-get install",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/dcontainer/__main__.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
-                "feature",
-                "inspect",
-                "ghcr.io/ebaskoro/devcontainer-features/sdkman:1.0.0",
-            ]
+                "install",
+                "apt-get",
+                "wget",
+            ] 
         },
+        {
+            "name": "debug apt-get install on ubuntu",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "install",
+                "apt-get",
+                "wget",
+                "--ppa",
+                "ppa:deadsnakes/ppa",
+            ] 
+        },
+
         {
             "name": "Debug Tests",
             "type": "python",

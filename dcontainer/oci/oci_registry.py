@@ -140,7 +140,9 @@ class OCIRegistry:
             return urllib.request.urlopen(request)  # nosec
 
     @staticmethod
-    def download_layer(oci_input: str, layer_num: int, output_file: Union[str, Path]) -> None:
+    def download_layer(
+        oci_input: str, layer_num: int, output_file: Union[str, Path]
+    ) -> None:
         if isinstance(output_file, str):
             output_file = Path(output_file)
 
@@ -157,21 +159,25 @@ class OCIRegistry:
             f.write(OCIRegistry.get_blob(oci_input, blob_digest))
 
     @staticmethod
-    def download_and_extract_layer(oci_input: str, output_dir: Union[str, Path], layer_num: int) -> None:
+    def download_and_extract_layer(
+        oci_input: str, output_dir: Union[str, Path], layer_num: int
+    ) -> None:
         if isinstance(output_dir, str):
             output_dir = Path(output_dir)
 
         if output_dir.is_file():
             raise ValueError(f"{output_dir} is a file (should be an empty directory)")
-        
+
         output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         if any(output_dir.iterdir()):
             raise ValueError(f"{output_dir} is not empty ")
 
         with tempfile.TemporaryDirectory() as download_dir:
             layer_file = Path(download_dir).joinpath("layer_file.tgz")
-            OCIRegistry.download_layer(oci_input=oci_input, layer_num=layer_num, output_file=layer_file)
+            OCIRegistry.download_layer(
+                oci_input=oci_input, layer_num=layer_num, output_file=layer_file
+            )
             with tarfile.open(layer_file, "r") as tar:
                 tar.extractall(output_dir)
 

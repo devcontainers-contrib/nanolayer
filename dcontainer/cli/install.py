@@ -1,6 +1,7 @@
 import logging
-from typing import List, Optional, Dict
-
+from typing import Dict, List, Optional
+from dcontainer.devcontainer.oci_feature_installer import OCIFeatureInstaller
+from dcontainer.apt_get.apt_get_installer import AptGetInstaller
 import typer
 
 logger = logging.getLogger(__name__)
@@ -21,13 +22,13 @@ def _validate_args(value: Optional[List[str]]):
 
 @app.command("devcontainer-feature")
 def install_devcontainer_feature(
-        feature: str,
-        option: Optional[List[str]] = typer.Option(None, callback=_validate_args),
-        remote_user: Optional[str] = typer.Option(None, callback=_validate_args),
-        env: Optional[List[str]] = typer.Option(None, callback=_validate_args),
-        verbose: bool = False,
+    feature: str,
+    option: Optional[List[str]] = typer.Option(None, callback=_validate_args),
+    remote_user: Optional[str] = typer.Option(None, callback=_validate_args),
+    env: Optional[List[str]] = typer.Option(None, callback=_validate_args),
+    verbose: bool = False,
 ) -> None:
-    from dcontainer.devcontainer.oci_feature_installer import OCIFeatureInstaller
+    
 
     def _key_val_arg_to_dict(args: Optional[List[str]]) -> Dict[str, str]:
         if args is None:
@@ -37,7 +38,7 @@ def install_devcontainer_feature(
         for single_arg in args:
             single_arg = _strip_if_wrapped_around(single_arg, '"')
             arg_name = single_arg.split("=")[0]
-            arg_value = single_arg[len(arg_name) + 1:]
+            arg_value = single_arg[len(arg_name) + 1 :]
             arg_value = _strip_if_wrapped_around(arg_value, '"')
             args_dict[arg_name] = arg_value
         return args_dict
@@ -55,5 +56,29 @@ def install_devcontainer_feature(
     options_dict = _key_val_arg_to_dict(option)
     envs_dict = _key_val_arg_to_dict(env)
 
-    OCIFeatureInstaller.install(feature_ref=feature, envs=envs_dict, options=options_dict, remote_user=remote_user,
-                                verbose=verbose)
+    OCIFeatureInstaller.install(
+        feature_ref=feature,
+        envs=envs_dict,
+        options=options_dict,
+        remote_user=remote_user,
+        verbose=verbose,
+    )
+
+
+@app.command("apt-get")
+def install_apt_get_packages(
+    package: List[str],
+    ppa: Optional[List[str]] = typer.Option(None),
+    force_ppas_on_non_ubuntu: bool = True,
+    remove_ppas_on_completion: bool = True,
+    remove_cache_on_completion: bool = True,
+) -> None:
+   
+
+    AptGetInstaller.install(
+        packages=package,
+        ppas=ppa,
+        force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
+        remove_ppas_on_completion=remove_ppas_on_completion,
+        remove_cache_on_completion=remove_cache_on_completion,
+    )
