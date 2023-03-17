@@ -53,7 +53,9 @@ class OCIFeatureInstaller:
         if envs is None:
             envs = {}
 
-        feature_obj = OCIFeature.get_devcontainer_feature_obj(oci_feature_ref=feature_ref)
+        feature_obj = OCIFeature.get_devcontainer_feature_obj(
+            oci_feature_ref=feature_ref
+        )
 
         options = cls._resolve_options(feature_obj=feature_obj, options=options)
         logger.info("resolved options: %s", str(options))
@@ -98,7 +100,9 @@ class OCIFeatureInstaller:
         )
 
         with tempfile.TemporaryDirectory() as tempdir:
-            OCIFeature.download_and_extract(oci_feature_ref=feature_ref, output_dir=tempdir)
+            OCIFeature.download_and_extract(
+                oci_feature_ref=feature_ref, output_dir=tempdir
+            )
 
             sys.stdout.reconfigure(
                 encoding="utf-8"
@@ -113,7 +117,7 @@ class OCIFeatureInstaller:
                 sudo {env_variables_cmd} bash -i {'-x' if verbose else ''} ./{cls._FEATURE_ENTRYPOINT}",
                 out_stream=sys.stdout,
                 err_stream=sys.stderr,
-                pty=True
+                pty=True,
             )
 
             if not response.ok:

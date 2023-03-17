@@ -1,45 +1,23 @@
-from typing import List, Optional, Type
 import platform
-import invoke
-import sys
+from typing import List, Optional
 
-
-class InteractiveSudoInvoker:
-    class InteractiveSudoInvokerException(Exception):
-        def __init__(self, command: str, response) -> None:
-            self.command = command
-            self.response = response
-
-        def __str__(self):
-            return f"The command '{self.command}' failed. return_code: {self.response.return_code}. see logs for details."
-
-    @staticmethod
-    def invoke(
-        command: str,
-        exception_class: Type["InteractiveSudoInvoker.InteractiveSudoInvokerException"],
-    ) -> None:
-        response = invoke.sudo(
-            command, out_stream=sys.stdout, err_stream=sys.stderr, pty=True
-        )
-        if not response.ok:
-            raise exception_class(command=command, response=response)
-
+from dcontainer.utils.sudo_invoker import SudoInvoker
 
 
 class AptGetInstaller:
     class PPASOnNonUbuntu(Exception):
         pass
 
-    class AptGetUpdateFailed(InteractiveSudoInvoker.InteractiveSudoInvokerException):
+    class AptGetUpdateFailed(SudoInvoker.InteractiveSudoInvokerException):
         pass
 
-    class AddPPAsFailed(InteractiveSudoInvoker.InteractiveSudoInvokerException):
+    class AddPPAsFailed(SudoInvoker.InteractiveSudoInvokerException):
         pass
 
-    class RemovePPAsFailed(InteractiveSudoInvoker.InteractiveSudoInvokerException):
+    class RemovePPAsFailed(SudoInvoker.InteractiveSudoInvokerException):
         pass
 
-    class CleanUpFailed(InteractiveSudoInvoker.InteractiveSudoInvokerException):
+    class CleanUpFailed(SudoInvoker.InteractiveSudoInvokerException):
         pass
 
     @staticmethod
@@ -68,29 +46,29 @@ class AptGetInstaller:
         normalized_ppas = AptGetInstaller.normalize_ppas(ppas)
 
         try:
-            InteractiveSudoInvoker.invoke(
+            SudoInvoker.invoke(
                 command="apt-get update -y",
                 exception_class=AptGetInstaller.AptGetUpdateFailed,
             )
 
             if ppas:
-                InteractiveSudoInvoker.invoke(
+                SudoInvoker.invoke(
                     command="apt-get install -y software-properties-common",
                     exception_class=AptGetInstaller.AddPPAsFailed,
                 )
 
                 for ppa in normalized_ppas:
-                    InteractiveSudoInvoker.invoke(
+                    SudoInvoker.invoke(
                         command=f"add-apt-repository -y {ppa}",
                         exception_class=AptGetInstaller.AddPPAsFailed,
                     )
 
-                InteractiveSudoInvoker.invoke(
+                SudoInvoker.invoke(
                     command="apt-get update -y",
                     exception_class=AptGetInstaller.AptGetUpdateFailed,
                 )
 
-            InteractiveSudoInvoker.invoke(
+            SudoInvoker.invoke(
                 command=f"apt-get install -y --no-install-recommends {' '.join(packages)}",
                 exception_class=AptGetInstaller.AptGetUpdateFailed,
             )
@@ -98,13 +76,13 @@ class AptGetInstaller:
         finally:
             if remove_ppas_on_completion:
                 for ppa in normalized_ppas:
-                    InteractiveSudoInvoker.invoke(
+                    SudoInvoker.invoke(
                         command=f"add-apt-repository -y --remove {ppa}",
                         exception_class=AptGetInstaller.RemovePPAsFailed,
                     )
 
             if remove_cache_on_completion:
-                InteractiveSudoInvoker.invoke(
+                SudoInvoker.invoke(
                     command="rm -rf /var/lib/apt/lists/*",
                     exception_class=AptGetInstaller.CleanUpFailed,
                 )
