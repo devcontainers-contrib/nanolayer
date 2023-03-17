@@ -15,7 +15,7 @@ TEST_IMAGE = "mcr.microsoft.com/devcontainers/base:debian"
 @pytest.mark.parametrize(
     "feature_id,feature_definition_dir,release_version",
     [
-        (v, os.path.join(FEATURE_DEFINITION_DIR, v), "v0.1.4")
+        (v, os.path.join(FEATURE_DEFINITION_DIR, v), "v0.3.0rc0")
         for v in os.listdir(FEATURE_DEFINITION_DIR)
     ],
 )
@@ -40,7 +40,7 @@ def test_feature_dir_generation(
     assert os.path.isfile(
         os.path.join(tmp_path_str, "src", feature_id, "devcontainer-feature.json")
     )
-    assert os.path.isfile(os.path.join(tmp_path_str, "src", feature_id, "install2.sh"))
+    assert os.path.isfile(os.path.join(tmp_path_str, "src", feature_id, "install.sh"))
     assert os.path.isfile(
         os.path.join(tmp_path_str, "src", feature_id, "install_command.sh")
     )
@@ -49,7 +49,7 @@ def test_feature_dir_generation(
 @pytest.mark.parametrize(
     "feature_id,feature_definition_dir,release_version",
     [
-        (v, os.path.join(FEATURE_DEFINITION_DIR, v), "v0.1.4")
+        (v, os.path.join(FEATURE_DEFINITION_DIR, v), "v0.3.0rc0")
         for v in os.listdir(FEATURE_DEFINITION_DIR)
     ],
 )

@@ -163,14 +163,16 @@ class OCIRegistry:
 
         if output_dir.is_file():
             raise ValueError(f"{output_dir} is a file (should be an empty directory)")
-
+        
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
         if any(output_dir.iterdir()):
             raise ValueError(f"{output_dir} is not empty ")
 
         with tempfile.TemporaryDirectory() as download_dir:
             layer_file = Path(download_dir).joinpath("layer_file.tgz")
-            feature_targz_location = OCIRegistry.download_layer(oci_input=oci_input, layer_num=layer_num, output_file=layer_file, )
-            with tarfile.open(feature_targz_location, "r") as tar:
+            OCIRegistry.download_layer(oci_input=oci_input, layer_num=layer_num, output_file=layer_file)
+            with tarfile.open(layer_file, "r") as tar:
                 tar.extractall(output_dir)
 
     @staticmethod

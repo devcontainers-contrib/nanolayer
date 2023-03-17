@@ -22,7 +22,7 @@ def generate_command(
         from dcontainer.devcontainer.feature_generation.oci_feature_generator import OCIFeatureGenerator
     except ImportError as e:
         logger.error(
-            "Some imports required for feature generation are missing.\nMake sure you have included the generate extras during installation.\n eg. 'pip install2 dcontainer[generate]'"
+            "Some imports required for feature generation are missing.\nMake sure you have included the generate extras during installation.\n eg. 'pip install dcontainer[generate]'"
         )
         raise typer.Exit(code=1) from e
 

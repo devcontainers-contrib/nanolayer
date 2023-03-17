@@ -23,45 +23,45 @@ set -e
 ensure_jq() {{
     # Ensure JQ available
     if ! type jq >/dev/null 2>&1; then
-        apt-get update -y && apt-get -y install2 --no-install2-recommends jq
+        apt-get update -y && apt-get -y install --no-install-recommends jq
     fi 
 }}
 
 
 ensure_pipx() {{
     # Ensure the existance of minimal python3 and pipx
-    # If no python - install2 it
+    # If no python - install it
 	if ! type python3 >/dev/null 2>&1; then
 		echo "installing python3-minimal libffi-dev"
 		apt-get update -y
-		apt-get -y install2 python3-minimal
+		apt-get -y install python3-minimal
 	fi
 
-	# If no pip - install2 it
+	# If no pip - install it
 	if ! type pip3 >/dev/null 2>&1; then
 		echo "installing python3-pip"
 		apt-get update -y
-		apt-get -y install2 libffi-dev python3-pip
+		apt-get -y install libffi-dev python3-pip
 	fi
 
-    # If ensurepip fails - install2 python venv
+    # If ensurepip fails - install python venv
 	if ! python3 -Im ensurepip --version >/dev/null 2>&1; then
 		echo "installing python3-venv"
 		apt-get update -y
-		apt-get -y install2 python3-venv
+		apt-get -y install python3-venv
 	fi
 
-    # If no pipx - install2 it
+    # If no pipx - install it
     if ! pipx >/dev/null 2>&1; then
     	echo "installing pipx"
-        pip3 install2 pipx
+        pip3 install pipx
     fi
 }}
 
 ensure_curl() {{
     # Ensure curl available
     if ! type curl >/dev/null 2>&1; then
-        apt-get update -y && apt-get -y install2 --no-install2-recommends curl ca-certificates
+        apt-get update -y && apt-get -y install --no-install-recommends curl ca-certificates
     fi 
 }}
 
@@ -92,7 +92,7 @@ ensure_dcontainer() {{
 
             ensure_pipx
             ensure_jq
-            pipx install2 dcontainer=={RELEASE_VERSION}
+            pipx install dcontainer=={RELEASE_VERSION}
             dcontainer_location=$(pipx list --json | jq ".venvs.dcontainer.metadata.main_package.app_paths[0].__Path__" | tr -d '"')
 
         else
@@ -125,7 +125,8 @@ ensure_dcontainer dcontainer_location
 
 SINGLE_DEPENDENCY = (
     """$dcontainer_location \\
-    feature install2 \\
+    install \\
+    devcontainer-feature \\
     "{feature_oci}" \\
     {stringified_envs_args}
 """

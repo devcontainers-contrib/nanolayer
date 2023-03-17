@@ -34,7 +34,7 @@ class OCIFeatureInstaller:
     _REMOTE_USER_ENV = "_REMOTE_USER"
     _REMOTE_USER_HOME_ENV = "_REMOTE_USER_HOME"
 
-    _FEATURE_ENTRYPOINT = "install2.sh"
+    _FEATURE_ENTRYPOINT = "install.sh"
 
     _PROFILE_DIR = "/etc/profile.d"
 
@@ -118,7 +118,7 @@ class OCIFeatureInstaller:
 
             if not response.ok:
                 raise OCIFeatureInstaller.FeatureInstallationException(
-                    f"feature {feature_ref} failed to install2. return_code: {response.return_code}. see logs for error reason."
+                    f"feature {feature_ref} failed to install. return_code: {response.return_code}. see logs for error reason."
                 )
 
             cls._set_permanent_envs(feature_obj)
