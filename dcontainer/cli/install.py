@@ -27,6 +27,7 @@ def install_devcontainer_feature(
         env: Optional[List[str]] = typer.Option(None, callback=_validate_args),
         verbose: bool = False,
 ) -> None:
+
     from dcontainer.devcontainer.oci_feature_installer import OCIFeatureInstaller
 
     def _key_val_arg_to_dict(args: Optional[List[str]]) -> Dict[str, str]:
@@ -57,3 +58,20 @@ def install_devcontainer_feature(
 
     OCIFeatureInstaller.install(feature_ref=feature, envs=envs_dict, options=options_dict, remote_user=remote_user,
                                 verbose=verbose)
+
+
+@app.command("apt-get")
+def install_apt_get_packages(
+        package: List[str],
+        ppa: Optional[List[str]] = typer.Option(None),
+        force_ppas_on_non_ubuntu: bool = True,
+        remove_ppas_on_completion: bool = True,
+        remove_cache_on_completion: bool = True,
+) -> None:
+    from dcontainer.apt_get.apt_get_installer import AptGetInstaller
+    
+    AptGetInstaller.install(packages=package, ppas=ppa, 
+                                force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
+                                remove_ppas_on_completion=remove_ppas_on_completion,
+                                remove_cache_on_completion=remove_cache_on_completion,
+                                )
