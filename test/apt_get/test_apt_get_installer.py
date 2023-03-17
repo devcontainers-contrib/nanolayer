@@ -50,7 +50,7 @@ def generate_testing_devcontainer_feature(release_version: str, command: str,  t
 @pytest.mark.parametrize(
     "packages,ppas,release_version,image",
     [
-        (["neovim"], ["ppa:neovim-ppa/stable"], "v0.3.0rc3", "mcr.microsoft.com/devcontainers/base:ubuntu")
+        (["neovim"], ["ppa:neovim-ppa/stable"], "v0.3.0rc5", "mcr.microsoft.com/devcontainers/base:ubuntu")
     ],
 )
 def test_apt_get_install(

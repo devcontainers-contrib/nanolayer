@@ -8,16 +8,16 @@ class AptGetInstaller:
     class PPASOnNonUbuntu(Exception):
         pass
 
-    class AptGetUpdateFailed(SudoInvoker.InteractiveSudoInvokerException):
+    class AptGetUpdateFailed(SudoInvoker.SudoInvokerException):
         pass
 
-    class AddPPAsFailed(SudoInvoker.InteractiveSudoInvokerException):
+    class AddPPAsFailed(SudoInvoker.SudoInvokerException):
         pass
 
-    class RemovePPAsFailed(SudoInvoker.InteractiveSudoInvokerException):
+    class RemovePPAsFailed(SudoInvoker.SudoInvokerException):
         pass
 
-    class CleanUpFailed(SudoInvoker.InteractiveSudoInvokerException):
+    class CleanUpFailed(SudoInvoker.SudoInvokerException):
         pass
 
     @staticmethod
