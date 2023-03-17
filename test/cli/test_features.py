@@ -4,7 +4,7 @@ import pathlib
 import pytest
 from helpers import RESOURCE_DIR
 
-from dcontainer.cli.generate.generate_feature import generate
+from dcontainer.devcontainer.feature_generation.oci_feature_generator import OCIFeatureGenerator
 
 FEATURE_DEFINITION_DIR = os.path.join(RESOURCE_DIR, "test_feature_definitions")
 
@@ -25,9 +25,9 @@ def test_feature_dir_generation(
     feature_definition = os.path.join(feature_definition_dir, "feature-definition.json")
 
     tmp_path_str = tmp_path.as_posix()
-    generate(
+    OCIFeatureGenerator.generate(
         feature_definition=feature_definition,
-        output_dir=tmp_path,
+        output_dir=tmp_path.as_posix(),
         release_version=release_version
     )
 
@@ -40,7 +40,7 @@ def test_feature_dir_generation(
     assert os.path.isfile(
         os.path.join(tmp_path_str, "src", feature_id, "devcontainer-feature.json")
     )
-    assert os.path.isfile(os.path.join(tmp_path_str, "src", feature_id, "install.sh"))
+    assert os.path.isfile(os.path.join(tmp_path_str, "src", feature_id, "install2.sh"))
     assert os.path.isfile(
         os.path.join(tmp_path_str, "src", feature_id, "install_command.sh")
     )
@@ -59,7 +59,7 @@ def test_feature_dir_generation_and_run_devcontainer_tests(
     feature_definition = os.path.join(feature_definition_dir, "feature-definition.json")
 
     tmp_path_str = tmp_path.as_posix()
-    generate(
+    OCIFeatureGenerator.generate(
         feature_definition=feature_definition,
         output_dir=tmp_path_str,
         release_version=release_version

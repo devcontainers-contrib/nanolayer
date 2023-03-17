@@ -10,7 +10,7 @@
 ### Feature Generation:
 
 ```
-Usage: python -m dcontainer feature generate [OPTIONS]
+Usage: python -m dcontainer generate devcontainer-feature [OPTIONS]
                                                         FEATURE_DEFINITION
                                                         OUTPUT_DIR
 
@@ -73,7 +73,7 @@ This is an *extended* version of the [devcontainer-feature.json](https://contain
         "version": {
             "type": "string",
             "default": "latest",
-            "description": "Select the version of act to install."
+            "description": "Select the version of act to install2."
         }
     },
 
@@ -103,5 +103,5 @@ git clone https://github.com/devcontainers-contrib/cli --depth 1
 cd cli
 
 
-dcontainer feature generate "./test/resources/test_feature_definitions/elixir-asdf/feature-definition.json" "./output_dir"
+dcontainer generate devcontainer-feature "./test/resources/test_feature_definitions/elixir-asdf/feature-definition.json" "./output_dir"
 ```

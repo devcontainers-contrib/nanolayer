@@ -8,8 +8,8 @@ from typing import Dict, Optional, Union
 
 import invoke
 
-from dcontainer.models.devcontainer_feature import Feature
-from dcontainer.oci.oci_feature import OCIFeature
+from dcontainer.devcontainer.models.devcontainer_feature import Feature
+from dcontainer.devcontainer.oci_feature import OCIFeature
 from dcontainer.settings import (
     ENV_CLI_LOCATION,
     ENV_FORCE_CLI_INSTALLATION,
@@ -34,14 +34,14 @@ class OCIFeatureInstaller:
     _REMOTE_USER_ENV = "_REMOTE_USER"
     _REMOTE_USER_HOME_ENV = "_REMOTE_USER_HOME"
 
-    _FEATURE_ENTRYPOINT = "install.sh"
+    _FEATURE_ENTRYPOINT = "install2.sh"
 
     _PROFILE_DIR = "/etc/profile.d"
 
     @classmethod
     def install(
         cls,
-        feature_oci: OCIFeature,
+        feature_ref: str,
         options: Optional[Dict[str, Union[str, bool]]] = None,
         envs: Optional[Dict[str, str]] = None,
         remote_user: Optional[str] = None,
@@ -52,7 +52,8 @@ class OCIFeatureInstaller:
 
         if envs is None:
             envs = {}
-        feature_obj = feature_oci.get_devcontainer_feature_obj()
+
+        feature_obj = OCIFeature.get_devcontainer_feature_obj(oci_feature_ref=feature_ref)
 
         options = cls._resolve_options(feature_obj=feature_obj, options=options)
         logger.info("resolved options: %s", str(options))
@@ -97,7 +98,7 @@ class OCIFeatureInstaller:
         )
 
         with tempfile.TemporaryDirectory() as tempdir:
-            feature_oci.download_and_extract(tempdir)
+            OCIFeature.download_and_extract(oci_feature_ref=feature_ref, output_dir=tempdir)
 
             sys.stdout.reconfigure(
                 encoding="utf-8"
@@ -117,7 +118,7 @@ class OCIFeatureInstaller:
 
             if not response.ok:
                 raise OCIFeatureInstaller.FeatureInstallationException(
-                    f"feature {feature_oci.path} failed to install. return_code: {response.return_code}. see logs for error reason."
+                    f"feature {feature_ref} failed to install2. return_code: {response.return_code}. see logs for error reason."
                 )
 
             cls._set_permanent_envs(feature_obj)

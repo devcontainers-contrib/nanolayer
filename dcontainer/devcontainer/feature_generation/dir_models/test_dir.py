@@ -1,8 +1,8 @@
 from easyfs import Directory
 
-from dcontainer.cli.generate.file_models.scenarios_json import ScenariosJson
-from dcontainer.cli.generate.file_models.test_sh import TestSH
-from dcontainer.models.devcontainer_feature_definition import (
+from dcontainer.devcontainer.feature_generation.file_models.scenarios_json import ScenariosJson
+from dcontainer.devcontainer.feature_generation.file_models.test_sh import TestSH
+from dcontainer.devcontainer.models.devcontainer_feature_definition import (
     FeatureDefinition,
     TestScenario,
 )

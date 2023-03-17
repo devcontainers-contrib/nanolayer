@@ -2,8 +2,11 @@ import hashlib
 import http.client
 import json
 import re
+import tarfile
+import tempfile
 import urllib
 import urllib.request
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel
@@ -135,6 +138,40 @@ class OCIRegistry:
             token = OCIRegistry._generate_token(e.headers.as_string())
             request.add_header("Authorization", f"Bearer {token}")
             return urllib.request.urlopen(request)  # nosec
+
+    @staticmethod
+    def download_layer(oci_input: str, layer_num: int, output_file: Union[str, Path]) -> None:
+        if isinstance(output_file, str):
+            output_file = Path(output_file)
+
+        if output_file.exists():
+            raise ValueError(f"{output_file.as_posix()} already exists")
+
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
+        manifest = OCIRegistry.get_manifest(oci_input)
+
+        blob_digest = manifest["layers"][layer_num]["digest"]
+
+        with open(output_file, "wb") as f:
+            f.write(OCIRegistry.get_blob(oci_input, blob_digest))
+
+    @staticmethod
+    def download_and_extract_layer(oci_input: str, output_dir: Union[str, Path], layer_num: int) -> None:
+        if isinstance(output_dir, str):
+            output_dir = Path(output_dir)
+
+        if output_dir.is_file():
+            raise ValueError(f"{output_dir} is a file (should be an empty directory)")
+
+        if any(output_dir.iterdir()):
+            raise ValueError(f"{output_dir} is not empty ")
+
+        with tempfile.TemporaryDirectory() as download_dir:
+            layer_file = Path(download_dir).joinpath("layer_file.tgz")
+            feature_targz_location = OCIRegistry.download_layer(oci_input=oci_input, layer_num=layer_num, output_file=layer_file, )
+            with tarfile.open(feature_targz_location, "r") as tar:
+                tar.extractall(output_dir)
 
     @staticmethod
     def get_manifest(oci_input: str) -> Dict[str, Any]:
