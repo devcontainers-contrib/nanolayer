@@ -75,7 +75,7 @@ class AptGetInstaller:
 
             if ppas:
                 InteractiveSudoInvoker.invoke(
-                    command="apt-get install software-properties-common",
+                    command="apt-get install -y software-properties-common",
                     exception_class=AptGetInstaller.AddPPAsFailed,
                 )
 
@@ -91,7 +91,7 @@ class AptGetInstaller:
                 )
 
             InteractiveSudoInvoker.invoke(
-                command=f"apt-get -y install --no-install-recommends {' '.join(packages)}",
+                command=f"apt-get install -y --no-install-recommends {' '.join(packages)}",
                 exception_class=AptGetInstaller.AptGetUpdateFailed,
             )
 
