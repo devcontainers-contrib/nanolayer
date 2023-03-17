@@ -1,9 +1,6 @@
-import os
 import pathlib
 from typing import List
 import pytest
-from helpers import RESOURCE_DIR
-from dcontainer.apt_get.apt_get_installer import AptGetInstaller
 from dcontainer.devcontainer.models.devcontainer_feature_definition import FeatureDefinition, TestScenario
 from dcontainer.devcontainer.feature_generation.oci_feature_generator import OCIFeatureGenerator
 from dcontainer.devcontainer.feature_generation.file_models.dependencies_sh import DependenciesSH
@@ -48,20 +45,18 @@ def generate_testing_devcontainer_feature(release_version: str, command: str,  t
 
 
 @pytest.mark.parametrize(
-    "packages,ppas,release_version,image",
+    "packages,ppas,test_command,release_version,image",
     [
-        (["neovim"], ["ppa:neovim-ppa/stable"], "v0.3.0rc5", "mcr.microsoft.com/devcontainers/base:ubuntu")
+        (["neovim"], ["ppa:neovim-ppa/stable"],"nvim --version", "v0.3.0rc5", "mcr.microsoft.com/devcontainers/base:ubuntu")
     ],
 )
 def test_apt_get_install(
-    shell, tmp_path: pathlib.Path, packages: List[str], ppas: List[str], release_version:str, image:str
+    packages: List[str], ppas: List[str], test_command, release_version:str, image:str
 ) -> None:
 
     packages_cmd = " ".join([f"{package} " for package in packages])
-    ppas_cmd = " ".join(["--ppa {ppa}" for ppa in ppas])
+    ppas_cmd = " ".join([f"--ppa {ppa}" for ppa in ppas])
     
     install_command = f"$dcontainer_location install apt-get {packages_cmd} {ppas_cmd}"
-    test_command = "neovim --version"
-
     
     assert generate_testing_devcontainer_feature(release_version=release_version,command=install_command, test_command= test_command, image=image)
