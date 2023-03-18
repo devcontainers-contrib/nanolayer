@@ -1,6 +1,7 @@
 from typing import List, Optional, Dict
 
 from dcontainer.utils.invoker import Invoker
+from dcontainer.utils.linux_information_desk import LinuxInformationDesk
 
 
 class AptitudeInstaller:
@@ -32,18 +33,16 @@ class AptitudeInstaller:
                 ppas[ppa_idx] = f"ppa:{ppa}"
         return ppas
     
-    @staticmethod
-    def _parse_env_file(path: str) -> Dict[str,str]:
-        with open(path, 'r') as f:                                               
-            return dict(tuple(line.replace('\n', '').split('=')) for line in f.readlines() if not line.startswith('#'))
         
-
     @classmethod
     def is_ubuntu(cls) -> bool:
-        Invoker.check_root_privileges()
-        parsed_os_release = cls._parse_env_file("/etc/os-release")
-        return "ubuntu" in parsed_os_release['NAME'].lower()
-         
+        return LinuxInformationDesk.get_release_id() == LinuxInformationDesk.LinuxReleaseID.ubuntu
+    
+    @classmethod
+    def is_debian_like(cls) -> bool:
+        return LinuxInformationDesk.get_release_id(id_like=True) == LinuxInformationDesk.LinuxReleaseID.ubuntu
+    
+
     @classmethod
     def install(
         cls,
@@ -53,6 +52,8 @@ class AptitudeInstaller:
         remove_ppas_on_completion: bool = True,
         remove_cache_on_completion: bool = True,
     ) -> None:
+        
+        assert cls.is_debian_like(), "aptitude should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
 
         if (
             ppas
