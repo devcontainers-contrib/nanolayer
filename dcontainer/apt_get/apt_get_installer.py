@@ -1,24 +1,24 @@
-import platform
-from typing import List, Optional
+from typing import List, Optional, Dict
 
-from dcontainer.utils.sudo_invoker import SudoInvoker
+from dcontainer.utils.invoker import Invoker
 
 
 class AptGetInstaller:
     class PPASOnNonUbuntu(Exception):
         pass
 
-    class AptGetUpdateFailed(SudoInvoker.SudoInvokerException):
+    class AptGetUpdateFailed(Invoker.InvokerException):
         pass
 
-    class AddPPAsFailed(SudoInvoker.SudoInvokerException):
+    class AddPPAsFailed(Invoker.InvokerException):
         pass
 
-    class RemovePPAsFailed(SudoInvoker.SudoInvokerException):
+    class RemovePPAsFailed(Invoker.InvokerException):
         pass
 
-    class CleanUpFailed(SudoInvoker.SudoInvokerException):
+    class CleanUpFailed(Invoker.InvokerException):
         pass
+    
 
     @staticmethod
     def normalize_ppas(ppas: List[str]) -> List[str]:
@@ -27,62 +27,99 @@ class AptGetInstaller:
             if "ppa:" != ppa[:4]:
                 ppas[ppa_idx] = f"ppa:{ppa}"
         return ppas
-
+    
     @staticmethod
+    def _parse_env_file(path: str) -> Dict[str,str]:
+        with open(path, 'r') as f:                                               
+            return dict(tuple(line.replace('\n', '').split('=')) for line in f.readlines() if not line.startswith('#'))
+        
+
+    @classmethod
+    def is_ubuntu(cls) -> bool:
+        Invoker.check_root_privileges()
+        parsed_os_release = cls._parse_env_file("/etc/os-release")
+        return "ubuntu" in parsed_os_release['NAME'].lower()
+    
+    @classmethod
     def install(
+        cls,
         packages: List[str],
         ppas: Optional[List[str]] = None,
-        force_ppas_on_non_ubuntu: bool = True,
+        force_ppas_on_non_ubuntu: bool = False,
         remove_ppas_on_completion: bool = True,
         remove_cache_on_completion: bool = True,
     ) -> None:
+
         if (
             ppas
-            and not "ubuntu" in platform.version().lower()
+            and not cls.is_ubuntu()
             and not force_ppas_on_non_ubuntu
         ):
-            raise AptGetInstaller.PPASOnNonUbuntu()
+            raise cls.PPASOnNonUbuntu()
 
-        normalized_ppas = AptGetInstaller.normalize_ppas(ppas)
+        normalized_ppas = cls.normalize_ppas(ppas)
+
+        software_properties_common_installed = False
 
         try:
-            SudoInvoker.invoke(
+            Invoker.invoke(
                 command="apt-get update -y",
-                exception_class=AptGetInstaller.AptGetUpdateFailed,
+                raise_on_failure=True,
+                exception_class=cls.AptGetUpdateFailed,
             )
 
             if ppas:
-                SudoInvoker.invoke(
-                    command="apt-get install -y software-properties-common",
-                    exception_class=AptGetInstaller.AddPPAsFailed,
-                )
-
-                for ppa in normalized_ppas:
-                    SudoInvoker.invoke(
-                        command=f"add-apt-repository -y {ppa}",
-                        exception_class=AptGetInstaller.AddPPAsFailed,
+                if Invoker.invoke("dpkg -s software-properties-common",
+                                  raise_on_failure=False) != 0:
+                    
+                    Invoker.invoke(
+                        command="apt install -y software-properties-common",
+                        raise_on_failure=True,
+                        exception_class=cls.AddPPAsFailed,
                     )
 
-                SudoInvoker.invoke(
+                    software_properties_common_installed = True
+
+
+                for ppa in normalized_ppas:
+                    Invoker.invoke(
+                        command=f"add-apt-repository -y {ppa}",
+                        raise_on_failure=True,
+                        exception_class=cls.AddPPAsFailed,
+                    )
+
+                Invoker.invoke(
                     command="apt-get update -y",
-                    exception_class=AptGetInstaller.AptGetUpdateFailed,
+                    raise_on_failure=True,
+                    exception_class=cls.AptGetUpdateFailed,
                 )
 
-            SudoInvoker.invoke(
+            Invoker.invoke(
                 command=f"apt-get install -y --no-install-recommends {' '.join(packages)}",
-                exception_class=AptGetInstaller.AptGetUpdateFailed,
+                raise_on_failure=True,
+                exception_class=cls.AptGetUpdateFailed,
             )
 
         finally:
             if remove_ppas_on_completion:
                 for ppa in normalized_ppas:
-                    SudoInvoker.invoke(
+                    Invoker.invoke(
                         command=f"add-apt-repository -y --remove {ppa}",
-                        exception_class=AptGetInstaller.RemovePPAsFailed,
+                        raise_on_failure=True,
+                        exception_class=cls.RemovePPAsFailed,
                     )
 
+                if software_properties_common_installed:
+                    Invoker.invoke(
+                        command="apt -y remove software-properties-common",
+                        raise_on_failure=True,
+                        exception_class=cls.RemovePPAsFailed,
+                    )
+
+
             if remove_cache_on_completion:
-                SudoInvoker.invoke(
+                Invoker.invoke(
                     command="rm -rf /var/lib/apt/lists/*",
-                    exception_class=AptGetInstaller.CleanUpFailed,
+                    raise_on_failure=True,
+                    exception_class=cls.CleanUpFailed,
                 )
