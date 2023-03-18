@@ -1,8 +1,7 @@
 from easyfs import File
 
-from dcontainer.devcontainer.models.devcontainer_feature_definition import (
-    FeatureDefinition,
-)
+from dcontainer.devcontainer.models.devcontainer_feature_definition import \
+    FeatureDefinition
 
 
 class DevcontainerFeatureJson(File):
