@@ -4,9 +4,8 @@ from typing import Dict, Optional, Union
 from easyfs import File
 
 from dcontainer.devcontainer.models.devcontainer_feature import FeatureOption
-from dcontainer.devcontainer.models.devcontainer_feature_definition import (
-    FeatureDependencies,
-)
+from dcontainer.devcontainer.models.devcontainer_feature_definition import \
+    FeatureDependencies
 from dcontainer.settings import ENV_CLI_LOCATION, ENV_FORCE_CLI_INSTALLATION
 from dcontainer.utils.version import resolve_own_release_version
 
