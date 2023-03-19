@@ -50,7 +50,7 @@
             ] 
         },
         {
-            "name": "debug feature install",
+            "name": "debug install feature",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/dcontainer/__main__.py",
@@ -65,7 +65,7 @@
             ] 
         },
         {
-            "name": "debug apt-get install",
+            "name": "debug install apt-get",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/dcontainer/__main__.py",
@@ -78,7 +78,7 @@
             ] 
         },
         {
-            "name": "debug apt-get install on ubuntu",
+            "name": "debug install apt-get with ppa",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/dcontainer/__main__.py",
@@ -90,6 +90,24 @@
                 "wget",
                 "--ppa",
                 "ppa:deadsnakes/ppa",
+            ] 
+        },
+        {
+            "name": "debug install gh-release",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "sudo": true, 
+            "args": [
+                "install",
+                "gh-release",
+                "PowerShell/PowerShell",
+                "pwsh",
+                "--asset-regex",
+                "powershell-7.3.3-linux-x64.tar.gz",
+                "--force"
             ] 
         },
 
