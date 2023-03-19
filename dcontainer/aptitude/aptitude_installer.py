@@ -1,11 +1,10 @@
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 from dcontainer.utils.invoker import Invoker
 from dcontainer.utils.linux_information_desk import LinuxInformationDesk
 
 
 class AptitudeInstaller:
-
     class InstallAptitude(Exception):
         pass
 
@@ -23,7 +22,6 @@ class AptitudeInstaller:
 
     class CleanUpFailed(Invoker.InvokerException):
         pass
-    
 
     @staticmethod
     def normalize_ppas(ppas: List[str]) -> List[str]:
@@ -32,16 +30,20 @@ class AptitudeInstaller:
             if "ppa:" != ppa[:4]:
                 ppas[ppa_idx] = f"ppa:{ppa}"
         return ppas
-    
-        
+
     @classmethod
     def is_ubuntu(cls) -> bool:
-        return LinuxInformationDesk.get_release_id() == LinuxInformationDesk.LinuxReleaseID.ubuntu
-    
+        return (
+            LinuxInformationDesk.get_release_id()
+            == LinuxInformationDesk.LinuxReleaseID.ubuntu
+        )
+
     @classmethod
     def is_debian_like(cls) -> bool:
-        return LinuxInformationDesk.get_release_id(id_like=True) == LinuxInformationDesk.LinuxReleaseID.ubuntu
-    
+        return (
+            LinuxInformationDesk.get_release_id(id_like=True)
+            == LinuxInformationDesk.LinuxReleaseID.ubuntu
+        )
 
     @classmethod
     def install(
@@ -52,14 +54,11 @@ class AptitudeInstaller:
         remove_ppas_on_completion: bool = True,
         remove_cache_on_completion: bool = True,
     ) -> None:
-        
-        assert cls.is_debian_like(), "aptitude should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
+        assert (
+            cls.is_debian_like()
+        ), "aptitude should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
 
-        if (
-            ppas
-            and not cls.is_ubuntu()
-            and not force_ppas_on_non_ubuntu
-        ):
+        if ppas and not cls.is_ubuntu() and not force_ppas_on_non_ubuntu:
             raise cls.PPASOnNonUbuntu()
 
         normalized_ppas = cls.normalize_ppas(ppas)
@@ -70,22 +69,22 @@ class AptitudeInstaller:
                 raise_on_failure=True,
                 exception_class=cls.AptUpdateFailed,
             )
-            
+
             # ensure aptitude existance
-            if Invoker.invoke("dpkg -s aptitude",
-                raise_on_failure=False) != 0:
-
+            if Invoker.invoke("dpkg -s aptitude", raise_on_failure=False) != 0:
                 Invoker.invoke(
-                        command="apt-get install -y aptitude",
-                        raise_on_failure=True,
-                        exception_class=cls.InstallAptitude,
-                    )
-
+                    command="apt-get install -y aptitude",
+                    raise_on_failure=True,
+                    exception_class=cls.InstallAptitude,
+                )
 
             if ppas:
-                if Invoker.invoke("dpkg -s software-properties-common",
-                                  raise_on_failure=False) != 0:
-                    
+                if (
+                    Invoker.invoke(
+                        "dpkg -s software-properties-common", raise_on_failure=False
+                    )
+                    != 0
+                ):
                     Invoker.invoke(
                         command="aptitude install -y software-properties-common",
                         raise_on_failure=True,
@@ -93,7 +92,6 @@ class AptitudeInstaller:
                     )
 
                     software_properties_common_installed = True
-
 
                 for ppa in normalized_ppas:
                     Invoker.invoke(

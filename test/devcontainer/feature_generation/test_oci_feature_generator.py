@@ -4,8 +4,9 @@ import pathlib
 import pytest
 from helpers import RESOURCE_DIR
 
-from dcontainer.devcontainer.feature_generation.oci_feature_generator import \
-    OCIFeatureGenerator
+from dcontainer.devcontainer.feature_generation.oci_feature_generator import (
+    OCIFeatureGenerator,
+)
 
 FEATURE_DEFINITION_DIR = os.path.join(RESOURCE_DIR, "test_feature_definitions")
 

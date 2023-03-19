@@ -103,10 +103,8 @@
             "args": [
                 "install",
                 "gh-release",
-                "PowerShell/PowerShell",
-                "pwsh",
-                "--asset-regex",
-                "powershell-7.3.3-linux-x64.tar.gz",
+                "cli/cli",
+                "gh",
                 "--force"
             ] 
         },

@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 from dcontainer.utils.invoker import Invoker
 from dcontainer.utils.linux_information_desk import LinuxInformationDesk
@@ -19,7 +19,6 @@ class AptGetInstaller:
 
     class CleanUpFailed(Invoker.InvokerException):
         pass
-    
 
     @staticmethod
     def normalize_ppas(ppas: List[str]) -> List[str]:
@@ -28,15 +27,21 @@ class AptGetInstaller:
             if "ppa:" != ppa[:4]:
                 ppas[ppa_idx] = f"ppa:{ppa}"
         return ppas
-        
+
     @classmethod
     def is_ubuntu(cls) -> bool:
-        return LinuxInformationDesk.get_release_id() == LinuxInformationDesk.LinuxReleaseID.ubuntu
-    
+        return (
+            LinuxInformationDesk.get_release_id()
+            == LinuxInformationDesk.LinuxReleaseID.ubuntu
+        )
+
     @classmethod
     def is_debian_like(cls) -> bool:
-        return LinuxInformationDesk.get_release_id(id_like=True) == LinuxInformationDesk.LinuxReleaseID.ubuntu
-    
+        return (
+            LinuxInformationDesk.get_release_id(id_like=True)
+            == LinuxInformationDesk.LinuxReleaseID.ubuntu
+        )
+
     @classmethod
     def install(
         cls,
@@ -46,13 +51,11 @@ class AptGetInstaller:
         remove_ppas_on_completion: bool = True,
         remove_cache_on_completion: bool = True,
     ) -> None:
-        assert cls.is_debian_like(), "apt-get should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
+        assert (
+            cls.is_debian_like()
+        ), "apt-get should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
 
-        if (
-            ppas
-            and not cls.is_ubuntu()
-            and not force_ppas_on_non_ubuntu
-        ):
+        if ppas and not cls.is_ubuntu() and not force_ppas_on_non_ubuntu:
             raise cls.PPASOnNonUbuntu()
 
         normalized_ppas = cls.normalize_ppas(ppas)
@@ -67,9 +70,12 @@ class AptGetInstaller:
             )
 
             if ppas:
-                if Invoker.invoke("dpkg -s software-properties-common",
-                                  raise_on_failure=False) != 0:
-                    
+                if (
+                    Invoker.invoke(
+                        "dpkg -s software-properties-common", raise_on_failure=False
+                    )
+                    != 0
+                ):
                     Invoker.invoke(
                         command="apt install -y software-properties-common",
                         raise_on_failure=True,
@@ -77,7 +83,6 @@ class AptGetInstaller:
                     )
 
                     software_properties_common_installed = True
-
 
                 for ppa in normalized_ppas:
                     Invoker.invoke(
@@ -113,7 +118,6 @@ class AptGetInstaller:
                         raise_on_failure=True,
                         exception_class=cls.RemovePPAsFailed,
                     )
-
 
             if remove_cache_on_completion:
                 Invoker.invoke(

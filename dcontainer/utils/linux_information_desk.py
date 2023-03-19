@@ -1,9 +1,45 @@
 import os
+import platform
 from enum import Enum
 from typing import Dict
 
 
 class LinuxInformationDesk:
+    class Architecture(Enum):
+        ARM64 = "a64"
+        x86_64 = "x86_64"
+        ARMV6 = "armv6"
+        ARMV7 = "armv7"
+        ARMHF = "armhf"
+        ARM32 = "arm32"
+        I386 = "i386"
+        PPC64 = "ppc64"
+        S390 = "s390"
+        OTHER = "other"
+
+    @classmethod
+    def get_architecture(cls) -> "LinuxInformationDesk.Architecture":
+        architecture = platform.machine().lower()
+        if "x86_64" in architecture or "amd64" in architecture:
+            return cls.Architecture.x86_64
+        if "arm64" in architecture:
+            return cls.Architecture.ARM64
+        if "armv6" in architecture:
+            return cls.Architecture.ARMV6
+        if "armv7" in architecture:
+            return cls.Architecture.ARMV7
+        if "armhf" in architecture:
+            return cls.Architecture.ARMHF
+        if "i386" in architecture:
+            return cls.Architecture.I386
+        if "ppc" in architecture:
+            return cls.Architecture.PPC64
+        if "arm32" in architecture:
+            return cls.Architecture.ARM32
+        if "s390" in architecture:
+            return cls.Architecture.S390
+        else:
+            return cls.Architecture.OTHER
 
     class LinuxReleaseID(Enum):
         ubuntu: str = "ubuntu"
@@ -16,23 +52,28 @@ class LinuxInformationDesk:
         manjaro: str = "manjaro"
         arch: str = "arch"
 
-
     @classmethod
-    def get_release_id(cls, id_like: bool = False) ->'LinuxInformationDesk.LinuxReleaseID':
+    def get_release_id(
+        cls, id_like: bool = False
+    ) -> "LinuxInformationDesk.LinuxReleaseID":
         assert cls.has_root_privileges()
 
-        def _parse_env_file(path: str) -> Dict[str,str]:
-            with open(path, 'r') as f:                                               
-                return dict(tuple(line.replace('\n', '').split('=')) for line in f.readlines() if not line.startswith('#'))
-        
+        def _parse_env_file(path: str) -> Dict[str, str]:
+            with open(path, "r") as f:
+                return dict(
+                    tuple(line.replace("\n", "").split("="))
+                    for line in f.readlines()
+                    if not line.startswith("#")
+                )
+
         parsed_os_release = _parse_env_file("/etc/os-release")
 
         if id_like:
-            os_release_id = parsed_os_release.get('ID_LIKE', None).lower()
+            os_release_id = parsed_os_release.get("ID_LIKE", None).lower()
             if os_release_id is None:
-                os_release_id = parsed_os_release['ID'].lower()
+                os_release_id = parsed_os_release["ID"].lower()
         else:
-            os_release_id = parsed_os_release['ID'].lower()
+            os_release_id = parsed_os_release["ID"].lower()
 
         if "ubuntu" in os_release_id:
             return cls.LinuxReleaseID.ubuntu
@@ -40,7 +81,7 @@ class LinuxInformationDesk:
             return cls.LinuxReleaseID.debian
         elif "alpine" in os_release_id:
             return cls.LinuxReleaseID.alpine
-        elif "fedora" in os_release_id :
+        elif "fedora" in os_release_id:
             return cls.LinuxReleaseID.fedora
         elif "opensuse" in os_release_id:
             return cls.LinuxReleaseID.opensuse

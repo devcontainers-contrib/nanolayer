@@ -1,12 +1,11 @@
 import platform
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 from dcontainer.utils.invoker import Invoker
 from dcontainer.utils.linux_information_desk import LinuxInformationDesk
 
 
 class AptInstaller:
-
     class PPASOnNonUbuntu(Exception):
         pass
 
@@ -21,7 +20,6 @@ class AptInstaller:
 
     class CleanUpFailed(Invoker.InvokerException):
         pass
-    
 
     @staticmethod
     def normalize_ppas(ppas: List[str]) -> List[str]:
@@ -30,20 +28,30 @@ class AptInstaller:
             if "ppa:" != ppa[:4]:
                 ppas[ppa_idx] = f"ppa:{ppa}"
         return ppas
-    
+
     @staticmethod
-    def _parse_env_file(path: str) -> Dict[str,str]:
-        with open(path, 'r') as f:                                               
-            return dict(tuple(line.replace('\n', '').split('=')) for line in f.readlines() if not line.startswith('#'))
-        
+    def _parse_env_file(path: str) -> Dict[str, str]:
+        with open(path, "r") as f:
+            return dict(
+                tuple(line.replace("\n", "").split("="))
+                for line in f.readlines()
+                if not line.startswith("#")
+            )
+
     @classmethod
     def is_ubuntu(cls) -> bool:
-        return LinuxInformationDesk.get_release_id() == LinuxInformationDesk.LinuxReleaseID.ubuntu
-    
+        return (
+            LinuxInformationDesk.get_release_id()
+            == LinuxInformationDesk.LinuxReleaseID.ubuntu
+        )
+
     @classmethod
     def is_debian_like(cls) -> bool:
-        return LinuxInformationDesk.get_release_id(id_like=True) == LinuxInformationDesk.LinuxReleaseID.ubuntu
-    
+        return (
+            LinuxInformationDesk.get_release_id(id_like=True)
+            == LinuxInformationDesk.LinuxReleaseID.ubuntu
+        )
+
     @classmethod
     def install(
         cls,
@@ -53,12 +61,10 @@ class AptInstaller:
         remove_ppas_on_completion: bool = True,
         remove_cache_on_completion: bool = True,
     ) -> None:
-        assert cls.is_debian_like(), "apt should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
-        if (
-            ppas
-            and not cls.is_ubuntu()
-            and not force_ppas_on_non_ubuntu
-        ):
+        assert (
+            cls.is_debian_like()
+        ), "apt should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
+        if ppas and not cls.is_ubuntu() and not force_ppas_on_non_ubuntu:
             raise cls.PPASOnNonUbuntu()
 
         normalized_ppas = cls.normalize_ppas(ppas)
@@ -71,9 +77,12 @@ class AptInstaller:
             )
 
             if ppas:
-                if Invoker.invoke("dpkg -s software-properties-common",
-                                  raise_on_failure=False) != 0:
-                    
+                if (
+                    Invoker.invoke(
+                        "dpkg -s software-properties-common", raise_on_failure=False
+                    )
+                    != 0
+                ):
                     Invoker.invoke(
                         command="apt install -y software-properties-common",
                         raise_on_failure=True,
@@ -81,7 +90,6 @@ class AptInstaller:
                     )
 
                     software_properties_common_installed = True
-
 
                 for ppa in normalized_ppas:
                     Invoker.invoke(

@@ -10,9 +10,13 @@ import invoke
 
 from dcontainer.devcontainer.models.devcontainer_feature import Feature
 from dcontainer.devcontainer.oci_feature import OCIFeature
-from dcontainer.settings import (ENV_CLI_LOCATION, ENV_FORCE_CLI_INSTALLATION,
-                                 ENV_PROPAGATE_CLI_LOCATION, ENV_VERBOSE,
-                                 DContainerSettings)
+from dcontainer.settings import (
+    ENV_CLI_LOCATION,
+    ENV_FORCE_CLI_INSTALLATION,
+    ENV_PROPAGATE_CLI_LOCATION,
+    ENV_VERBOSE,
+    DContainerSettings,
+)
 
 logger = logging.getLogger(__name__)
 

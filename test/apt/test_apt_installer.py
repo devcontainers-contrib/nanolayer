@@ -1,4 +1,3 @@
-
 from typing import List
 
 import pytest
@@ -13,27 +12,30 @@ from helpers import execute_current_python_in_container
             ["ppa:neovim-ppa/stable"],
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:ubuntu",
-            0
+            0,
         ),
         (
             ["neovim"],
             ["ppa:neovim-ppa/stable"],
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
-            1
+            1,
         ),
-        
         (
             ["neovim"],
             [],
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
-            0
-        )
+            0,
+        ),
     ],
 )
 def test_apt_install(
-    packages: List[str], ppas: List[str], test_command, image: str,  excpected_result: int,
+    packages: List[str],
+    ppas: List[str],
+    test_command,
+    image: str,
+    excpected_result: int,
 ) -> None:
     packages_cmd = " ".join([f"{package} " for package in packages])
     ppas_cmd = " ".join([f"--ppa {ppa}" for ppa in ppas])
