@@ -8,7 +8,7 @@ import re
 import os
 import semver
 import stat
-
+from fsspec.implementations.tar import TarFileSystem
 import urllib
 from pathlib import Path
 import json
@@ -20,6 +20,42 @@ import zipfile
 from dcontainer.utils.linux_information_desk import LinuxInformationDesk
 
 logger= logging.getLogger(__name__)
+from tarfile import TarFile
+
+
+class ExtendedTarFile(TarFile):
+
+    def extract_prefix(self, prefix: str) -> None:
+        subdir_and_files = [
+            tarinfo for tarinfo in self.getmembers()
+            if tarinfo.name.startswith(prefix)
+        ]
+        self.extractall(members=subdir_and_files)
+
+
+    def get_names_by_prefix(self, prefix: str) -> None:
+        subdir_and_files = [
+            name for name in self.getnames()
+            if name.startswith(prefix)
+        ]
+        return subdir_and_files
+
+    def get_names_by_suffix(self, suffix: str) -> None:
+        subdir_and_files = [
+            name for name in self.getnames()
+            if name.endswith(suffix)
+        ]
+        return subdir_and_files
+
+    def names_by_filename(self, filename: str) -> List[str]:
+        matching_members = self.get_names_by_suffix(suffix=f"/{filename}")
+        # could also be as root member
+        if filename in self.getnames():
+            matching_members.append(filename)
+
+        return matching_members
+       
+
 
 class GHReleaseInstaller:
     X86_X64_REGEX = ""
@@ -50,7 +86,10 @@ class GHReleaseInstaller:
     class ReleaseVersionNotFound(Exception):
         pass
 
-    class BinaryNotFound(Exception):
+    class MoBinaryMatchesFound(Exception):
+        pass
+
+    class MultipleBinaryMatchesFound(Exception):
         pass
 
     class TargetExists(Exception):
@@ -75,9 +114,11 @@ class GHReleaseInstaller:
     @classmethod
     def get_latest_stable_version(cls, repo: str) -> List[str]:
         all_version_tags = cls.get_version_tags(repo)
-        def strip_prefix(value:str, prefix: str):
+
+        def strip_prefix(value:str, prefix: str) -> str:
             if value[:len(prefix)] == prefix:
                 return value[len(prefix):]
+            return value
             
         semversions = [semver.VersionInfo.parse(strip_prefix(version, "v")) if semver.VersionInfo.isvalid(strip_prefix(version, "v")) else semver.VersionInfo(0,0,0) for version in all_version_tags ]
 
@@ -173,19 +214,15 @@ class GHReleaseInstaller:
         return "/usr/local/lib"
     
     @classmethod
-    def _chmod(cls, location: str, permissions: str) -> None:
-        octal_permissions = int(permissions, base=8)
-        os.chmod(location, octal_permissions)
-
-    @classmethod
     def _recursive_chmod(cls, dir_location: str, permissions: str) -> None:
         octal_permissions = int(permissions, base=8)
         os.chmod(dir_location, octal_permissions)
-        for root, dirs, files in os.walk(dir_location):
-            for f in files:
-                os.chmod(os.path.join(root, f), octal_permissions)
-            for d in dirs:
-                os.chmod(os.path.join(root, d), octal_permissions)
+        if os.path.isdir(dir_location):
+            for root, dirs, files in os.walk(dir_location):
+                for f in files:
+                    os.chmod(os.path.join(root, f), octal_permissions)
+                for d in dirs:
+                    os.chmod(os.path.join(root, d), octal_permissions)
 
 
     @classmethod
@@ -242,59 +279,62 @@ class GHReleaseInstaller:
             cls.download_asset(url=resolved_asset.browser_download_url, target=temp_asset_path)
             
             if tarfile.is_tarfile(temp_asset_path):
-                with tarfile.open(temp_asset_path) as tarf:
-                    member_names = tarf.getnames()
 
-                    if len(member_names) == 1:
-                        member = member_names[0]
-                        tarf.extract(member, temp_extraction_path)
-                        if member.name != target_name:
-                            logger.warning("renaming %s to %s", member.name, target_name)
-                        shutil.copyfile(temp_extraction_path.joinpath(member.name), final_binary_location )
-                    
+                with ExtendedTarFile.open(temp_asset_path) as tarf:
+
+                    # resolve target member name 
+                    if len(tarf.getnames()) == 1:
+                        # In case of a single member, use it no matter how its named
+                        target_member_name = tarf.getnames()[0]
                     else:
-                        logger.warning("found more than one file in archive %s", resolved_asset.name)
+                        target_member_names = tarf.names_by_filename(target_name)
+                        if len(target_member_names) > 1:
+                            raise cls.MultipleBinaryMatchesFound(f"multiple binary matches were found in archive {resolved_asset.name}: {target_members}")
+                        if len(target_member_names) == 0:
+                            raise cls.MoBinaryMatchesFound(f"no binary named {target_name} found in archive {resolved_asset.name}")
+                        target_member_name = target_member_names[0]
 
+
+                    same_dir_members = tarf.get_names_by_prefix(os.path.dirname(target_member_name))
+                    if len(same_dir_members) == 1:
+                        tarf.extract(target_member_name, temp_extraction_path)
+                        if target_member_name != target_name:
+                            logger.warning("renaming %s to %s", target_member_name, target_name)
+                        shutil.copyfile(temp_extraction_path.joinpath(target_member_name), final_binary_location)
+                        cls._recursive_chmod(final_binary_location, cls.BIN_PERMISSIONS)
+
+                    else:
+                        # In case other files in same dir, assume lib dir. 
+                        # extracting to lib location and soft link the target into bin location
+                        logger.warning("extracting %s into %s", resolved_asset.name, lib_location)
+                        target_lib_location = lib_location.joinpath(target_name)
+
+                        if target_lib_location.exists() and not force:
+                            raise cls.TargetExists(f"{target_lib_location} already exists")
+
+                        tarf.extractall(temp_extraction_path)
                         
-                        if target_name in member_names:
-                            logger.warning("extracting %s into %s", resolved_asset.name, lib_location)
-                            target_lib_location = lib_location.joinpath(target_name)
-
-                            if target_lib_location.exists() and not force:
-                                raise cls.TargetExists(f"{target_lib_location} already exists")
-
-                            tarf.extractall(temp_extraction_path)
-                            
-                            try:
-                                shutil.copytree(temp_extraction_path, target_lib_location, dirs_exist_ok=force)
-                            except FileExistsError:
-                                raise cls.TargetExists(f"{target_lib_location} already exists")
-                            
-                            lib_binary_location = target_lib_location.joinpath(target_name)
-                            
-                            # execute permissions
-                            cls._recursive_chmod(target_lib_location, cls.BIN_PERMISSIONS)
-
-
-                            logger.warning("linking %s to %s", lib_binary_location, final_binary_location)
-                            try:
-                                os.symlink(lib_binary_location, final_binary_location)
-                            except FileExistsError as e:
-                                if force:
-                                    os.remove(final_binary_location)
-                                    os.symlink(lib_binary_location, final_binary_location)
-
-                                else:
-                                    raise cls.TargetExists(f"target {final_binary_location} already exists")
+                        try:
+                            shutil.copytree(temp_extraction_path, target_lib_location, dirs_exist_ok=force)
+                        except FileExistsError as exc:
+                            raise cls.TargetExists(f"{target_lib_location} already exists") from exc
                         
-                        else:
-                            raise cls.BinaryNotFound(f"{resolved_asset.name} is an archive but no binary named {target_name} found in it")
+                        lib_binary_location = target_lib_location.joinpath(target_name)
+                        
+                        # execute permissions
+                        cls._recursive_chmod(target_lib_location, cls.BIN_PERMISSIONS)
 
+                        logger.warning("linking %s to %s", lib_binary_location, final_binary_location)
+                        try:
+                            os.symlink(lib_binary_location, final_binary_location)
+                        except FileExistsError as exc:
+                            os.remove(final_binary_location)
+                            os.symlink(lib_binary_location, final_binary_location)
+                   
             else:
                 # assumes regular binary 
-
                 shutil.copyfile(temp_asset_path, final_binary_location)
-                cls._chmod(final_binary_location, cls.BIN_PERMISSIONS)
+                cls._recursive_chmod(final_binary_location, cls.BIN_PERMISSIONS)
             
 
             # execute permissions
