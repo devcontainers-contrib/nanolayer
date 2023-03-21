@@ -1,4 +1,4 @@
-name: Tests
+name: Generation Tests
 
 on:
   workflow_dispatch:
@@ -50,4 +50,4 @@ jobs:
           pip install -r requirements.txt -r requirements-generate.txt -r requirements-dev.txt
       - name: "Test with pytest"
         run: |
-          python -m pytest -s -v --ignore=tests/devcontainer/feature_generation
+          python -m pytest -s -v tests/devcontainer/feature_generation
