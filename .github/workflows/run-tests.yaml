@@ -45,4 +45,4 @@ jobs:
           pip install -r requirements.txt -r requirements-generate.txt -r requirements-dev.txt
       - name: Test with pytest
         run: |
-          pytest -s
+          python -m pytest -s
