@@ -275,9 +275,7 @@ class GHReleaseInstaller:
         asset_regex: Optional[str] = None,
         arch: Optional[LinuxInformationDesk.Architecture] = None,
     ) -> "GHReleaseInstaller.ReleaseAsset":
-        # either this or that, and not both
-        assert asset_regex is not None or arch is not None
-        assert not (asset_regex is not None and arch is not None)
+        assert not (asset_regex is None and arch is None), "at least one of 'asset_regex','arch' arguments must be given"
 
         assets = cls._get_assets_by_tag(repo=repo, tag=tag)
         if asset_regex is not None:
