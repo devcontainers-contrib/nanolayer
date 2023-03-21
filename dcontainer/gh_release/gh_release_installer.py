@@ -471,7 +471,7 @@ class GHReleaseInstaller:
 
         # will raise an exception if more or less than a single asset can meet the requirments
         resolved_asset = cls.resolve_asset(
-            repo=repo, tag=version, asset_regex=asset_regex, arch=arch
+            repo=repo, tag=version, asset_regex=asset_regex, arch=arch, target_name=target_name
         )
 
         #
