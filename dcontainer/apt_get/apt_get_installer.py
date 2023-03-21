@@ -39,7 +39,7 @@ class AptGetInstaller:
     def is_debian_like(cls) -> bool:
         return (
             LinuxInformationDesk.get_release_id(id_like=True)
-            == LinuxInformationDesk.LinuxReleaseID.ubuntu
+            == LinuxInformationDesk.LinuxReleaseID.debian
         )
 
     @classmethod
