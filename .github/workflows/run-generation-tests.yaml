@@ -23,8 +23,8 @@ jobs:
       with:
         filters: |
           relevant_files:
-            - 'dcontainer/**'
-            - 'tests/**'
+            - 'dcontainer/devcontainer/feature_generation**'
+            - 'tests/dcontainer/feature_generation**'
 
   run-tests:
     needs: [changes]  
