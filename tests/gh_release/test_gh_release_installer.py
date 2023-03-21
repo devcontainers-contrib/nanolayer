@@ -52,7 +52,7 @@ from helpers import execute_current_python_in_container
         ),
         (
             "pwsh --version",
-            0,
+            1,
             "mcr.microsoft.com/devcontainers/base:debian",
             "PowerShell/PowerShell",
             "pwsh",
@@ -75,7 +75,7 @@ def test_gh_release_install(
 
 
 @pytest.mark.parametrize(
-    "test_command,excpected_result,image,repo,target,asset_regex",
+    "test_command,excpected_result,image,repo,target,version,asset_regex",
     [
         (
             "doctl version",
@@ -83,6 +83,7 @@ def test_gh_release_install(
             "mcr.microsoft.com/devcontainers/base:debian",
             "digitalocean/doctl",
             "doctl",
+            "1.93.1",
             "doctl-1.93.1-linux-amd64.tar.gz",
         ),
         (
@@ -91,6 +92,7 @@ def test_gh_release_install(
             "mcr.microsoft.com/devcontainers/base:debian",
             "argoproj/argo-cd",
             "argocd",
+            "2.6.6",
             "argocd-linux-amd64",
         ),
         (
@@ -99,6 +101,7 @@ def test_gh_release_install(
             "mcr.microsoft.com/devcontainers/base:debian",
             "ahmetb/kubectx",
             "kubectx",
+            "0.9.4",
             "kubectx_v0.9.4_linux_x86_64.tar.gz",
         ),
         (
@@ -107,6 +110,7 @@ def test_gh_release_install(
             "mcr.microsoft.com/devcontainers/base:debian",
             "ahmetb/kubectx",
             "kubens",
+            "v0.9.4",
             "kubens_v0.9.4_linux_x86_64.tar.gz",
         ),
         (
@@ -115,6 +119,7 @@ def test_gh_release_install(
             "mcr.microsoft.com/devcontainers/base:debian",
             "tenable/terrascan",
             "terrascan",
+            "1.18.0",
             "terrascan_1.18.0_Linux_x86_64.tar.gz",
         ),
         (
@@ -123,6 +128,7 @@ def test_gh_release_install(
             "mcr.microsoft.com/devcontainers/base:debian",
             "cli/cli",
             "gh",
+            "2.24.3",
             "gh_2.24.3_linux_amd64.tar.gz",
         ),
         (
@@ -131,6 +137,7 @@ def test_gh_release_install(
             "mcr.microsoft.com/devcontainers/base:debian",
             "PowerShell/PowerShell",
             "pwsh",
+            "7.3.3",
             "powershell-7.3.3-linux-x64.tar.gz",
         ),
     ],
@@ -141,9 +148,10 @@ def test_gh_release_install_with_regex(
     image: str,
     repo: List[str],
     target: str,
+    version: str,
     asset_regex: str,
 ) -> None:
-    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m dcontainer install gh-release {repo} {target} --asset-regex {asset_regex} && {test_command}"
+    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m dcontainer install gh-release {repo} {target} --version {version} --asset-regex {asset_regex} && {test_command}"
 
     assert excpected_result == execute_current_python_in_container(
         test_command=full_test_command,
