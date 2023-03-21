@@ -30,25 +30,27 @@ def execute_current_python_in_container(
     target_mounts_location = f"/mnt/{platform.node()}"
 
     for global_site_package in site.getsitepackages():
+        if os.path.exists(global_site_package):
+            mounts.append(
+                Mount(
+                    source=global_site_package,
+                    target=os.path.join(
+                        target_mounts_location, global_site_package.strip("/")
+                    ),
+                    type="bind",
+                )
+            )
+
+    if os.path.exists(site.getusersitepackages()):
         mounts.append(
             Mount(
-                source=global_site_package,
+                source=site.getusersitepackages(),
                 target=os.path.join(
-                    target_mounts_location, global_site_package.strip("/")
+                    target_mounts_location, site.getusersitepackages().strip("/")
                 ),
                 type="bind",
             )
         )
-
-    mounts.append(
-        Mount(
-            source=site.getusersitepackages(),
-            target=os.path.join(
-                target_mounts_location, site.getusersitepackages().strip("/")
-            ),
-            type="bind",
-        )
-    )
 
     repo = git.Repo(".", search_parent_directories=True)
     mounts.append(
