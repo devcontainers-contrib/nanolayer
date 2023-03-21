@@ -5,6 +5,9 @@ from typing import Dict
 
 
 class LinuxInformationDesk:
+    OS_RELEASE_PATH = "/etc/os-release"
+
+
     class Architecture(Enum):
         ARM64 = "a64"
         x86_64 = "x86_64"
@@ -53,9 +56,7 @@ class LinuxInformationDesk:
         arch: str = "arch"
 
     @classmethod
-    def get_release_id(
-        cls, id_like: bool = False
-    ) -> "LinuxInformationDesk.LinuxReleaseID":
+    def _get_release_id_str(cls, id_like: bool = False) -> str:
         assert cls.has_root_privileges()
 
         def _parse_env_file(path: str) -> Dict[str, str]:
@@ -66,14 +67,24 @@ class LinuxInformationDesk:
                     if not line.startswith("#")
                 )
 
-        parsed_os_release = _parse_env_file("/etc/os-release")
+        parsed_os_release = _parse_env_file(cls.OS_RELEASE_PATH)
 
         if id_like:
-            os_release_id = parsed_os_release.get("ID_LIKE", None).lower()
+            os_release_id = parsed_os_release.get("ID_LIKE", None)
             if os_release_id is None:
-                os_release_id = parsed_os_release["ID"].lower()
+                os_release_id = parsed_os_release["ID"]
         else:
-            os_release_id = parsed_os_release["ID"].lower()
+            os_release_id = parsed_os_release["ID"]
+
+        return os_release_id
+
+    @classmethod
+    def get_release_id(
+        cls, id_like: bool = False
+    ) -> "LinuxInformationDesk.LinuxReleaseID":
+        assert cls.has_root_privileges()
+
+        os_release_id = cls._get_release_id_str(id_like=id_like).lower()
 
         if "ubuntu" in os_release_id:
             return cls.LinuxReleaseID.ubuntu
