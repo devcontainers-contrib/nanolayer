@@ -23,8 +23,8 @@ jobs:
       with:
         filters: |
           relevant_files:
-            - 'src/**'
-            - 'test/**'
+            - 'dcontainer/**'
+            - 'tests/**'
 
   run-tests:
     needs: [changes]  
