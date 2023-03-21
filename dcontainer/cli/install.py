@@ -126,16 +126,14 @@ def install_gh_release_binary(
     version: str = "latest",
     asset_regex: Optional[str] = None,
     force: bool = False,
-    extract: bool = True,
     arch: Optional[str] = None,
-    platform: Optional[str] = None,
-    rename_to: Optional[str] = None,
     checksum_regex: Optional[str] = None,
     checksum: Optional[bool] = True,
 ) -> None:
     GHReleaseInstaller.install(
         repo=repo,
         target_name=target,
+        arch=arch,
         version=version,
         asset_regex=asset_regex,
         force=force,
