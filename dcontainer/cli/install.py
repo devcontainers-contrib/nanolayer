@@ -3,8 +3,11 @@ from typing import Dict, List, Optional
 
 import typer
 
+from dcontainer.apt.apt_installer import AptInstaller
 from dcontainer.apt_get.apt_get_installer import AptGetInstaller
+from dcontainer.aptitude.aptitude_installer import AptitudeInstaller
 from dcontainer.devcontainer.oci_feature_installer import OCIFeatureInstaller
+from dcontainer.gh_release.gh_release_installer import GHReleaseInstaller
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +72,7 @@ def install_devcontainer_feature(
 def install_apt_get_packages(
     package: List[str],
     ppa: Optional[List[str]] = typer.Option(None),
-    force_ppas_on_non_ubuntu: bool = True,
+    force_ppas_on_non_ubuntu: bool = False,
     remove_ppas_on_completion: bool = True,
     remove_cache_on_completion: bool = True,
 ) -> None:
@@ -79,4 +82,61 @@ def install_apt_get_packages(
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
         remove_ppas_on_completion=remove_ppas_on_completion,
         remove_cache_on_completion=remove_cache_on_completion,
+    )
+
+
+@app.command("apt")
+def install_apt_packages(
+    package: List[str],
+    ppa: Optional[List[str]] = typer.Option(None),
+    force_ppas_on_non_ubuntu: bool = False,
+    remove_ppas_on_completion: bool = True,
+    remove_cache_on_completion: bool = True,
+) -> None:
+    AptInstaller.install(
+        packages=package,
+        ppas=ppa,
+        force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
+        remove_ppas_on_completion=remove_ppas_on_completion,
+        remove_cache_on_completion=remove_cache_on_completion,
+    )
+
+
+@app.command("aptitude")
+def install_aptitude_packages(
+    package: List[str],
+    ppa: Optional[List[str]] = typer.Option(None),
+    force_ppas_on_non_ubuntu: bool = False,
+    remove_ppas_on_completion: bool = True,
+    remove_cache_on_completion: bool = True,
+) -> None:
+    AptitudeInstaller.install(
+        packages=package,
+        ppas=ppa,
+        force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
+        remove_ppas_on_completion=remove_ppas_on_completion,
+        remove_cache_on_completion=remove_cache_on_completion,
+    )
+
+
+@app.command("gh-release")
+def install_gh_release_binary(
+    repo: str,
+    target: str,
+    version: str = "latest",
+    asset_regex: Optional[str] = None,
+    force: bool = False,
+    extract: bool = True,
+    arch: Optional[str] = None,
+    platform: Optional[str] = None,
+    rename_to: Optional[str] = None,
+    checksum_regex: Optional[str] = None,
+    checksum: Optional[bool] = True,
+) -> None:
+    GHReleaseInstaller.install(
+        repo=repo,
+        target_name=target,
+        version=version,
+        asset_regex=asset_regex,
+        force=force,
     )

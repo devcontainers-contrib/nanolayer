@@ -4,11 +4,14 @@ from dcontainer.utils.invoker import Invoker
 from dcontainer.utils.linux_information_desk import LinuxInformationDesk
 
 
-class AptGetInstaller:
+class AptitudeInstaller:
+    class InstallAptitude(Exception):
+        pass
+
     class PPASOnNonUbuntu(Exception):
         pass
 
-    class AptGetUpdateFailed(Invoker.InvokerException):
+    class AptUpdateFailed(Invoker.InvokerException):
         pass
 
     class AddPPAsFailed(Invoker.InvokerException):
@@ -53,21 +56,27 @@ class AptGetInstaller:
     ) -> None:
         assert (
             cls.is_debian_like()
-        ), "apt-get should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
+        ), "aptitude should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
 
         if ppas and not cls.is_ubuntu() and not force_ppas_on_non_ubuntu:
             raise cls.PPASOnNonUbuntu()
 
         normalized_ppas = cls.normalize_ppas(ppas)
-
         software_properties_common_installed = False
-
         try:
             Invoker.invoke(
-                command="apt-get update -y",
+                command="apt update -y",
                 raise_on_failure=True,
-                exception_class=cls.AptGetUpdateFailed,
+                exception_class=cls.AptUpdateFailed,
             )
+
+            # ensure aptitude existance
+            if Invoker.invoke("dpkg -s aptitude", raise_on_failure=False) != 0:
+                Invoker.invoke(
+                    command="apt-get install -y aptitude",
+                    raise_on_failure=True,
+                    exception_class=cls.InstallAptitude,
+                )
 
             if ppas:
                 if (
@@ -77,7 +86,7 @@ class AptGetInstaller:
                     != 0
                 ):
                     Invoker.invoke(
-                        command="apt install -y software-properties-common",
+                        command="aptitude install -y software-properties-common",
                         raise_on_failure=True,
                         exception_class=cls.AddPPAsFailed,
                     )
@@ -92,15 +101,15 @@ class AptGetInstaller:
                     )
 
                 Invoker.invoke(
-                    command="apt-get update -y",
+                    command="aptitude update -y",
                     raise_on_failure=True,
-                    exception_class=cls.AptGetUpdateFailed,
+                    exception_class=cls.AptUpdateFailed,
                 )
 
             Invoker.invoke(
-                command=f"apt-get install -y --no-install-recommends {' '.join(packages)}",
+                command=f"aptitude install -y {' '.join(packages)}",
                 raise_on_failure=True,
-                exception_class=cls.AptGetUpdateFailed,
+                exception_class=cls.AptUpdateFailed,
             )
 
         finally:
@@ -111,10 +120,9 @@ class AptGetInstaller:
                         raise_on_failure=True,
                         exception_class=cls.RemovePPAsFailed,
                     )
-
                 if software_properties_common_installed:
                     Invoker.invoke(
-                        command="apt -y remove software-properties-common",
+                        command="aptitude -y remove software-properties-common",
                         raise_on_failure=True,
                         exception_class=cls.RemovePPAsFailed,
                     )

@@ -1,3 +1,4 @@
 pydantic==1.10.5
 typer
 invoke
+semver==2.13.0

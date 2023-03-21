@@ -2,8 +2,10 @@ import typer
 
 from dcontainer.cli.generate import app as generate_app
 from dcontainer.cli.install import app as install_app
-from dcontainer.utils.version import (resolve_own_package_version,
-                                      resolve_own_release_version)
+from dcontainer.utils.version import (
+    resolve_own_package_version,
+    resolve_own_release_version,
+)
 
 app = typer.Typer(pretty_exceptions_show_locals=False, pretty_exceptions_short=False)
 app.add_typer(install_app, name="install")
