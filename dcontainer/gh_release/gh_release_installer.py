@@ -83,14 +83,15 @@ MISC_REGEX_MAP = {
 
 
 class GHReleaseInstaller:
+
     class FindAllRegexFilter:
         def __init__(self, name: str, regex: str, negative: bool) -> None:
             self.name = name
             self.regex = regex
             self.negative = negative
 
-        def __call__(self, value: str) -> bool:
-            matches = len(re.findall(self.regex, value))
+        def __call__(self, asset: 'GHReleaseInstaller.ReleaseAsset') -> bool:
+            matches = len(re.findall(self.regex, asset.name))
             if self.negative:
                 return matches == 0
             else:
@@ -272,6 +273,7 @@ class GHReleaseInstaller:
         cls,
         repo: str,
         tag: str,
+        target_name: str,
         asset_regex: Optional[str] = None,
         arch: Optional[LinuxInformationDesk.Architecture] = None,
     ) -> "GHReleaseInstaller.ReleaseAsset":
@@ -295,8 +297,6 @@ class GHReleaseInstaller:
             else:
                 return assets[0]
         else:
-            asset_names = [asset.name for asset in assets]
-
             # add all non-requested architecture as a negative filters
             bad_architecture_regexes = deepcopy(ARCH_REGEX_MAP)
             bad_architecture_regexes.pop(arch)
@@ -319,48 +319,61 @@ class GHReleaseInstaller:
                 for name, regex in bad_platform_regexes.items()
             ]
 
-            # a positive filter about our own architecture
-            positive_architecture_filters = [
-                cls.FindAllRegexFilter(
-                    name=arch.value, regex=ARCH_REGEX_MAP[arch], negative=False
-                )
-            ]
+            # One filter to rule them all
+            assets = filter(
+                lambda asset: all(
+                    f(asset)
+                    for f in (negative_architecture_filters
+                    + negative_misc_filters
+                    + negative_platform_filters)
+                ),
+                assets,
+            )
 
-            # a positive filter about our own current platform
-            positive_platform_filters = [
+            # actually run the filters...
+            assets = list(assets)
+
+            if len(assets) == 1:
+                return assets[0]
+            elif len(assets) == 0:
+                raise cls.NoAssetsFound("No matches found")
+
+
+
+            # positive filters are being run one by one, because we want to discard those 
+            # who filter out all of the remaining.
+
+            positive_filters = [
+                cls.FindAllRegexFilter(
+                    name=arch.value,
+                    regex=ARCH_REGEX_MAP[arch],
+                    negative=False
+                ),
                 cls.FindAllRegexFilter(
                     name=PlatformType.LINUX.value,
                     regex=PLATFORM_REGEX_MAP[PlatformType.LINUX],
                     negative=False,
+                ),
+                cls.FindAllRegexFilter(
+                    name="contains target name",
+                    regex=f".*{target_name}.*",
+                    negative=False,
                 )
             ]
 
-            # One filter to rule them all
-            asset_names = filter(
-                lambda x: all(
-                    f(x)
-                    for f in negative_architecture_filters
-                    + negative_misc_filters
-                    + negative_platform_filters
-                    + positive_architecture_filters
-                    + positive_platform_filters
-                ),
-                asset_names,
-            )
-            # todo: we have enough information in the assets to include a minimum bytes size filter - consider
-            # adding it in the future if needed
+            for positive_filter in positive_filters:
+                filtered_assets = list(filter(positive_filter, assets))
 
-            # actually run the filters...
-            asset_names = list(asset_names)
+                if len(filtered_assets) == 0:
+                    # filter is too aggressive. ignoring it
+                    continue
+                else:
+                    assets = filtered_assets
+                
+            if len(assets) > 1:
+                raise cls.TooManyAssetsFound(f"Too many matches found: {assets}")
 
-            if len(asset_names) == 0:
-                raise cls.NoAssetsFound("No matches found")
-
-            if len(asset_names) > 1:
-                raise cls.TooManyAssetsFound(f"Too many matches found: {asset_names}")
-
-            #  I ❤️ filters
-            return next(filter(lambda asset: asset.name == asset_names[0], assets))
+            return assets[0]
 
     @classmethod
     def resolve_and_validate_dir(
