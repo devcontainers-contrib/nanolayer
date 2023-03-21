@@ -139,13 +139,8 @@ class DependenciesSH(File):
         options: Optional[Dict[str, FeatureOption]],
         release_version: Optional[str] = None,
     ) -> None:
-        try:
-            self.release_version = release_version or resolve_own_release_version()
-        except Exception as e:
-            raise ValueError(
-                "could not resolve release version because of error, please manually set release_verison"
-            ) from e
-
+   
+        self.release_version = release_version
         self.dependencies = dependencies
         self.options = options
         super().__init__(content=self.to_str().encode())
@@ -203,6 +198,14 @@ class DependenciesSH(File):
         if self.dependencies is None or len(self.dependencies) == 0:
             return ""
 
+        try:
+            release_version = self.release_version or resolve_own_release_version()
+        except Exception as e:
+            raise ValueError(
+                "could not resolve release version because of error, please manually set release_verison"
+            ) from e
+
+
         installation_lines = []
         for feature_dependency in self.dependencies:
             resolved_params = {}
@@ -220,7 +223,7 @@ class DependenciesSH(File):
         dependency_installation_lines = "\n\n".join(installation_lines)
         return (
             DependenciesSH._generate_dcontainer_setup_bash_script(
-                release_version=self.release_version
+                release_version=release_version
             )
             + dependency_installation_lines
         )
