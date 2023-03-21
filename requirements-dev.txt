@@ -2,3 +2,4 @@ pytest
 pytest-shell-utilities
 black
 mypy
+GitPython
