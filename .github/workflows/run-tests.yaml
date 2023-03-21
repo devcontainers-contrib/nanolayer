@@ -28,7 +28,7 @@ jobs:
 
   run-tests:
     needs: [changes]  
-    if: ${{ needs.changes.outputs.relevant_files == 'true' }}
+    if: ${{ (needs.changes.outputs.relevant_files == 'true') || (github.event_name	== 'workflow_dispatch') }}
 
     runs-on: ubuntu-latest
     
