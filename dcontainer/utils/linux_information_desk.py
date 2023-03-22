@@ -7,7 +7,6 @@ from typing import Dict
 class LinuxInformationDesk:
     OS_RELEASE_PATH = "/etc/os-release"
 
-
     class Architecture(Enum):
         ARM64 = "a64"
         x86_64 = "x86_64"

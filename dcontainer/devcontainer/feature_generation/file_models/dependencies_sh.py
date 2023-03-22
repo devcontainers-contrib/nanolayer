@@ -139,7 +139,6 @@ class DependenciesSH(File):
         options: Optional[Dict[str, FeatureOption]],
         release_version: Optional[str] = None,
     ) -> None:
-   
         self.release_version = release_version
         self.dependencies = dependencies
         self.options = options
@@ -204,7 +203,6 @@ class DependenciesSH(File):
             raise ValueError(
                 "could not resolve release version because of error, please manually set release_verison"
             ) from e
-
 
         installation_lines = []
         for feature_dependency in self.dependencies:

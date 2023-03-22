@@ -83,14 +83,13 @@ MISC_REGEX_MAP = {
 
 
 class GHReleaseInstaller:
-
     class FindAllRegexFilter:
         def __init__(self, name: str, regex: str, negative: bool) -> None:
             self.name = name
             self.regex = regex
             self.negative = negative
 
-        def __call__(self, asset: 'GHReleaseInstaller.ReleaseAsset') -> bool:
+        def __call__(self, asset: "GHReleaseInstaller.ReleaseAsset") -> bool:
             matches = len(re.findall(self.regex, asset.name))
             if self.negative:
                 return matches == 0
@@ -277,7 +276,9 @@ class GHReleaseInstaller:
         asset_regex: Optional[str] = None,
         arch: Optional[LinuxInformationDesk.Architecture] = None,
     ) -> "GHReleaseInstaller.ReleaseAsset":
-        assert not (asset_regex is None and arch is None), "at least one of 'asset_regex','arch' arguments must be given"
+        assert not (
+            asset_regex is None and arch is None
+        ), "at least one of 'asset_regex','arch' arguments must be given"
 
         assets = cls._get_assets_by_tag(repo=repo, tag=tag)
         if asset_regex is not None:
@@ -323,9 +324,11 @@ class GHReleaseInstaller:
             assets = filter(
                 lambda asset: all(
                     f(asset)
-                    for f in (negative_architecture_filters
-                    + negative_misc_filters
-                    + negative_platform_filters)
+                    for f in (
+                        negative_architecture_filters
+                        + negative_misc_filters
+                        + negative_platform_filters
+                    )
                 ),
                 assets,
             )
@@ -338,16 +341,12 @@ class GHReleaseInstaller:
             elif len(assets) == 0:
                 raise cls.NoAssetsFound("No matches found")
 
-
-
-            # positive filters are being run one by one, because we want to discard those 
+            # positive filters are being run one by one, because we want to discard those
             # who filter out all of the remaining.
 
             positive_filters = [
                 cls.FindAllRegexFilter(
-                    name=arch.value,
-                    regex=ARCH_REGEX_MAP[arch],
-                    negative=False
+                    name=arch.value, regex=ARCH_REGEX_MAP[arch], negative=False
                 ),
                 cls.FindAllRegexFilter(
                     name=PlatformType.LINUX.value,
@@ -358,7 +357,7 @@ class GHReleaseInstaller:
                     name="contains target name",
                     regex=f".*{target_name}.*",
                     negative=False,
-                )
+                ),
             ]
 
             for positive_filter in positive_filters:
@@ -369,7 +368,7 @@ class GHReleaseInstaller:
                     continue
                 else:
                     assets = filtered_assets
-                
+
             if len(assets) > 1:
                 raise cls.TooManyAssetsFound(f"Too many matches found: {assets}")
 
@@ -471,7 +470,11 @@ class GHReleaseInstaller:
 
         # will raise an exception if more or less than a single asset can meet the requirments
         resolved_asset = cls.resolve_asset(
-            repo=repo, tag=version, asset_regex=asset_regex, arch=arch, target_name=target_name
+            repo=repo,
+            tag=version,
+            asset_regex=asset_regex,
+            arch=arch,
+            target_name=target_name,
         )
 
         #
