@@ -34,18 +34,19 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          # - {
-          #   runner: "ubuntu-latest"
-          # }
-          # - {
-          #   runner: "macos-latest"
-          # }
           - {
-            docker_platform: "linux/amd64"
+            subtest_dir: "tests/apt"
           }
           - {
-            docker_platform: "linux/arm64"
+            subtest_dir: "tests/apt-get"
           }
+          - {
+            subtest_dir: "tests/aptitude"
+          }
+          - {
+            subtest_dir: "tests/gh-release"
+          }
+
 
     runs-on: ubuntu-latest
     
@@ -61,10 +62,9 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
-      - name: "set docker platform"
+      - name: "yest docker platform"
         run: |
-          export DOCKER_DEFAULT_PLATFORM=${{ matrix.config.docker_platform }}
-          docker run -t ubuntu uname -a
+          DOCKER_DEFAULT_PLATFORM=linux/arm64 docker run -t ubuntu uname -a
 
       - name: "Set up Python 3.8"
         uses: actions/setup-python@v4
@@ -77,4 +77,4 @@ jobs:
           pip install -r requirements.txt -r requirements-generate.txt -r requirements-dev.txt
       - name: "Test with pytest"
         run: |
-          python -m pytest -s -v --ignore=tests/devcontainer/feature_generation
+          python -m pytest -s -v ${{ matrix.config.subtest_dir }} --ignore=tests/devcontainer/feature_generation
