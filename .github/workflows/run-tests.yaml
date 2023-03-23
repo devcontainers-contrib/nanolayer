@@ -25,6 +25,7 @@ jobs:
           relevant_files:
             - 'dcontainer/**'
             - 'tests/**'
+            - '.github/workflows/run-tests.yaml'
 
   run-tests:
     needs: [changes]  
