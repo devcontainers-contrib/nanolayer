@@ -38,13 +38,13 @@ jobs:
             subtest_dir: "tests/apt"
           }
           - {
-            subtest_dir: "tests/apt-get"
+            subtest_dir: "tests/apt_get"
           }
           - {
             subtest_dir: "tests/aptitude"
           }
           - {
-            subtest_dir: "tests/gh-release"
+            subtest_dir: "tests/gh_release"
           }
 
 
