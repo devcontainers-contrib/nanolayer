@@ -25,6 +25,14 @@ from helpers import execute_current_python_in_container
             "linux/amd64"
         ),
         (
+            "argocd --help",
+            0,
+            "mcr.microsoft.com/devcontainers/base:debian",
+            "argoproj/argo-cd",
+            "argocd",
+            "linux/ar64"
+        ),
+        (
             "which kubectx",
             0,
             "mcr.microsoft.com/devcontainers/base:debian",
@@ -38,7 +46,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "ahmetb/kubectx",
             "kubens",
-            "linux/arm64"
+            "linux/amd64"
         ),
         (
             "terrascan version",
@@ -47,6 +55,14 @@ from helpers import execute_current_python_in_container
             "tenable/terrascan",
             "terrascan",
             "linux/amd64"
+        ),
+        (
+            "terrascan version",
+            0,
+            "mcr.microsoft.com/devcontainers/base:debian",
+            "tenable/terrascan",
+            "terrascan",
+            "linux/arm64"
         ),
         (
             "gh --version",
