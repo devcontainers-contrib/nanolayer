@@ -31,14 +31,14 @@ jobs:
     if: ${{ (needs.changes.outputs.relevant_files == 'true') || (github.event_name	== 'workflow_dispatch') }}
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         config:
           - {
             runner: "ubuntu-latest"
           }
           - {
-            runner: "macos-12"
+            runner: "macos-latest"
           }
           - {
             runner: "x86-aws-runner--1-${{ github.run_id }}"
@@ -55,6 +55,8 @@ jobs:
       - name: "Install latest devcontainer CLI"
         run: npm install -g @devcontainers/cli
 
+      - name: "check docker available"
+        run: docker ps
 
       - name: "Set up Python 3.8"
         uses: actions/setup-python@v4
