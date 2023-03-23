@@ -8,7 +8,7 @@ class LinuxInformationDesk:
     OS_RELEASE_PATH = "/etc/os-release"
 
     class Architecture(Enum):
-        ARM64 = "a64"
+        ARM64 = "arm64"
         x86_64 = "x86_64"
         ARMV6 = "armv6"
         ARMV7 = "armv7"
@@ -24,7 +24,7 @@ class LinuxInformationDesk:
         architecture = platform.machine().lower()
         if "x86_64" in architecture or "amd64" in architecture:
             return cls.Architecture.x86_64
-        if "arm64" in architecture:
+        if "arm64" in architecture or "aarch64" in architecture:
             return cls.Architecture.ARM64
         if "armv6" in architecture:
             return cls.Architecture.ARMV6

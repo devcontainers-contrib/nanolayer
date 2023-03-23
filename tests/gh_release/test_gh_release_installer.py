@@ -62,7 +62,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "PowerShell/PowerShell",
             "pwsh",
-            "linux/arm64"
+            "linux/amd64"
         ),
     ],
 )
