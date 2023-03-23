@@ -30,7 +30,24 @@ jobs:
     needs: [changes]  
     if: ${{ (needs.changes.outputs.relevant_files == 'true') || (github.event_name	== 'workflow_dispatch') }}
 
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        config:
+          - {
+            runner: "ubuntu-latest"
+          }
+          - {
+            runner: "macos-12"
+          }
+          - {
+            runner: "x86-aws-runner--1-${{ github.run_id }}"
+          }
+          - {
+            runner: "arm-aws-runner--1-${{ github.run_id }}"
+          }
+
+    runs-on: ${{ matrix.config.runner }}
     
     steps:
       - uses: actions/checkout@v3
