@@ -30,7 +30,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "argoproj/argo-cd",
             "argocd",
-            "linux/ar64"
+            "linux/arm64"
         ),
         (
             "which kubectx",
