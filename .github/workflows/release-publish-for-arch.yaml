@@ -70,7 +70,8 @@ jobs:
           apt-get install -y python3.8 python3.8-venv
           python3.8 -m pip install --upgrade pip 
           python3.8 -m pip install --upgrade build setuptools wheel setuptools-scm[toml]
-          python3.8 -m build --wheel
+          apt-get install -y python3-pyproj
+          python3.8 -m build --wheel --no-isolation
 
           # apt-get update -y
           # apt-get install -y python3-dev python3-venv python3-pip
