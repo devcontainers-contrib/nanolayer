@@ -70,6 +70,8 @@ jobs:
           python3.8 -m pip install --upgrade pip 
           python3.8 -m pip install --upgrade build setuptools wheel  setuptools-scm
           export SETUPTOOLS_SCM_DEBUG=1
+          echo hi
+          sleep 100
           python3.8 -m build --wheel
   
       - name: Build Binary using Pyoxidizer
