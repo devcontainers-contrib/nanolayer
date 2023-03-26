@@ -1,4 +1,4 @@
-name: Release Binaries - For Arch
+name: Release Binaries For Arch
 
 on:
   workflow_dispatch:

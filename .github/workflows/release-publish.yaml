@@ -58,7 +58,7 @@ jobs:
     uses: ./.github/workflows/release-publish-for-arch.yaml
     needs: start-runner
     with:
-      triple_target: "x86_64-unknown-linux-gnu"
+      triple_target: "aarch64-unknown-linux-gnu"
       binary_name: "dcontainer"
       runner: ${{ needs.start-runner.outputs.arm64-label }}
         
