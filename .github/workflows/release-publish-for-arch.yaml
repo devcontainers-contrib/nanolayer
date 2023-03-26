@@ -68,18 +68,18 @@ jobs:
           add-apt-repository -y ppa:deadsnakes/ppa
           apt-get update -y
           export DEBIAN_FRONTEND=noninteractive 
-          apt-get install -y python3.10 python3.10-venv
-          python3.10 -m pip install --upgrade pip 
-          python3.10 -m pip install --upgrade build setuptools wheel setuptools-scm[toml]
+          apt-get install -y python3.8 python3.8-venv
+          python3.8 -m pip install --upgrade pip 
+          python3.8 -m pip install --upgrade build setuptools wheel setuptools-scm[toml]
 
           pwd 
           ls 
           
           git config --system --add safe.directory $GITHUB_WORKSPACE
           git config --system --add safe.directory pwd
-          python3.10 -m setuptools_scm
+          python3.8 -m setuptools_scm
 
-          python3.10 -m build --wheel 
+          python3.8 -m build --wheel 
 
           # apt-get update -y
           # apt-get install -y python3-dev python3-venv python3-pip
@@ -93,8 +93,8 @@ jobs:
   
         run: |
           apt-get install -y build-essential
-          python3.10 -m pip install --upgrade pip 
-          python3.10 -m pip install pyoxidizer
+          python3.8 -m pip install --upgrade pip 
+          python3.8 -m pip install pyoxidizer
   
           oxidizer_location=$GITHUB_WORKSPACE
           wheel_location=./dist/$(ls dist | grep .whl)
