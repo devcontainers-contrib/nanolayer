@@ -30,7 +30,7 @@ jobs:
         with:
           mode: start
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          ec2-image-id: ami-0be0b429754f45749
+          ec2-image-id: ami-0263e4deb427da90e
           ec2-instance-type: c6i.large
           subnet-id: subnet-0106a8fd730d9d51a
           security-group-id: sg-0603c015125d85171
@@ -40,7 +40,7 @@ jobs:
         with:
           mode: start
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          ec2-image-id: ami-0590b70c4d04522b2
+          ec2-image-id: ami-0e5599794d252b611
           ec2-instance-type: c7g.large
           subnet-id: subnet-0106a8fd730d9d51a
           security-group-id: sg-0603c015125d85171
