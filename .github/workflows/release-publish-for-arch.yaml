@@ -61,17 +61,18 @@ jobs:
 
       - name: Build Python Package
         run: |
-          python -m pip install --upgrade pip 
-          python -m pip install --upgrade build setuptools wheel  setuptools-scm
-          python -m build --wheel
+          apt-get install -y python3-pip python3-venv
+          python3 -m pip install --upgrade pip 
+          python3 -m pip install --upgrade build setuptools wheel  setuptools-scm
+          python3 -m build --wheel
   
       - name: Build Binary using Pyoxidizer
         id: run_pyoxidizer
   
         run: |
           apt-get install -y build-essential
-          python -m pip install --upgrade pip 
-          python -m pip install pyoxidizer
+          python3 -m pip install --upgrade pip 
+          python3 -m pip install pyoxidizer
   
           oxidizer_location=$GITHUB_WORKSPACE
           wheel_location=./dist/$(ls dist | grep .whl)
