@@ -9,14 +9,12 @@ permissions:
        
 
 jobs:
-  start-runner:
-    name: Start self-hosted EC2 runner
+  start-runner-x86_64:
+    name: Start self-hosted x86_64 EC2 runner
     runs-on: ubuntu-latest
     outputs:
-      x86_64-label: ${{ steps.start-x86_x64-ec2-runner.outputs.label }}
-      arm64-label: ${{ steps.start-arm64-ec2-runner.outputs.label }}
-      x86_64-ec2-instance-id: ${{ steps.start-x86_x64-ec2-runner.outputs.ec2-instance-id }}
-      arm64-ec2-instance-id: ${{ steps.start-arm64-ec2-runner.outputs.ec2-instance-id }}
+      label: ${{ steps.start-x86_64-ec2-runner.outputs.label }}
+      ec2-instance-id: ${{ steps.start-x86_64-ec2-runner.outputs.ec2-instance-id }}
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -25,7 +23,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Start x86_64 EC2 runner
-        id: start-x86_x64-ec2-runner
+        id: start-x86_64-ec2-runner
         uses: machulav/ec2-github-runner@v2
         with:
           mode: start
@@ -34,40 +32,20 @@ jobs:
           ec2-instance-type: c6i.large
           subnet-id: subnet-0106a8fd730d9d51a
           security-group-id: sg-0603c015125d85171
-      - name: Start ARM64 EC2 runner
-        id: start-arm64-ec2-runner
-        uses: machulav/ec2-github-runner@v2
-        with:
-          mode: start
-          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          ec2-image-id: ami-0e5599794d252b611
-          ec2-instance-type: c7g.large
-          subnet-id: subnet-0106a8fd730d9d51a
-          security-group-id: sg-0603c015125d85171
 
   release-publish-x86_64:
     uses: ./.github/workflows/release-publish-for-arch.yaml
-    needs: start-runner
+    needs: start-runner-x86_64
     with:
       triple_target: "x86_64-unknown-linux-gnu"
       binary_name: "dcontainer"
-      runner: ${{ needs.start-runner.outputs.x86_64-label }}
-        
+      runner: ${{ needs.start-runner-x86_64.outputs.label }}
 
-  release-publish-arm64:
-    uses: ./.github/workflows/release-publish-for-arch.yaml
-    needs: start-runner
-    with:
-      triple_target: "aarch64-unknown-linux-gnu"
-      binary_name: "dcontainer"
-      runner: ${{ needs.start-runner.outputs.arm64-label }}
-        
-  stop-runner:
+  stop-runner-x86_64:
     name: Stop self-hosted EC2 runner
     needs:
-      - start-runner # required to get output from the start-runner job
+      - start-runner-x86_64 # required to get output from the start-runner job
       - release-publish-x86_64 # required to wait when the main job is done
-      - release-publish-arm64 # required to wait when the main job is done
     runs-on: ubuntu-latest
     if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
     steps:
@@ -82,12 +60,59 @@ jobs:
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          label: ${{ needs.start-runner.outputs.x86_64-label }}
-          ec2-instance-id: ${{ needs.start-runner.outputs.x86_64-ec2-instance-id }}
+          label: ${{ needs.start-runner-x86_64.outputs.label }}
+          ec2-instance-id: ${{ needs.start-runner-x86_64.outputs.ec2-instance-id }}
+          
+  start-runner-arm64:
+    name: Start self-hosted arm64 EC2 runner
+    runs-on: ubuntu-latest
+    outputs:
+      label: ${{ steps.start-arm64-ec2-runner.outputs.label }}
+      ec2-instance-id: ${{ steps.start-arm64-ec2-runner.outputs.ec2-instance-id }}
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Start ARM64 EC2 runner
+        id: start-arm64-ec2-runner
+        uses: machulav/ec2-github-runner@v2
+        with:
+          mode: start
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          ec2-image-id: ami-0e5599794d252b611
+          ec2-instance-type: c7g.large
+          subnet-id: subnet-0106a8fd730d9d51a
+          security-group-id: sg-0603c015125d85171
+
+  release-publish-arm64:
+    uses: ./.github/workflows/release-publish-for-arch.yaml
+    needs: start-runner-arm64
+    with:
+      triple_target: "aarch64-unknown-linux-gnu"
+      binary_name: "dcontainer"
+      runner: ${{ needs.start-runner-arm64.outputs.label }}
+        
+  stop-runner-arm64:
+    name: Stop self-hosted EC2 runner
+    needs:
+      - start-runner-arm64 # required to get output from the start-runner job
+      - release-publish-arm64 # required to wait when the main job is done
+    runs-on: ubuntu-latest
+    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: Stop EC2 arm64 runner
         uses: machulav/ec2-github-runner@v2
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          label: ${{ needs.start-runner.outputs.arm64-label }}
-          ec2-instance-id: ${{ needs.start-runner.outputs.arm64-ec2-instance-id }}
+          label: ${{ needs.start-runner-arm64.outputs.label }}
+          ec2-instance-id: ${{ needs.start-runner-arm64.outputs.ec2-instance-id }}
