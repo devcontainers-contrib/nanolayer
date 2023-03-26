@@ -32,9 +32,66 @@ jobs:
     name: Do the job on the runner
     needs: start-runner # required to start the main job when the runner is ready
     runs-on: ${{ needs.start-runner.outputs.label }} # run the job on the newly created runner
+
+    env:
+      binary_name: dcontainer
+      target_triple: "x86_64-unknown-linux-gnu"
     steps:
-      - name: Hello World
-        run: echo 'Hello World!'
+      - uses: actions/checkout@v3
+  
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+  
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+  
+      - name: Build Python Package
+        run: |
+          python -m pip install --upgrade pip 
+          python -m pip install --upgrade build setuptools wheel  setuptools-scm
+          python -m build --wheel
+  
+      - name: Build Binary using Pyoxidizer
+        id: run_pyoxidizer
+  
+        run: |
+          python -m pip install --upgrade pip 
+          python -m pip install pyoxidizer
+  
+          oxidizer_location=$GITHUB_WORKSPACE
+          wheel_location=./dist/$(ls dist | grep .whl)
+          target_triple=$target_triple
+          run_command="from dcontainer.__main__ import main; main()"
+          python_version="3.10"
+  
+          pyoxidizer build exe \
+            --path $oxidizer_location \
+            --release \
+            --var wheel_location $wheel_location \
+            --var run_command "$run_command" \
+            --var python_version $python_version \
+            --var app_name $binary_name \
+            --target-triple $target_triple 
+  
+          pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
+          
+          strip $oxidizer_location/build/$target_triple/release/exe/$binary_name
+          
+          tar -zcvf $GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
+  
+          echo "binary_location=$GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz" >> "$GITHUB_OUTPUT"
+  
+      - name: Create GH Release
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+            files: |
+              ${{ steps.run_pyoxidizer.outputs.binary_location }}
+  
   stop-runner:
     name: Stop self-hosted EC2 runner
     needs:
