@@ -97,8 +97,9 @@ ensure_dcontainer() {{
             }}
             trap clean_up EXIT
 
-            binary_name=dcontainer-$(uname -m)-unknown-linux-gnu
-            curl -sSL -o $tmp_dir/dcontainer {release_link}/$binary_name
+            targz_name=dcontainer-$(uname -m)-unknown-linux-gnu.tgz
+            curl -sSL -o $tmp_dir/dcontainer.tgz {release_link}/$targz_name 
+            tar -xf $tmp_dir/dcontainer.tgz
             chmod a+x $tmp_dir/dcontainer
             dcontainer_location=$tmp_dir/dcontainer
            

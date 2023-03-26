@@ -96,7 +96,7 @@ jobs:
           
           strip $oxidizer_location/build/$target_triple/release/exe/$binary_name
           
-          tar -zcvf $GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
+          ( cd $oxidizer_location/build/$target_triple/release/exe && tar -zcvf $GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz "$binary_name" )
   
           echo "binary_location=$GITHUB_WORKSPACE/build/$binary_name-$target_triple.tgz" >> "$GITHUB_OUTPUT"
   
