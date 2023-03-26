@@ -70,7 +70,7 @@ jobs:
 
           sudo apt-get install -y python3-packaging
           sudo apt-get install -y python3-dev python3-venv python3-pip
-          python3 -m pip install --upgrade pip 
+          python3 -m pip install pip==22.3.1 
           python3 -m pip install --upgrade build setuptools wheel  setuptools-scm packaging
           export SETUPTOOLS_SCM_DEBUG=1
           python3 -m build --wheel
@@ -80,7 +80,6 @@ jobs:
   
         run: |
           sudo apt-get install -y build-essential
-          python3 -m pip install --upgrade pip 
           python3 -m pip install pyoxidizer
   
           oxidizer_location=$GITHUB_WORKSPACE
