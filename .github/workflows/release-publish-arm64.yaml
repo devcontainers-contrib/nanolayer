@@ -28,12 +28,12 @@ jobs:
         with:
           mode: start
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          ec2-image-id: ami-0be0b429754f45749
-          ec2-instance-type: c6i.large
+          ec2-image-id: ami-0590b70c4d04522b2
+          ec2-instance-type: c7g.large
           subnet-id: subnet-0106a8fd730d9d51a
           security-group-id: sg-0603c015125d85171
 
-  release-publish-x86_64:
+  release-publish-arm64:
     uses: ./.github/workflows/release-publish-for-arch.yaml
     needs: start-runner
     with:
@@ -45,7 +45,7 @@ jobs:
     name: Stop self-hosted EC2 runner
     needs:
       - start-runner # required to get output from the start-runner job
-      - release-publish-x86_64 # required to wait when the main job is done
+      - release-publish-arm64 # required to wait when the main job is done
     runs-on: ubuntu-latest
     if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
     steps:
