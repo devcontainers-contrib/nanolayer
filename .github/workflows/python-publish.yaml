@@ -10,6 +10,7 @@ permissions:
 jobs:
   release-publish:
     uses: ./.github/workflows/release-publish.yaml
+    secrets: inherit
 
   python-publish:
     needs: [release-publish]  
