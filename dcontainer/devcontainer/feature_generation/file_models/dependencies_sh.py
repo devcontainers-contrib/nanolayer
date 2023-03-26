@@ -99,7 +99,7 @@ ensure_dcontainer() {{
 
             targz_name=dcontainer-$(uname -m)-unknown-linux-gnu.tgz
             curl -sSL -o $tmp_dir/dcontainer.tgz {release_link}/$targz_name 
-            tar -xf $tmp_dir/dcontainer.tgz
+            (cd $tmp_dir && tar -xf $tmp_dir/dcontainer.tgz)
             chmod a+x $tmp_dir/dcontainer
             dcontainer_location=$tmp_dir/dcontainer
            
