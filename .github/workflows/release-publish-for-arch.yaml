@@ -75,8 +75,8 @@ jobs:
           pwd 
           ls 
           
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          git config --global --add safe.directory $pwd
+          git config --system --add safe.directory $GITHUB_WORKSPACE
+          git config --system --add safe.directory pwd
           python3.10 -m setuptools_scm
 
           python3.10 -m build --wheel 
