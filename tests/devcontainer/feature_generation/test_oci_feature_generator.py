@@ -17,7 +17,7 @@ TEST_IMAGE = "mcr.microsoft.com/devcontainers/base:debian"
 @pytest.mark.parametrize(
     "feature_id,feature_definition_dir,release_version",
     [
-        (v, os.path.join(FEATURE_DEFINITION_DIR, v), "v0.3.1")
+        (v, os.path.join(FEATURE_DEFINITION_DIR, v), "v0.3.4")
         for v in os.listdir(FEATURE_DEFINITION_DIR)
     ],
 )
@@ -55,7 +55,7 @@ def test_feature_dir_generation(
 @pytest.mark.parametrize(
     "feature_id,feature_definition_dir,release_version",
     [
-        (v, os.path.join(FEATURE_DEFINITION_DIR, v), "v0.3.1")
+        (v, os.path.join(FEATURE_DEFINITION_DIR, v), "v0.3.4")
         for v in os.listdir(FEATURE_DEFINITION_DIR)
     ],
 )
