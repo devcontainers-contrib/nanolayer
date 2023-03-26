@@ -5,7 +5,7 @@ from helpers import execute_current_python_in_container
 
 
 @pytest.mark.parametrize(
-    "packages,ppas,test_command,image,excpected_result",
+    "packages,ppas,test_command,image,excpected_result,docker_platform",
     [
         (
             ["neovim"],
@@ -13,6 +13,8 @@ from helpers import execute_current_python_in_container
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:ubuntu",
             0,
+            "linux/amd64"
+
         ),
         (
             ["neovim"],
@@ -20,6 +22,7 @@ from helpers import execute_current_python_in_container
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
             1,
+            "linux/amd64"
         ),
         (
             ["neovim"],
@@ -27,6 +30,15 @@ from helpers import execute_current_python_in_container
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
             0,
+            "linux/amd64"
+        ),
+        (
+            ["neovim"],
+            [],
+            "nvim --version",
+            "mcr.microsoft.com/devcontainers/base:debian",
+            0,
+            "linux/arm64"
         ),
     ],
 )
@@ -36,6 +48,7 @@ def test_apt_get_install(
     test_command,
     image: str,
     excpected_result: int,
+    docker_platform: str,
 ) -> None:
     packages_cmd = " ".join([f"{package} " for package in packages])
     ppas_cmd = " ".join([f"--ppa {ppa}" for ppa in ppas])
@@ -44,4 +57,5 @@ def test_apt_get_install(
     assert excpected_result == execute_current_python_in_container(
         test_command=full_test_command,
         image=image,
+        docker_platform=docker_platform
     )
