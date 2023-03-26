@@ -39,12 +39,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
   
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-            toolchain: stable
-            override: true
-  
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
