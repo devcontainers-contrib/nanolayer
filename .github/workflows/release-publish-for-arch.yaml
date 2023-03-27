@@ -57,8 +57,18 @@ jobs:
     runs-on: ${{ inputs.runner }}  # assume python3 exists
 
     steps:
-      
-      - uses: actions/checkout@v2
+      - name: install latest git
+        # IMPORTANT: installation of latest git is needed for old runners (ubuntu18.04) to have a .git folder after the usage of actions/checkout@v3
+        # https://github.com/actions/checkout/issues/335
+        run: |
+          sudo apt-get install -y software-properties-common \
+          && sudo apt-get update \
+          && sudo add-apt-repository -y ppa:git-core/ppa \
+          && sudo apt-get update \
+          && sudo apt-get install -y git
+          
+
+      - uses: actions/checkout@v3
         with:
           # IMPORTANT: a positive fetch-depth value is needed in order to ensure a .git folder under old ubuntu18.04 runners. 
           # A valid .git folder is required for setuptools-scm to resolve python package versions
