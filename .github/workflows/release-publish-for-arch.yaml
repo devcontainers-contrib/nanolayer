@@ -58,12 +58,15 @@ jobs:
 
     steps:
       
-      
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          # IMPORTANT: a positive fetch-depth value is needed in order to ensure a .git folder under old ubuntu18.04 runners. 
+          # A valid .git folder is required for setuptools-scm to resolve python package versions
+          fetch-depth: 0 
 
       - name: Build Python Package
+        # IMPORTANT: the ambigiuse setup_python action does not provide support for ARM runners
+        # A valid .git folder is required for setuptools-scm to resolve python package versions
         run: |
           sudo apt-get update -y
           sudo apt-get install -y git 
