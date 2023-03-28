@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   release-publish:
-    uses: ./.github/workflows/release-publish.yaml
+    uses: ./.github/workflows/release-binaries-on-ec2-all.yaml
     secrets: inherit
 
   python-publish:
