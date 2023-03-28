@@ -1,0 +1,121 @@
+name: Release Binaries On EC2
+
+on:
+  workflow_dispatch:
+    inputs:
+      triple_target:
+        description: 'rust cargo triple target for pyoxidizer'
+        required: true
+        type: choice
+        options:
+        - "x86_64-unknown-linux-gnu"
+        - "aarch64-unknown-linux-gnu"
+
+      binary_name:
+        description: 'output binary name'
+        required: false
+        type: string
+        default: "dcontainer"
+
+  
+      ami_id:
+        description: 'ami image id'
+        required: false
+        type: string
+        default: "ami-0557a15b87f6559cf"  # ubuntu 22.04 on us-east-1
+          
+      instance_type:
+        description: 'aws instance type'
+        required: true
+        type: string
+        default: "c6i.large"
+
+
+  workflow_call:
+    inputs:
+      triple_target:
+        description: 'rust cargo triple target for pyoxidizer'
+        required: true
+        type: string
+  
+      binary_name:
+        description: 'output binary name'
+        required: false
+        type: string
+        default: "dcontainer"
+  
+      ami_id:
+        description: 'ami image id'
+        required: false
+        type: string
+        default: "ami-0557a15b87f6559cf"  # ubuntu 22.04 on us-east-1
+        
+      instance_type:
+        description: 'aws instance type'
+        required: true
+        type: string
+        default: "c6i.large"
+        
+permissions:
+  contents: write
+  discussions: write
+
+
+jobs:
+  start-runner:
+    name: Start runner
+    runs-on: ubuntu-latest
+    outputs:
+      label: ${{ steps.start-runner.outputs.label }}
+      ec2-instance-id: ${{ steps.start-runner.outputs.ec2-instance-id }}
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Start runner
+        id: start-runner
+        uses: machulav/ec2-github-runner@v2
+        with:
+          mode: start
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          ec2-image-id: ${{ inputs.ami_id }} 
+          ec2-instance-type: ${{ inputs.instance_type }}  
+          subnet-id: ${{ secrets.AWS_SUBNET_ID }} 
+
+          security-group-id: ${{ secrets.AWS_SECURITY_GROUP_ID }}  
+  
+  release-binaries:
+    uses: ./.github/workflows/release-binaries.yaml
+    secrets: inherit
+    needs: start-runner
+    with:
+      triple_target: ${{ inputs.triple_target }}  
+      binary_name:  ${{ inputs.binary_name }}  
+      runner: ${{ needs.start-runner.outputs.label }}
+
+  stop-runner:
+    name: Stop runner
+    needs:
+      - start-runner # required to get output from the start-runner job
+      - release-binaries # required to wait when the main job is done
+    runs-on: ubuntu-latest
+    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Stop runner
+        uses: machulav/ec2-github-runner@v2
+        with:
+          mode: stop
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          label: ${{ needs.start-runner.outputs.label }}
+          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
+          
