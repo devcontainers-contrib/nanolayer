@@ -12,6 +12,7 @@ jobs:
  
   release-publish-x86_64:
     uses: ./.github/workflows/release-binaries-on-ec2.yaml
+    secrets: inherit
     with:
       triple_target: "x86_64-unknown-linux-gnu"
       binary_name: "dcontainer"
@@ -23,6 +24,7 @@ jobs:
  
   release-publish-arm64:
     uses: ./.github/workflows/release-binaries-on-ec2.yaml
+    secrets: inherit
     with:
       triple_target: "aarch64-unknown-linux-gnu"
       binary_name: "dcontainer"

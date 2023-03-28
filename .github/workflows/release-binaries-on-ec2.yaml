@@ -89,6 +89,7 @@ jobs:
   
   release-binaries:
     uses: ./.github/workflows/release-binaries.yaml
+    secrets: inherit
     needs: start-runner
     with:
       triple_target: ${{ inputs.triple_target }}  
