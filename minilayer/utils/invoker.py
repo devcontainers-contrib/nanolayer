@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Type
+from typing import Dict, Optional, Type
 
 import invoke
 
@@ -32,8 +32,15 @@ class Invoker:
         command: str,
         raise_on_failure: bool,
         exception_class: Type["Invoker.InvokerException"] = InvokerException,
+        clean_history: bool = True,
+        envs: Optional[Dict[str, str]] = None,
     ) -> int:
         Invoker.check_root_privileges()
+
+        if envs is None:
+            envs = {}
+        if clean_history:
+            envs["HISTFILE"] = "/dev/null"
 
         response = invoke.run(
             command,
@@ -42,6 +49,7 @@ class Invoker:
             pty=True,
             warn=True,
             echo=True,
+            env=envs,
         )
 
         if raise_on_failure and not response.ok:

@@ -23,7 +23,7 @@ jobs:
       with:
         filters: |
           relevant_files:
-            - 'dcontainer/**'
+            - 'minilayer/**'
             - 'tests/**'
             - '.github/workflows/run-tests.yaml'
 

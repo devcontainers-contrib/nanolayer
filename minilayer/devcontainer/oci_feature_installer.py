@@ -8,14 +8,14 @@ from typing import Dict, Optional, Union
 
 import invoke
 
-from dcontainer.devcontainer.models.devcontainer_feature import Feature
-from dcontainer.devcontainer.oci_feature import OCIFeature
-from dcontainer.settings import (
+from minilayer.devcontainer.models.devcontainer_feature import Feature
+from minilayer.devcontainer.oci_feature import OCIFeature
+from minilayer.settings import (
     ENV_CLI_LOCATION,
     ENV_FORCE_CLI_INSTALLATION,
     ENV_PROPAGATE_CLI_LOCATION,
     ENV_VERBOSE,
-    DContainerSettings,
+    MiniLayerSettings,
 )
 
 logger = logging.getLogger(__name__)
@@ -71,7 +71,7 @@ class OCIFeatureInstaller:
             envs[option_name.upper()] = option_value
 
         try:
-            settings = DContainerSettings()
+            settings = MiniLayerSettings()
 
             if settings.verbose == "1":
                 verbose = True

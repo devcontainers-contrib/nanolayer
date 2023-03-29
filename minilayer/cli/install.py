@@ -3,11 +3,11 @@ from typing import Dict, List, Optional
 
 import typer
 
-from dcontainer.apt.apt_installer import AptInstaller
-from dcontainer.apt_get.apt_get_installer import AptGetInstaller
-from dcontainer.aptitude.aptitude_installer import AptitudeInstaller
-from dcontainer.devcontainer.oci_feature_installer import OCIFeatureInstaller
-from dcontainer.gh_release.gh_release_installer import GHReleaseInstaller
+from minilayer.apt.apt_installer import AptInstaller
+from minilayer.apt_get.apt_get_installer import AptGetInstaller
+from minilayer.aptitude.aptitude_installer import AptitudeInstaller
+from minilayer.devcontainer.oci_feature_installer import OCIFeatureInstaller
+from minilayer.gh_release.gh_release_installer import GHReleaseInstaller
 
 logger = logging.getLogger(__name__)
 
@@ -73,15 +73,17 @@ def install_apt_get_packages(
     package: List[str],
     ppa: Optional[List[str]] = typer.Option(None),
     force_ppas_on_non_ubuntu: bool = False,
-    remove_ppas_on_completion: bool = True,
-    remove_cache_on_completion: bool = True,
+    clean_ppas: bool = True,
+    clean_cache: bool = True,
+    preserve_apt_list: bool = True,
 ) -> None:
     AptGetInstaller.install(
         packages=package,
         ppas=ppa,
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
-        remove_ppas_on_completion=remove_ppas_on_completion,
-        remove_cache_on_completion=remove_cache_on_completion,
+        clean_ppas=clean_ppas,
+        clean_cache=clean_cache,
+        preserve_apt_list=preserve_apt_list,
     )
 
 
@@ -90,15 +92,17 @@ def install_apt_packages(
     package: List[str],
     ppa: Optional[List[str]] = typer.Option(None),
     force_ppas_on_non_ubuntu: bool = False,
-    remove_ppas_on_completion: bool = True,
-    remove_cache_on_completion: bool = True,
+    clean_ppas: bool = True,
+    clean_cache: bool = True,
+    preserve_apt_list: bool = True,
 ) -> None:
     AptInstaller.install(
         packages=package,
         ppas=ppa,
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
-        remove_ppas_on_completion=remove_ppas_on_completion,
-        remove_cache_on_completion=remove_cache_on_completion,
+        clean_ppas=clean_ppas,
+        clean_cache=clean_cache,
+        preserve_apt_list=preserve_apt_list,
     )
 
 
@@ -107,15 +111,17 @@ def install_aptitude_packages(
     package: List[str],
     ppa: Optional[List[str]] = typer.Option(None),
     force_ppas_on_non_ubuntu: bool = False,
-    remove_ppas_on_completion: bool = True,
-    remove_cache_on_completion: bool = True,
+    clean_ppas: bool = True,
+    clean_cache: bool = True,
+    preserve_apt_list: bool = True,
 ) -> None:
     AptitudeInstaller.install(
         packages=package,
         ppas=ppa,
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
-        remove_ppas_on_completion=remove_ppas_on_completion,
-        remove_cache_on_completion=remove_cache_on_completion,
+        clean_ppas=clean_ppas,
+        clean_cache=clean_cache,
+        preserve_apt_list=preserve_apt_list,
     )
 
 
@@ -127,8 +133,6 @@ def install_gh_release_binary(
     asset_regex: Optional[str] = None,
     force: bool = False,
     arch: Optional[str] = None,
-    checksum_regex: Optional[str] = None,
-    checksum: Optional[bool] = True,
 ) -> None:
     GHReleaseInstaller.install(
         repo=repo,

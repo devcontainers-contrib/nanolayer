@@ -4,7 +4,7 @@ import pathlib
 import pytest
 from helpers import RESOURCE_DIR
 
-from dcontainer.devcontainer.feature_generation.oci_feature_generator import (
+from minilayer.devcontainer.feature_generation.oci_feature_generator import (
     OCIFeatureGenerator,
 )
 
@@ -41,15 +41,13 @@ def test_feature_dir_generation(
         os.path.join(tmp_path_str, "test", feature_id, "scenarios.json")
     )
     assert os.path.isfile(
-        os.path.join(tmp_path_str, "src", feature_id, "dependencies.sh")
+        os.path.join(tmp_path_str, "src", feature_id, "library_scripts.sh")
     )
     assert os.path.isfile(
         os.path.join(tmp_path_str, "src", feature_id, "devcontainer-feature.json")
     )
     assert os.path.isfile(os.path.join(tmp_path_str, "src", feature_id, "install.sh"))
-    assert os.path.isfile(
-        os.path.join(tmp_path_str, "src", feature_id, "install_command.sh")
-    )
+
 
 
 @pytest.mark.parametrize(
