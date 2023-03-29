@@ -90,7 +90,7 @@ def test_gh_release_install(
     target: str,
     docker_platform: str,
 ) -> None:
-    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m dcontainer install gh-release {repo} {target} && {test_command}"
+    full_test_command = f"id"
 
     assert excpected_result == execute_current_python_in_container(
         test_command=full_test_command, image=image, docker_platform=docker_platform

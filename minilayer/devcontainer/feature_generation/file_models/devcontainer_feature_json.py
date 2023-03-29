@@ -1,6 +1,6 @@
 from easyfs import File
 
-from dcontainer.devcontainer.models.devcontainer_feature_definition import (
+from minilayer.devcontainer.models.devcontainer_feature_definition import (
     FeatureDefinition,
 )
 

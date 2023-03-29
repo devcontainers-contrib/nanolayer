@@ -1,8 +1,8 @@
 from typing import Optional
 from easyfs import File
 
-from dcontainer.settings import ENV_CLI_LOCATION, ENV_FORCE_CLI_INSTALLATION
-from dcontainer.utils.version import resolve_own_release_version
+from minilayer.settings import ENV_CLI_LOCATION, ENV_FORCE_CLI_INSTALLATION
+from minilayer.utils.version import resolve_own_release_version
 
 RELEASE_LINK = """{RELEASE_VERSION}"""
 

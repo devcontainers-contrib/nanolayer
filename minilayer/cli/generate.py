@@ -18,7 +18,7 @@ def generate_command(
     release_version: Optional[str] = None,
 ) -> None:
     try:
-        from dcontainer.devcontainer.feature_generation.oci_feature_generator import (
+        from minilayer.devcontainer.feature_generation.oci_feature_generator import (
             OCIFeatureGenerator,
         )
     except ImportError as e:

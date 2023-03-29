@@ -2,9 +2,9 @@ from typing import Optional
 
 from easyfs import Directory
 
-from dcontainer.devcontainer.feature_generation.dir_models.src_dir import SrcDir
-from dcontainer.devcontainer.feature_generation.dir_models.test_dir import TestDir
-from dcontainer.devcontainer.models.devcontainer_feature_definition import (
+from minilayer.devcontainer.feature_generation.dir_models.src_dir import SrcDir
+from minilayer.devcontainer.feature_generation.dir_models.test_dir import TestDir
+from minilayer.devcontainer.models.devcontainer_feature_definition import (
     FeatureDefinition,
 )
 

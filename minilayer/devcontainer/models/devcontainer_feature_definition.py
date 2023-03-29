@@ -5,7 +5,7 @@ from unittest import mock
 
 from pydantic import BaseModel, Extra, Field
 
-from dcontainer.devcontainer.models.devcontainer_feature import Feature
+from minilayer.devcontainer.models.devcontainer_feature import Feature
 
 
 class FeatureDependency(BaseModel):

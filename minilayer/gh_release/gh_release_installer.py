@@ -19,8 +19,8 @@ import invoke
 import semver
 from pydantic import BaseModel, Extra
 
-from dcontainer.utils.invoker import Invoker
-from dcontainer.utils.linux_information_desk import LinuxInformationDesk
+from minilayer.utils.invoker import Invoker
+from minilayer.utils.linux_information_desk import LinuxInformationDesk
 
 logger = logging.getLogger(__name__)
 from tarfile import TarFile

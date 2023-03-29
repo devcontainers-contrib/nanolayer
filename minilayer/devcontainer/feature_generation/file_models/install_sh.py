@@ -3,8 +3,8 @@ from typing import Dict, Optional, Union
 
 from easyfs import File
 
-from dcontainer.devcontainer.models.devcontainer_feature import FeatureOption
-from dcontainer.devcontainer.models.devcontainer_feature_definition import (
+from minilayer.devcontainer.models.devcontainer_feature import FeatureOption
+from minilayer.devcontainer.models.devcontainer_feature_definition import (
     FeatureDependencies,
 )
 

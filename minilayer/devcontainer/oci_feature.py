@@ -3,8 +3,8 @@ import tempfile
 from pathlib import Path
 from typing import Union
 
-from dcontainer.devcontainer.models.devcontainer_feature import Feature
-from dcontainer.oci.oci_registry import OCIRegistry
+from minilayer.devcontainer.models.devcontainer_feature import Feature
+from minilayer.oci.oci_registry import OCIRegistry
 
 
 class OCIFeature:

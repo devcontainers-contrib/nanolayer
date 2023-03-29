@@ -23,8 +23,8 @@ jobs:
       with:
         filters: |
           relevant_files:
-            - 'dcontainer/devcontainer/feature_generation**'
-            - 'tests/dcontainer/feature_generation**'
+            - 'minilayer/devcontainer/feature_generation**'
+            - 'tests/minilayer/feature_generation**'
 
   run-tests:
     needs: [changes]  

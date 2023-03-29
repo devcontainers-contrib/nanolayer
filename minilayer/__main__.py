@@ -1,8 +1,8 @@
 import typer
 
-from dcontainer.cli.generate import app as generate_app
-from dcontainer.cli.install import app as install_app
-from dcontainer.utils.version import (
+from minilayer.cli.generate import app as generate_app
+from minilayer.cli.install import app as install_app
+from minilayer.utils.version import (
     resolve_own_package_version,
     resolve_own_release_version,
 )

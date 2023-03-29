@@ -3,11 +3,11 @@ from typing import Dict, List, Optional
 
 import typer
 
-from dcontainer.apt.apt_installer import AptInstaller
-from dcontainer.apt_get.apt_get_installer import AptGetInstaller
-from dcontainer.aptitude.aptitude_installer import AptitudeInstaller
-from dcontainer.devcontainer.oci_feature_installer import OCIFeatureInstaller
-from dcontainer.gh_release.gh_release_installer import GHReleaseInstaller
+from minilayer.apt.apt_installer import AptInstaller
+from minilayer.apt_get.apt_get_installer import AptGetInstaller
+from minilayer.aptitude.aptitude_installer import AptitudeInstaller
+from minilayer.devcontainer.oci_feature_installer import OCIFeatureInstaller
+from minilayer.gh_release.gh_release_installer import GHReleaseInstaller
 
 logger = logging.getLogger(__name__)
 

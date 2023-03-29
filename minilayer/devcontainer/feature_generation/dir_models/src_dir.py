@@ -2,15 +2,15 @@ from typing import Optional
 
 from easyfs import Directory
 
-from dcontainer.devcontainer.feature_generation.file_models.library_scripts_sh import (
+from minilayer.devcontainer.feature_generation.file_models.library_scripts_sh import (
     LibraryScriptsSH,
 )
-from dcontainer.devcontainer.feature_generation.file_models.devcontainer_feature_json import (
+from minilayer.devcontainer.feature_generation.file_models.devcontainer_feature_json import (
     DevcontainerFeatureJson,
 )
 
-from dcontainer.devcontainer.feature_generation.file_models.install_sh import InstallSH
-from dcontainer.devcontainer.models.devcontainer_feature_definition import (
+from minilayer.devcontainer.feature_generation.file_models.install_sh import InstallSH
+from minilayer.devcontainer.models.devcontainer_feature_definition import (
     FeatureDefinition,
 )
 

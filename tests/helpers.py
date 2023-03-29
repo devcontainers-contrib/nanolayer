@@ -9,11 +9,11 @@ from typing import Optional
 import git
 import invoke
 
-from dcontainer.devcontainer.feature_generation.oci_feature_generator import (
+from minilayer.devcontainer.feature_generation.oci_feature_generator import (
     OCIFeatureGenerator,
 )
-from dcontainer.devcontainer.models.devcontainer_feature import Mount
-from dcontainer.devcontainer.models.devcontainer_feature_definition import (
+from minilayer.devcontainer.models.devcontainer_feature import Mount
+from minilayer.devcontainer.models.devcontainer_feature_definition import (
     FeatureDefinition,
     TestScenario,
 )
