@@ -14,7 +14,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "digitalocean/doctl",
             "doctl",
-            "linux/amd64"
+            "linux/amd64",
         ),
         (
             "argocd --help",
@@ -22,7 +22,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "argoproj/argo-cd",
             "argocd",
-            "linux/amd64"
+            "linux/amd64",
         ),
         (
             "argocd --help",
@@ -30,7 +30,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "argoproj/argo-cd",
             "argocd",
-            "linux/arm64"
+            "linux/arm64",
         ),
         (
             "which kubectx",
@@ -38,7 +38,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "ahmetb/kubectx",
             "kubectx",
-            "linux/amd64"
+            "linux/amd64",
         ),
         (
             "which kubens",
@@ -46,7 +46,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "ahmetb/kubectx",
             "kubens",
-            "linux/amd64"
+            "linux/amd64",
         ),
         (
             "terrascan version",
@@ -54,7 +54,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "tenable/terrascan",
             "terrascan",
-            "linux/amd64"
+            "linux/amd64",
         ),
         (
             "terrascan version",
@@ -62,7 +62,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "tenable/terrascan",
             "terrascan",
-            "linux/arm64"
+            "linux/arm64",
         ),
         (
             "gh --version",
@@ -70,7 +70,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "cli/cli",
             "gh",
-            "linux/amd64"
+            "linux/amd64",
         ),
         (
             "pwsh --version",
@@ -78,7 +78,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "PowerShell/PowerShell",
             "pwsh",
-            "linux/amd64"
+            "linux/amd64",
         ),
     ],
 )
@@ -93,7 +93,5 @@ def test_gh_release_install(
     full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m dcontainer install gh-release {repo} {target} && {test_command}"
 
     assert excpected_result == execute_current_python_in_container(
-        test_command=full_test_command,
-        image=image,
-        docker_platform=docker_platform
+        test_command=full_test_command, image=image, docker_platform=docker_platform
     )

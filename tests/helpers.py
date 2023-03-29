@@ -26,7 +26,6 @@ def execute_current_python_in_container(
     remote_user: Optional[str] = None,
     docker_platform: str = "linux/amd64",
 ) -> int:
-
     feature_definition = FeatureDefinition(id="test", version="0.0.0")
     mounts = []
     target_mounts_location = f"/mnt/{platform.node()}"

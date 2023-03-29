@@ -13,8 +13,7 @@ from helpers import execute_current_python_in_container
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:ubuntu",
             0,
-            "linux/amd64"
-
+            "linux/amd64",
         ),
         (
             ["neovim"],
@@ -22,7 +21,7 @@ from helpers import execute_current_python_in_container
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
             1,
-            "linux/amd64"
+            "linux/amd64",
         ),
         (
             ["neovim"],
@@ -30,7 +29,7 @@ from helpers import execute_current_python_in_container
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
             0,
-            "linux/amd64"
+            "linux/amd64",
         ),
         (
             ["neovim"],
@@ -38,7 +37,7 @@ from helpers import execute_current_python_in_container
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
             0,
-            "linux/arm64"
+            "linux/arm64",
         ),
     ],
 )
@@ -55,7 +54,5 @@ def test_apt_get_install(
     full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m dcontainer install apt-get {packages_cmd} {ppas_cmd} && {test_command}"
 
     assert excpected_result == execute_current_python_in_container(
-        test_command=full_test_command,
-        image=image,
-        docker_platform=docker_platform
+        test_command=full_test_command, image=image, docker_platform=docker_platform
     )

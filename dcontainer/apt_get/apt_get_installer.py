@@ -1,3 +1,4 @@
+import tempfile
 from typing import Dict, List, Optional
 
 from dcontainer.utils.invoker import Invoker
@@ -48,8 +49,9 @@ class AptGetInstaller:
         packages: List[str],
         ppas: Optional[List[str]] = None,
         force_ppas_on_non_ubuntu: bool = False,
-        remove_ppas_on_completion: bool = True,
-        remove_cache_on_completion: bool = True,
+        clean_ppas: bool = True,
+        clean_cache: bool = True,
+        preserve_apt_list: bool = True,
     ) -> None:
         assert (
             cls.is_debian_like()
@@ -61,67 +63,80 @@ class AptGetInstaller:
         normalized_ppas = cls.normalize_ppas(ppas)
 
         software_properties_common_installed = False
+        with tempfile.TemporaryDirectory() as tempdir:
+            if preserve_apt_list:
+                Invoker.invoke(
+                    command=f"cp -p -R /var/lib/apt/lists {tempdir}",
+                    raise_on_failure=True,
+                    exception_class=cls.AptGetUpdateFailed,
+                )
 
-        try:
-            Invoker.invoke(
-                command="apt-get update -y",
-                raise_on_failure=True,
-                exception_class=cls.AptGetUpdateFailed,
-            )
-
-            if ppas:
-                if (
-                    Invoker.invoke(
-                        "dpkg -s software-properties-common", raise_on_failure=False
-                    )
-                    != 0
-                ):
-                    Invoker.invoke(
-                        command="apt install -y software-properties-common",
-                        raise_on_failure=True,
-                        exception_class=cls.AddPPAsFailed,
-                    )
-
-                    software_properties_common_installed = True
-
-                for ppa in normalized_ppas:
-                    Invoker.invoke(
-                        command=f"add-apt-repository -y {ppa}",
-                        raise_on_failure=True,
-                        exception_class=cls.AddPPAsFailed,
-                    )
-
+            try:
                 Invoker.invoke(
                     command="apt-get update -y",
                     raise_on_failure=True,
                     exception_class=cls.AptGetUpdateFailed,
                 )
 
-            Invoker.invoke(
-                command=f"apt-get install -y --no-install-recommends {' '.join(packages)}",
-                raise_on_failure=True,
-                exception_class=cls.AptGetUpdateFailed,
-            )
+                if ppas:
+                    if (
+                        Invoker.invoke(
+                            "dpkg -s software-properties-common", raise_on_failure=False
+                        )
+                        != 0
+                    ):
+                        Invoker.invoke(
+                            command="apt install -y software-properties-common",
+                            raise_on_failure=True,
+                            exception_class=cls.AddPPAsFailed,
+                        )
 
-        finally:
-            if remove_ppas_on_completion:
-                for ppa in normalized_ppas:
+                        software_properties_common_installed = True
+
+                    for ppa in normalized_ppas:
+                        Invoker.invoke(
+                            command=f"add-apt-repository -y {ppa}",
+                            raise_on_failure=True,
+                            exception_class=cls.AddPPAsFailed,
+                        )
+
                     Invoker.invoke(
-                        command=f"add-apt-repository -y --remove {ppa}",
+                        command="apt-get update -y",
                         raise_on_failure=True,
-                        exception_class=cls.RemovePPAsFailed,
+                        exception_class=cls.AptGetUpdateFailed,
                     )
 
-                if software_properties_common_installed:
-                    Invoker.invoke(
-                        command="apt -y remove software-properties-common",
-                        raise_on_failure=True,
-                        exception_class=cls.RemovePPAsFailed,
-                    )
-
-            if remove_cache_on_completion:
                 Invoker.invoke(
-                    command="rm -rf /var/lib/apt/lists/*",
+                    command=f"apt-get install -y --no-install-recommends {' '.join(packages)}",
                     raise_on_failure=True,
-                    exception_class=cls.CleanUpFailed,
+                    exception_class=cls.AptGetUpdateFailed,
                 )
+
+            finally:
+                if clean_ppas:
+                    for ppa in normalized_ppas:
+                        Invoker.invoke(
+                            command=f"add-apt-repository -y --remove {ppa}",
+                            raise_on_failure=True,
+                            exception_class=cls.RemovePPAsFailed,
+                        )
+
+                    if software_properties_common_installed:
+                        Invoker.invoke(
+                            command="apt-get -y purge software-properties-common --auto-remove",
+                            raise_on_failure=True,
+                            exception_class=cls.RemovePPAsFailed,
+                        )
+
+                if clean_cache:
+                    Invoker.invoke(
+                        command="apt-get clean",
+                        raise_on_failure=True,
+                        exception_class=cls.CleanUpFailed,
+                    )
+                if preserve_apt_list:
+                    Invoker.invoke(
+                        command=f"mv {tempdir} /var/lib/apt/lists",
+                        raise_on_failure=True,
+                        exception_class=cls.CleanUpFailed,
+                    )
