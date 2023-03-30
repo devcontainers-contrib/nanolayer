@@ -113,7 +113,7 @@ jobs:
             --var app_name $binary_name \
             --target-triple $target_triple 
   
-          pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
+          # pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
           
           strip $oxidizer_location/build/$target_triple/release/exe/$binary_name
           
