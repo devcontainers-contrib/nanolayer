@@ -95,7 +95,9 @@ jobs:
   
         run: |
           sudo apt-get install -y build-essential musl musl-dev musl-tools 
-          python3 -m pip install pyoxidizer
+
+          # NOTE: keep version at 0.23.0: https://github.com/indygreg/PyOxidizer/issues/673
+          python3 -m pip install pyoxidizer==0.23.0
   
           oxidizer_location=$GITHUB_WORKSPACE
           wheel_location=./dist/$(ls dist | grep .whl)
