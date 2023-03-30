@@ -135,7 +135,7 @@ class OCIFeatureInstaller:
         feature_profile_dir = Path(cls._PROFILE_DIR)
         feature_profile_dir.mkdir(exist_ok=True, parents=True)
         feature_profile_file = feature_profile_dir.joinpath(
-            f"dcontainer-{feature.id}.sh"
+            f"minilayer-{feature.id}.sh"
         )
 
         if not feature_profile_file.exists():

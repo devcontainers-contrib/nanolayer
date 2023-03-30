@@ -14,13 +14,13 @@ app.add_typer(generate_app, name="generate")
 
 def version_callback(value: bool) -> None:
     if value:
-        typer.echo(f"dcontainer version: {resolve_own_package_version()}")
+        typer.echo(f"minilayer version: {resolve_own_package_version()}")
         raise typer.Exit()
 
 
 def release_version_callback(value: bool) -> None:
     if value:
-        typer.echo(f"dcontainer release version: {resolve_own_release_version()}")
+        typer.echo(f"minilayer release version: {resolve_own_release_version()}")
         raise typer.Exit()
 
 

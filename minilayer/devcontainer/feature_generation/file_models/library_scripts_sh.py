@@ -1,4 +1,5 @@
 from typing import Optional
+
 from easyfs import File
 
 from minilayer.settings import ENV_CLI_LOCATION, ENV_FORCE_CLI_INSTALLATION
@@ -103,29 +104,29 @@ clean_download() {{
 }}
 
 
-ensure_dcontainer() {{
-    # Ensure existance of the dcontainer cli program
+ensure_minilayer() {{
+    # Ensure existance of the minilayer cli program
     local variable_name=$1
-    local dcontainer_location=""
+    local minilayer_location=""
 
-    # If possible - try to use an already installed dcontainer
+    # If possible - try to use an already installed minilayer
     if [[ -z "${{{force_cli_installation_env}}}" ]]; then
         if [[ -z "${{{cli_location_env}}}" ]]; then
-            if type dcontainer >/dev/null 2>&1; then
-                echo "Using a pre-existing dcontainer"
-                dcontainer_location=dcontainer
+            if type minilayer >/dev/null 2>&1; then
+                echo "Using a pre-existing minilayer"
+                minilayer_location=minilayer
             fi
         elif [ -f "${{{cli_location_env}}}" ] && [ -x "${{{cli_location_env}}}" ] ; then
-            echo "Using a pre-existing dcontainer which were given in env varialbe"
-            dcontainer_location=${{{cli_location_env}}}
+            echo "Using a pre-existing minilayer which were given in env varialbe"
+            minilayer_location=${{{cli_location_env}}}
         fi
     fi
 
     # If not previuse installation found, download it temporarly and delete at the end of the script 
-    if [[ -z "${{dcontainer_location}}" ]]; then
+    if [[ -z "${{minilayer_location}}" ]]; then
 
         if [ "$(uname -sm)" == "Linux x86_64" ] || [ "$(uname -sm)" == "Linux aarch64" ]; then
-            tmp_dir=$(mktemp -d -t dcontainer-XXXXXXXXXX)
+            tmp_dir=$(mktemp -d -t minilayer-XXXXXXXXXX)
 
             clean_up () {{
                 ARG=$?
@@ -134,14 +135,23 @@ ensure_dcontainer() {{
             }}
             trap clean_up EXIT
 
-            tar_filename=dcontainer-"$(uname -m)"-unknown-linux-gnu.tgz
+            
+            if [ -x "/sbin/apk" ] ; then
+                clib_type=musl
+            else
+                clib_type=gnu
+            fi
+            
+            tar_filename=minilayer-"$(uname -m)"-unknown-linux-$clib_type.tgz
 
             # clean download will minimize leftover in case a downloaderlike wget or curl need to be installed
             clean_download https://github.com/devcontainers-contrib/cli/releases/download/{release_version}/$tar_filename $tmp_dir/$tar_filename
             
             tar xfzv $tmp_dir/$tar_filename -C "$tmp_dir"
-            chmod a+x $tmp_dir/dcontainer
-            dcontainer_location=$tmp_dir/dcontainer
+            chmod a+x $tmp_dir/minilayer
+            minilayer_location=$tmp_dir/minilayer
+      
+
         else
             echo "No binaries compiled for non-x86-linux architectures yet: $(uname -m)"
             exit 1
@@ -149,7 +159,7 @@ ensure_dcontainer() {{
     fi
 
     # Expose outside the resolved location
-    declare -g ${{variable_name}}=$dcontainer_location
+    declare -g ${{variable_name}}=$minilayer_location
 
 }}
 
