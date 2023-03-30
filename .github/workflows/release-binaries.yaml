@@ -93,8 +93,9 @@ jobs:
           # https://github.com/pypa/setuptools/issues/3269#issuecomment-1104943440
           # sudo apt-get remove -y python3-setuptools 
           sudo python3 -m pip install --upgrade build setuptools wheel setuptools-scm packaging
+          python3 -m pip install --upgrade build setuptools wheel setuptools-scm packaging
           export SETUPTOOLS_SCM_DEBUG=1
-          sudo python3 -m build --wheel
+          python3 -m build --wheel --no-isolation
   
       - name: Build Binary using Pyoxidizer
         id: run_pyoxidizer
