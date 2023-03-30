@@ -3,15 +3,12 @@ import pathlib
 from pkg_resources import parse_requirements
 import re
 
-here = pathlib.Path(__file__).parent.resolve()
-
 
 def fix_requirement_line(line: str) -> str:
     if line.startswith("git+"):
         egg_name = re.search(r"egg=([a-zA-Z_\-0-9\s]+)", line).group(1)
         return f"{egg_name.strip()} @ {line}"
     return line
-
 
 
 with open("requirements.txt", "r") as f:
@@ -49,7 +46,9 @@ setup(
     author="Daniel Braun",
     packages=find_packages(),
     install_requires=REQUIREMENTS,
-
+    package_data={"minilayer": ["py.typed"]},
+    long_description_content_type="text/markdown", 
+    long_description=(pathlib.Path(__file__).parent.resolve() / "README.md").read_text(encoding="utf-8"),  
     extras_require={ 
             "dev": REQUIREMENTS_DEV,
             "generate": REQUIREMENTS_GENERATE,
