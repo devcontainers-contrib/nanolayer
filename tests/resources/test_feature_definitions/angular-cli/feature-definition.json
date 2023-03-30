@@ -31,7 +31,7 @@
     "test_scenarios": [
         {
             "name": "test_defaults",
-            "image": "mcr.microsoft.com/devcontainers/base:debian",
+            "image": "mcr.microsoft.com/devcontainers/base:alpine",
             "test_commands": [
                 "ng --help"
             ],
