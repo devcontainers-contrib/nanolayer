@@ -3,6 +3,12 @@ name: Release Binaries
 on:
   workflow_dispatch:
     inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: true
+
       triple_target:
         description: 'rust cargo triple target for pyoxidizer'
         required: true
@@ -75,7 +81,7 @@ jobs:
           # A valid .git folder is required for setuptools-scm to resolve python package versions
           fetch-depth: 0
 
-      - name: Build Python Package
+      - name: Setup python
         # IMPORTANT: the ambigiuse setup_python action does not provide support for ARM runners
         # A valid .git folder is required for setuptools-scm to resolve python package versions
         run: |
@@ -90,6 +96,12 @@ jobs:
           # https://github.com/pypa/setuptools/issues/3269#issuecomment-1104943440
           apt purge -y python3-setuptools 
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
+
+      - name: Build package
+        run: |
           python3 -m pip install --upgrade build setuptools wheel  setuptools-scm packaging
           export SETUPTOOLS_SCM_DEBUG=1
           python3 -m build --wheel
