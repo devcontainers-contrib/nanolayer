@@ -3,3 +3,8 @@ pytest-shell-utilities
 black
 mypy
 gitpython
+build 
+setuptools 
+wheel  
+setuptools-scm 
+packaging
