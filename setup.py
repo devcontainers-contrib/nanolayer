@@ -1,7 +1,8 @@
-from setuptools import setup, find_packages
 import pathlib
-from pkg_resources import parse_requirements
 import re
+
+from pkg_resources import parse_requirements
+from setuptools import find_packages, setup
 
 
 def fix_requirement_line(line: str) -> str:
@@ -18,7 +19,6 @@ with open("requirements.txt", "r") as f:
             [fix_requirement_line(line) for line in f.readlines()]
         )
     ]
-
 
 
 with open("requirements-dev.txt", "r") as f:
@@ -42,20 +42,18 @@ with open("requirements-generate.txt", "r") as f:
 setup(
     name="minilayer",
     use_scm_version=True,
-    setup_requires=['setuptools_scm'],
+    setup_requires=["setuptools_scm"],
     author="Daniel Braun",
     packages=find_packages(),
     install_requires=REQUIREMENTS,
     package_data={"minilayer": ["py.typed"]},
-    long_description_content_type="text/markdown", 
-    long_description=(pathlib.Path(__file__).parent.resolve() / "README.md").read_text(encoding="utf-8"),  
-    extras_require={ 
-            "dev": REQUIREMENTS_DEV,
-            "generate": REQUIREMENTS_GENERATE,
-        },
-
-    entry_points = {
-        'console_scripts': ['minilayer=minilayer.__main__:main']
-    }
+    long_description_content_type="text/markdown",
+    long_description=(pathlib.Path(__file__).parent.resolve() / "README.md").read_text(
+        encoding="utf-8"
+    ),
+    extras_require={
+        "dev": REQUIREMENTS_DEV,
+        "generate": REQUIREMENTS_GENERATE,
+    },
+    entry_points={"console_scripts": ["minilayer=minilayer.__main__:main"]},
 )
-

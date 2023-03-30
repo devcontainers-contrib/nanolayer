@@ -2,7 +2,7 @@ from typing import Optional
 
 from easyfs import File
 
-from minilayer.settings import ENV_CLI_LOCATION, ENV_FORCE_CLI_INSTALLATION
+from minilayer.utils.settings import ENV_CLI_LOCATION, ENV_FORCE_CLI_INSTALLATION
 from minilayer.utils.version import resolve_own_release_version
 
 RELEASE_LINK = """{RELEASE_VERSION}"""
@@ -141,7 +141,7 @@ ensure_minilayer() {{
             else
                 clib_type=gnu
             fi
-            
+
             tar_filename=minilayer-"$(uname -m)"-unknown-linux-$clib_type.tgz
 
             # clean download will minimize leftover in case a downloaderlike wget or curl need to be installed

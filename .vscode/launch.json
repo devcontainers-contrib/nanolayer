@@ -17,7 +17,7 @@
             "name": "debug --release-version",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "program": "${workspaceFolder}/minilayer/__main__.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
@@ -29,7 +29,7 @@
             "name": "debug --help",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "program": "${workspaceFolder}/minilayer/__main__.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
@@ -41,7 +41,7 @@
             "name": "debug --version",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "program": "${workspaceFolder}/minilayer/__main__.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
@@ -53,7 +53,7 @@
             "name": "debug install feature",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "program": "${workspaceFolder}/minilayer/__main__.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
@@ -68,7 +68,7 @@
             "name": "debug install apt-get",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "program": "${workspaceFolder}/minilayer/__main__.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
@@ -81,7 +81,7 @@
             "name": "debug install apt-get with ppa",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "program": "${workspaceFolder}/minilayer/__main__.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
@@ -96,7 +96,7 @@
             "name": "debug install gh-release",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/dcontainer/__main__.py",
+            "program": "${workspaceFolder}/minilayer/__main__.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "sudo": true, 

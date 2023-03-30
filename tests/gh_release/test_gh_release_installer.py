@@ -27,6 +27,14 @@ from helpers import execute_current_python_in_container
         (
             "argocd --help",
             0,
+            "mcr.microsoft.com/devcontainers/base:alpine",
+            "argoproj/argo-cd",
+            "argocd",
+            "linux/amd64",
+        ),
+        (
+            "argocd --help",
+            0,
             "mcr.microsoft.com/devcontainers/base:debian",
             "argoproj/argo-cd",
             "argocd",

@@ -12,11 +12,11 @@ import invoke
 from minilayer.devcontainer.feature_generation.oci_feature_generator import (
     OCIFeatureGenerator,
 )
-from minilayer.devcontainer.models.devcontainer_feature import Mount
 from minilayer.devcontainer.models.devcontainer_feature_definition import (
     FeatureDefinition,
     TestScenario,
 )
+from minilayer.installers.devcontainer_feature.models.devcontainer_feature import Mount
 
 
 def execute_current_python_in_container(

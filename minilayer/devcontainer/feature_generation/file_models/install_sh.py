@@ -3,9 +3,11 @@ from typing import Dict, Optional, Union
 
 from easyfs import File
 
-from minilayer.devcontainer.models.devcontainer_feature import FeatureOption
 from minilayer.devcontainer.models.devcontainer_feature_definition import (
     FeatureDependencies,
+)
+from minilayer.installers.devcontainer_feature.models.devcontainer_feature import (
+    FeatureOption,
 )
 
 logger = logging.getLogger(__name__)
@@ -45,14 +47,11 @@ class InstallSH(File):
         options: Optional[Dict[str, FeatureOption]],
     ) -> None:
         self.install_command = install_command
-        self.dependencies = dependencies
+        self.dependencies = dependencies or []
         self.options = options
         super().__init__(content=self.to_str().encode())
 
     def to_str(self) -> str:
-        if self.dependencies is None or len(self.dependencies) == 0:
-            return ""
-
         installation_lines = []
         for feature_dependency in self.dependencies:
             resolved_params = {}

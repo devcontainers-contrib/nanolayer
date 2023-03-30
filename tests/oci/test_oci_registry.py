@@ -4,7 +4,7 @@ import pathlib
 import pytest
 from helpers import RESOURCE_DIR
 
-from minilayer.oci.oci_registry import OCIRegistry
+from minilayer.utils.oci_registry import OCIRegistry
 
 TEST_OCI_OBJECT = "ghcr.io/devcontainers-contrib/features/bash-command:1.0.0"
 
