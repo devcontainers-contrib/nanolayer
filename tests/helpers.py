@@ -25,6 +25,7 @@ def execute_current_python_in_container(
     setup_command: str = "",
     remote_user: Optional[str] = None,
     docker_platform: str = "linux/amd64",
+    minilayer_version: Optional[str] = None,
 ) -> int:
     feature_definition = FeatureDefinition(id="test", version="0.0.0")
     mounts = []
@@ -87,6 +88,7 @@ def execute_current_python_in_container(
         OCIFeatureGenerator.generate(
             feature_definition=feature_definition_obj_path,
             output_dir=tmp_path_str,
+            minilayer_version=minilayer_version
         )
 
         remote_user_cmd = "" if remote_user is None else f"--remote-user {remote_user}"

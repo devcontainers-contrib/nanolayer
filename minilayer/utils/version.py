@@ -22,6 +22,7 @@ def _get_latest_release(repo: str) -> str:
 
 
 def _get_github_tags(repo: str) -> List[str]:
+    # todo: solve rate limitting issue
     response = urllib.request.urlopen(
         f"https://api.github.com/repos/{repo}/tags"
     )  # nosec
