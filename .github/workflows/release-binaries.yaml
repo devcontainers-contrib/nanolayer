@@ -91,7 +91,7 @@ jobs:
       - name: Build package
         run: |
           # https://github.com/pypa/setuptools/issues/3269#issuecomment-1104943440
-          sudo apt-get remove -y python3-setuptools 
+          # sudo apt-get remove -y python3-setuptools 
           sudo python3 -m pip uninstall setuptools
 
 
