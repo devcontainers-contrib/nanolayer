@@ -94,7 +94,7 @@ jobs:
         id: run_pyoxidizer
   
         run: |
-          sudo apt-get install -y build-essential
+          sudo apt-get install -y build-essential musl-gcc
           python3 -m pip install pyoxidizer
   
           oxidizer_location=$GITHUB_WORKSPACE
