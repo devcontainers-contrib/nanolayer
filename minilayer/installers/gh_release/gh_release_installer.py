@@ -4,12 +4,9 @@ import os
 import platform
 import re
 import shutil
-import stat
 import tarfile
 import tempfile
 import urllib
-import uuid
-import zipfile
 from copy import deepcopy
 from enum import Enum
 from pathlib import Path
@@ -231,7 +228,7 @@ class GHReleaseInstaller:
             headers = {}
 
         if "User-Agent" not in headers:
-            headers["User-Agent"] = "dcontainer"
+            headers["User-Agent"] = "minilayer"
 
         request = urllib.request.Request(url=url, headers=headers)
 

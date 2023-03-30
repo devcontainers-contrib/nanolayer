@@ -3,6 +3,7 @@ name: Release Binaries
 on:
   workflow_dispatch:
     inputs:
+
       triple_target:
         description: 'rust cargo triple target for pyoxidizer'
         required: true
@@ -67,7 +68,6 @@ jobs:
           && sudo add-apt-repository -y ppa:git-core/ppa \
           && sudo apt-get update \
           && sudo apt-get install -y git
-          
 
       - uses: actions/checkout@v3
         with:
@@ -75,7 +75,7 @@ jobs:
           # A valid .git folder is required for setuptools-scm to resolve python package versions
           fetch-depth: 0
 
-      - name: Build Python Package
+      - name: Setup python
         # IMPORTANT: the ambigiuse setup_python action does not provide support for ARM runners
         # A valid .git folder is required for setuptools-scm to resolve python package versions
         run: |
@@ -85,17 +85,23 @@ jobs:
           sudo apt-get install -y git 
           sudo apt-get install -y python3-packaging
           sudo apt-get install -y python3-dev python3-venv python3-pip
-          python3 -m pip install pip==21.3.1 
-          python3 -m pip install --upgrade build setuptools wheel  setuptools-scm packaging
+
+      - name: Build package
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade build setuptools wheel setuptools-scm packaging
+          
           export SETUPTOOLS_SCM_DEBUG=1
-          python3 -m build --wheel
+          python3 ./setup.py bdist_wheel
   
       - name: Build Binary using Pyoxidizer
         id: run_pyoxidizer
   
         run: |
           sudo apt-get install -y build-essential musl musl-dev musl-tools 
-          python3 -m pip install pyoxidizer
+
+          # NOTE: keep version at 0.23.0: https://github.com/indygreg/PyOxidizer/issues/673
+          python3 -m pip install pyoxidizer==0.23.0
   
           oxidizer_location=$GITHUB_WORKSPACE
           wheel_location=./dist/$(ls dist | grep .whl)
@@ -113,7 +119,7 @@ jobs:
             --var app_name $binary_name \
             --target-triple $target_triple 
   
-          # pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
+          pyoxidizer analyze "$oxidizer_location/build/$target_triple/release/exe/$binary_name"
           
           strip $oxidizer_location/build/$target_triple/release/exe/$binary_name
           

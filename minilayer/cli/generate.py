@@ -23,7 +23,7 @@ def generate_command(
         )
     except ImportError as e:
         logger.error(
-            "Some imports required for feature generation are missing.\nMake sure you have included the generate extras during installation.\n eg. 'pip install dcontainer[generate]'"
+            "Some imports required for feature generation are missing.\nMake sure you have included the generate extras during installation.\n eg. 'pip install minilayer[generate]'"
         )
         raise typer.Exit(code=1) from e
 

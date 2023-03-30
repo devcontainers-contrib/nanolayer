@@ -3,11 +3,13 @@ from typing import Dict, List, Optional
 
 import typer
 
-from minilayer.apt.apt_installer import AptInstaller
-from minilayer.apt_get.apt_get_installer import AptGetInstaller
-from minilayer.aptitude.aptitude_installer import AptitudeInstaller
-from minilayer.devcontainer.oci_feature_installer import OCIFeatureInstaller
-from minilayer.gh_release.gh_release_installer import GHReleaseInstaller
+from minilayer.installers.apt.apt_installer import AptInstaller
+from minilayer.installers.apt_get.apt_get_installer import AptGetInstaller
+from minilayer.installers.aptitude.aptitude_installer import AptitudeInstaller
+from minilayer.installers.devcontainer_feature.oci_feature_installer import (
+    OCIFeatureInstaller,
+)
+from minilayer.installers.gh_release.gh_release_installer import GHReleaseInstaller
 
 logger = logging.getLogger(__name__)
 
@@ -16,12 +18,18 @@ app = typer.Typer(pretty_exceptions_show_locals=False, pretty_exceptions_short=F
 app.command()
 
 
-def _validate_args(value: Optional[List[str]]):
+def _validate_args(value: Optional[List[str]]) -> Optional[List[str]]:
     if value is not None:
         for arg in value:
             splitted_arg = arg.split("=")
             if len(splitted_arg) < 2 or len(splitted_arg[0]) == 0:
                 raise typer.BadParameter("Must be formatted as 'key=value'")
+    return value
+
+
+def _non_empty_string(value: str) -> str:
+    if value == "":
+        raise typer.BadParameter("empty string value")
     return value
 
 
@@ -128,7 +136,7 @@ def install_aptitude_packages(
 @app.command("gh-release")
 def install_gh_release_binary(
     repo: str,
-    target: str,
+    target: str = typer.Option(None, callback=_non_empty_string),
     version: str = "latest",
     asset_regex: Optional[str] = None,
     force: bool = False,

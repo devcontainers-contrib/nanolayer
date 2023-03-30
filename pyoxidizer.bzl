@@ -151,6 +151,7 @@ def make_exe():
 
     # Use jemalloc as Python's memory allocator.
     # python_config.allocator_backend = "jemalloc"
+    # python_config.allocator_backend = "rust"
 
     # Use mimalloc as Python's memory allocator.
     # python_config.allocator_backend = "mimalloc"

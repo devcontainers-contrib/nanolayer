@@ -1,0 +1,65 @@
+{
+    "id": "gh-release",
+    "version": "1.0.1",
+    "name": "Github Release",
+    "documentationURL": "http://github.com/devcontainers-contrib/features/tree/main/src/gh-release",
+    "description": "Github Release feature will download, extract and add to path a release binary from a given repo",
+    "options": {
+        "repo": {
+            "default": "",
+            "description": "Select the version of the github release binary to install.",
+            "proposals": [
+                "digitalocean/doctl",
+                "argoproj/argo-cd",
+                "tenable/terrascan"
+            ],
+            "type": "string"
+        },
+        "target": {
+            "default": "",
+            "description": "The target binary name. For example, for Github CLI the binary name would be 'gh'. For DigitalOcean CLI: 'doctl', etc.",
+            "proposals": [
+                "gh",
+                "doctl"
+            ],
+            "type": "string"
+        },
+        "version": {
+            "default": "latest",
+            "description": "Select the version of the github release binary to install.",
+            "proposals": [
+                "latest"
+            ],
+            "type": "string"
+        }
+    },
+    "installsAfter": [],
+    "dependencies": [],
+    "install_command": "$minilayer_location\\\n   install gh-release\\\n   \"$REPO\"\\\n   \"$TARGET\"\\\n   --version \"$VERSION\"",
+    "test_scenarios": [
+        {
+            "name": "test_defaults_debian",
+            "image": "mcr.microsoft.com/devcontainers/base:debian",
+            "test_commands": [
+                "gh --version"
+            ],
+            "options": {
+                "version": "latest",
+                "repo": "cli/cli",
+                "target": "gh"
+            }
+        },
+        {
+            "name": "test_defaults_alpine",
+            "image": "mcr.microsoft.com/devcontainers/base:alpine",
+            "test_commands": [
+                "gh --version"
+            ],
+            "options": {
+                "version": "latest",
+                "repo": "cli/cli",
+                "target": "gh"
+            }
+        }
+    ]
+}

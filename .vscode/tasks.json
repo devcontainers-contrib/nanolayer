@@ -1,0 +1,10 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "pyoxidizer",
+            "type": "shell",
+            "command": "python3 -m build --wheel && pyoxidizer build exe --path ${workspaceFolder} --release --var wheel_location ./dist/$(ls dist | grep .whl) --var run_command 'from minilayer.__main__ import main; main()'  --var python_version 3.10  --var app_name minilayer --target-triple x86_64-unknown-linux-musl"
+        }
+    ]
+}

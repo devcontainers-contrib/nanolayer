@@ -23,13 +23,13 @@ on:
         description: 'ami image id'
         required: false
         type: string
-        default: "ami-0557a15b87f6559cf"  # ubuntu 22.04 on us-east-1
+        default: "ami-05bdb9a595eeef95a"  # ubuntu 22.04 on us-east-1
           
       instance_type:
         description: 'aws instance type'
         required: true
         type: string
-        default: "c6i.large"
+        default: "c6i.xlarge"
 
 
   workflow_call:
@@ -49,13 +49,13 @@ on:
         description: 'ami image id'
         required: false
         type: string
-        default: "ami-0557a15b87f6559cf"  # ubuntu 22.04 on us-east-1
+        default: "ami-05bdb9a595eeef95a"  # ubuntu 18.04 on us-east-1
         
       instance_type:
         description: 'aws instance type'
         required: true
         type: string
-        default: "c6i.large"
+        default: "c6i.xlarge"
         
 permissions:
   contents: write

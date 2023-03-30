@@ -1,7 +1,7 @@
 import tempfile
 from typing import Dict, List, Optional
 
-from minilayer.apt_get.apt_get_installer import AptGetInstaller
+from minilayer.installers.apt_get.apt_get_installer import AptGetInstaller
 from minilayer.utils.invoker import Invoker
 from minilayer.utils.linux_information_desk import LinuxInformationDesk
 

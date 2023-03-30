@@ -23,6 +23,20 @@ jobs:
       # ami_id: ami-007855ac798b5175e # ubuntu 22.04
       
  
+ 
+  release-publish-x86_64-alpine:
+    uses: ./.github/workflows/release-binaries-on-ec2.yaml
+    secrets: inherit
+    with:
+      triple_target: "x86_64-unknown-linux-musl"
+      binary_name: "minilayer"
+      instance_type: "c6i.xlarge"
+      # ami_id: ami-0b0ea68c435eb488d # ubuntu 16.04
+      ami_id: ami-05bdb9a595eeef95a # ubuntu 18.04
+      # ami_id: ami-07a72d328538fc075 # ubuntu 20.04 
+      # ami_id: ami-007855ac798b5175e # ubuntu 22.04
+      
+ 
   release-publish-arm64:
     uses: ./.github/workflows/release-binaries-on-ec2.yaml
     secrets: inherit

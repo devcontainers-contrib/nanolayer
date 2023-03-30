@@ -126,7 +126,7 @@ class OCIRegistry:
             headers = {}
 
         if "User-Agent" not in headers:
-            headers["User-Agent"] = "dcontainer"
+            headers["User-Agent"] = "minilayer"
 
         request = urllib.request.Request(url=url, headers=headers)
 

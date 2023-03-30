@@ -5,7 +5,7 @@ from importlib.metadata import version
 from typing import List, Optional
 
 OWN_REPO = "devcontainers-contrib/cli"
-OWN_PACKAGE = "dcontainer"
+OWN_PACKAGE = "minilayer"
 
 
 def _resolve_package_version(package: str) -> str:
