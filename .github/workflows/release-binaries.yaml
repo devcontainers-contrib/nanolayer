@@ -87,7 +87,8 @@ jobs:
           sudo apt-get install -y python3-packaging
           sudo apt-get install -y python3-dev python3-venv python3-pip
           sudo python3 -m pip install pip==21.3.1 
-
+          - name: Setup upterm session
+          uses: lhotari/action-upterm@v1
       - name: Build package
         run: |
           # https://github.com/pypa/setuptools/issues/3269#issuecomment-1104943440
