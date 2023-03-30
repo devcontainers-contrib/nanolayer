@@ -97,14 +97,14 @@ jobs:
           # sudo apt-get remove -y python3-setuptools 
           export DEB_PYTHON_INSTALL_LAYOUT=deb_system
 
-          sudo python3 -m pip install --upgrade pip
-          sudo python3 -m pip install --upgrade build setuptools wheel setuptools-scm packaging
+          # sudo python3 -m pip install --upgrade pip
+          # sudo python3 -m pip install --upgrade build setuptools wheel setuptools-scm packaging
           
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade build setuptools wheel setuptools-scm packaging
           
           export SETUPTOOLS_SCM_DEBUG=1
-          python3 -m build --wheel
+          python3 ./setup.py bdist_wheel
   
       - name: Build Binary using Pyoxidizer
         id: run_pyoxidizer
