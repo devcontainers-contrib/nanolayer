@@ -2,7 +2,7 @@
 
 `nanolayer` helps keep container layers as small as possible.
 
-It does so by automaticly deleting any installation leftovers (such as apt-get update lists, ppas, etc)
+It does so by automatically deleting any installation leftovers (such as apt-get update lists, ppas, etc)
 
 
 ## Installation
