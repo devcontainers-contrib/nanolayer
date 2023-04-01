@@ -16,8 +16,8 @@ import invoke
 import semver
 from pydantic import BaseModel, Extra
 
-from minilayer.utils.invoker import Invoker
-from minilayer.utils.linux_information_desk import LinuxInformationDesk
+from nanolayer.utils.invoker import Invoker
+from nanolayer.utils.linux_information_desk import LinuxInformationDesk
 
 logger = logging.getLogger(__name__)
 from tarfile import TarFile
@@ -228,7 +228,7 @@ class GHReleaseInstaller:
             headers = {}
 
         if "User-Agent" not in headers:
-            headers["User-Agent"] = "minilayer"
+            headers["User-Agent"] = "nanolayer"
 
         request = urllib.request.Request(url=url, headers=headers)
 

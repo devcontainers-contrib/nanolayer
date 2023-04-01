@@ -35,7 +35,7 @@
     },
     "installsAfter": [],
     "dependencies": [],
-    "install_command": "$minilayer_location\\\n   install gh-release\\\n   \"$REPO\"\\\n   \"$TARGET\"\\\n   --version \"$VERSION\"",
+    "install_command": "$nanolayer_location\\\n   install gh-release\\\n   \"$REPO\"\\\n   \"$TARGET\"\\\n   --version \"$VERSION\"",
     "test_scenarios": [
         {
             "name": "test_defaults_debian",

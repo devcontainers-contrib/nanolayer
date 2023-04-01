@@ -16,7 +16,7 @@ on:
         description: 'output binary name'
         required: false
         type: string
-        default: "minilayer"
+        default: "nanolayer"
 
   
       ami_id:
@@ -43,7 +43,7 @@ on:
         description: 'output binary name'
         required: false
         type: string
-        default: "minilayer"
+        default: "nanolayer"
   
       ami_id:
         description: 'ami image id'

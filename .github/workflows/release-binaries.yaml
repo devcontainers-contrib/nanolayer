@@ -17,7 +17,7 @@ on:
         description: 'output binary name'
         required: false
         type: string
-        default: "minilayer"
+        default: "nanolayer"
 
       runner:
         description: 'runner name'
@@ -38,7 +38,7 @@ on:
         description: 'output binary name'
         required: false
         type: string
-        default: "minilayer"
+        default: "nanolayer"
         
   
       runner:
@@ -55,7 +55,7 @@ permissions:
 jobs:
   release-publish:
     env:
-      binary_name: minilayer
+      binary_name: nanolayer
     runs-on: ${{ inputs.runner }}  # assume python3 exists
 
     steps:
@@ -107,7 +107,7 @@ jobs:
           wheel_location=./dist/$(ls dist | grep .whl)
           target_triple=${{ inputs.triple_target }}
           binary_name=${{ inputs.binary_name }} 
-          run_command="from minilayer.__main__ import main; main()"
+          run_command="from nanolayer.__main__ import main; main()"
           python_version="3.10"
   
           pyoxidizer build exe \
