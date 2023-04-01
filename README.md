@@ -1,7 +1,9 @@
 # Nanolayer CLI
 
-`nanolayer` helps keep copntainer layers are small as possible
-It automaticly deletes installation leftovers (such as apt-get update lists, ppas, etc)
+`nanolayer` helps keep container layers as small as possible.
+
+It does so by automaticly deleting any installation leftovers (such as apt-get update lists, ppas, etc)
+
 
 ## Installation
 
