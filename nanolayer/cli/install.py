@@ -3,13 +3,13 @@ from typing import Dict, List, Optional
 
 import typer
 
-from minilayer.installers.apt.apt_installer import AptInstaller
-from minilayer.installers.apt_get.apt_get_installer import AptGetInstaller
-from minilayer.installers.aptitude.aptitude_installer import AptitudeInstaller
-from minilayer.installers.devcontainer_feature.oci_feature_installer import (
+from nanolayer.installers.apt.apt_installer import AptInstaller
+from nanolayer.installers.apt_get.apt_get_installer import AptGetInstaller
+from nanolayer.installers.aptitude.aptitude_installer import AptitudeInstaller
+from nanolayer.installers.devcontainer_feature.oci_feature_installer import (
     OCIFeatureInstaller,
 )
-from minilayer.installers.gh_release.gh_release_installer import GHReleaseInstaller
+from nanolayer.installers.gh_release.gh_release_installer import GHReleaseInstaller
 
 logger = logging.getLogger(__name__)
 

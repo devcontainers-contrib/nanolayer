@@ -51,7 +51,7 @@ def test_apt_get_install(
 ) -> None:
     packages_cmd = " ".join([f"{package} " for package in packages])
     ppas_cmd = " ".join([f"--ppa {ppa}" for ppa in ppas])
-    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m minilayer install apt-get {packages_cmd} {ppas_cmd} && {test_command}"
+    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install apt-get {packages_cmd} {ppas_cmd} && {test_command}"
 
     assert excpected_result == execute_current_python_in_container(
         test_command=full_test_command, image=image, docker_platform=docker_platform

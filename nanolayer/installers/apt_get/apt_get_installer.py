@@ -1,8 +1,8 @@
 import tempfile
 from typing import Dict, List, Optional
 
-from minilayer.utils.invoker import Invoker
-from minilayer.utils.linux_information_desk import LinuxInformationDesk
+from nanolayer.utils.invoker import Invoker
+from nanolayer.utils.linux_information_desk import LinuxInformationDesk
 
 
 class AptGetInstaller:

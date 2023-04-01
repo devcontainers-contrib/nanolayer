@@ -1,7 +1,7 @@
 import typer
 
-from minilayer.cli.install import app as install_app
-from minilayer.utils.version import (
+from nanolayer.cli.install import app as install_app
+from nanolayer.utils.version import (
     resolve_own_package_version,
     resolve_own_release_version,
 )
@@ -12,13 +12,13 @@ app.add_typer(install_app, name="install")
 
 def version_callback(value: bool) -> None:
     if value:
-        typer.echo(f"minilayer version: {resolve_own_package_version()}")
+        typer.echo(f"nanolayer version: {resolve_own_package_version()}")
         raise typer.Exit()
 
 
 def release_version_callback(value: bool) -> None:
     if value:
-        typer.echo(f"minilayer release version: {resolve_own_release_version()}")
+        typer.echo(f"nanolayer release version: {resolve_own_release_version()}")
         raise typer.Exit()
 
 

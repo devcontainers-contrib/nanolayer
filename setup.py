@@ -33,13 +33,13 @@ with open("requirements-dev.txt", "r") as f:
 
 
 setup(
-    name="minilayer",
+    name="nanolayer",
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     author="Daniel Braun",
     packages=find_packages(),
     install_requires=REQUIREMENTS,
-    package_data={"minilayer": ["py.typed"]},
+    package_data={"nanolayer": ["py.typed"]},
     long_description_content_type="text/markdown",
     long_description=(pathlib.Path(__file__).parent.resolve() / "README.md").read_text(
         encoding="utf-8"
@@ -47,5 +47,5 @@ setup(
     extras_require={
         "dev": REQUIREMENTS_DEV,
     },
-    entry_points={"console_scripts": ["minilayer=minilayer.__main__:main"]},
+    entry_points={"console_scripts": ["nanolayer=nanolayer.__main__:main"]},
 )

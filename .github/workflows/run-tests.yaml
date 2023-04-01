@@ -23,7 +23,7 @@ jobs:
       with:
         filters: |
           relevant_files:
-            - 'minilayer/**'
+            - 'nanolayer/**'
             - 'tests/**'
             - '.github/workflows/run-tests.yaml'
 

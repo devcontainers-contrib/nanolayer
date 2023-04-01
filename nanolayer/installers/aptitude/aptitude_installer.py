@@ -1,9 +1,9 @@
 import tempfile
 from typing import Dict, List, Optional
 
-from minilayer.installers.apt_get.apt_get_installer import AptGetInstaller
-from minilayer.utils.invoker import Invoker
-from minilayer.utils.linux_information_desk import LinuxInformationDesk
+from nanolayer.installers.apt_get.apt_get_installer import AptGetInstaller
+from nanolayer.utils.invoker import Invoker
+from nanolayer.utils.linux_information_desk import LinuxInformationDesk
 
 
 class AptitudeInstaller:

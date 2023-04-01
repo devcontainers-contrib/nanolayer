@@ -1,14 +1,14 @@
-# MiniLayer CLI
+# nanolayer CLI
 
 
 ## Installation
 
 
-`pipx install minilayer`
+`pipx install nanolayer`
 
 
 ### GH Release installation:
 
 ```
-Usage: minilayer install gh cli/cli gh 
+Usage: nanolayer install gh cli/cli gh 
 ```
