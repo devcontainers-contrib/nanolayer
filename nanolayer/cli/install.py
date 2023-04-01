@@ -27,7 +27,6 @@ def _validate_args(value: Optional[List[str]]) -> Optional[List[str]]:
     return value
 
 
-
 @app.command("devcontainer-feature")
 def install_devcontainer_feature(
     feature: str,
@@ -73,16 +72,17 @@ def install_devcontainer_feature(
 
 @app.command("apt-get")
 def install_apt_get_packages(
-    package: List[str],
-    ppa: Optional[List[str]] = typer.Option(None),
+    packages: str = typer.Argument(None, help="comma separated list of apt-get packages"),
+    ppas: Optional[str] = typer.Option(None, help="comma separated list of ppas to make use of"),
     force_ppas_on_non_ubuntu: bool = False,
     clean_ppas: bool = True,
     clean_cache: bool = True,
     preserve_apt_list: bool = True,
 ) -> None:
+    
     AptGetInstaller.install(
-        packages=package,
-        ppas=ppa,
+        packages=packages.split(","),
+        ppas=ppas.split(","),
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
         clean_ppas=clean_ppas,
         clean_cache=clean_cache,
@@ -92,16 +92,16 @@ def install_apt_get_packages(
 
 @app.command("apt")
 def install_apt_packages(
-    package: List[str],
-    ppa: Optional[List[str]] = typer.Option(None),
+    packages: str = typer.Argument(None, help="comma separated list of apt packages"),
+    ppas: Optional[str] = typer.Option(None, help="comma separated list of ppas to make use of"),
     force_ppas_on_non_ubuntu: bool = False,
     clean_ppas: bool = True,
     clean_cache: bool = True,
     preserve_apt_list: bool = True,
 ) -> None:
     AptInstaller.install(
-        packages=package,
-        ppas=ppa,
+        packages=packages.split(","),
+        ppas=ppas.split(","),
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
         clean_ppas=clean_ppas,
         clean_cache=clean_cache,
@@ -111,16 +111,16 @@ def install_apt_packages(
 
 @app.command("aptitude")
 def install_aptitude_packages(
-    package: List[str],
-    ppa: Optional[List[str]] = typer.Option(None),
+    packages: str = typer.Argument(None, help="comma separated list of aptitude packages"),
+    ppas: Optional[str] = typer.Option(None, help="comma separated list of ppas to make use of"),
     force_ppas_on_non_ubuntu: bool = False,
     clean_ppas: bool = True,
     clean_cache: bool = True,
     preserve_apt_list: bool = True,
 ) -> None:
     AptitudeInstaller.install(
-        packages=package,
-        ppas=ppa,
+        packages=packages.split(","),
+        ppas=ppas.split(","),
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
         clean_ppas=clean_ppas,
         clean_cache=clean_cache,

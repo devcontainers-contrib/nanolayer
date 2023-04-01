@@ -8,32 +8,32 @@ from helpers import execute_current_python_in_container
     "packages,ppas,test_command,image,excpected_result,docker_platform",
     [
         (
-            ["neovim"],
-            ["ppa:neovim-ppa/stable"],
+            "neovim",
+            "ppa:neovim-ppa/stable",
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:ubuntu",
             0,
             "linux/amd64",
         ),
         (
-            ["neovim"],
-            ["ppa:neovim-ppa/stable"],
+            "neovim",
+            "ppa:neovim-ppa/stable",
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
             1,
             "linux/amd64",
         ),
         (
-            ["neovim"],
-            [],
+            "neovim",
+            "",
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
             0,
             "linux/amd64",
         ),
         (
-            ["neovim"],
-            [],
+            "neovim",
+            "",
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
             0,
@@ -42,16 +42,15 @@ from helpers import execute_current_python_in_container
     ],
 )
 def test_apt_get_install(
-    packages: List[str],
-    ppas: List[str],
+    packages: str,
+    ppas: str,
     test_command,
     image: str,
     excpected_result: int,
     docker_platform: str,
 ) -> None:
-    packages_cmd = " ".join([f"{package} " for package in packages])
-    ppas_cmd = " ".join([f"--ppa {ppa}" for ppa in ppas])
-    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install apt-get {packages_cmd} {ppas_cmd} && {test_command}"
+    ppas_cmd = f" --ppas {ppas} " if ppas else ""
+    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install apt-get {packages} {ppas_cmd} && {test_command}"
 
     assert excpected_result == execute_current_python_in_container(
         test_command=full_test_command, image=image, docker_platform=docker_platform

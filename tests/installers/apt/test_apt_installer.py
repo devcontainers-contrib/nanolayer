@@ -5,41 +5,51 @@ from helpers import execute_current_python_in_container
 
 
 @pytest.mark.parametrize(
-    "packages,ppas,test_command,image,excpected_result",
+    "packages,ppas,test_command,image,excpected_result,docker_platform",
     [
         (
-            ["neovim"],
-            ["ppa:neovim-ppa/stable"],
+            "neovim",
+            "ppa:neovim-ppa/stable",
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:ubuntu",
             0,
+            "linux/amd64",
         ),
         (
-            ["neovim"],
-            ["ppa:neovim-ppa/stable"],
+            "neovim",
+            "ppa:neovim-ppa/stable",
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
             1,
+            "linux/amd64",
         ),
         (
-            ["neovim"],
-            [],
+            "neovim",
+            "",
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:debian",
             0,
+            "linux/amd64",
+        ),
+        (
+            "neovim",
+            "",
+            "nvim --version",
+            "mcr.microsoft.com/devcontainers/base:debian",
+            0,
+            "linux/arm64",
         ),
     ],
 )
 def test_apt_install(
-    packages: List[str],
-    ppas: List[str],
+    packages: str,
+    ppas: str,
     test_command,
     image: str,
     excpected_result: int,
 ) -> None:
-    packages_cmd = " ".join([f"{package} " for package in packages])
-    ppas_cmd = " ".join([f"--ppa {ppa}" for ppa in ppas])
-    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install apt {packages_cmd} {ppas_cmd} && {test_command}"
+    ppas_cmd = f" --ppas {ppas} " if ppas else ""
+    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install apt {packages} {ppas_cmd} && {test_command}"
 
     assert excpected_result == execute_current_python_in_container(
         test_command=full_test_command,
