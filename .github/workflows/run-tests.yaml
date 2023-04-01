@@ -36,16 +36,16 @@ jobs:
       matrix:
         config:
           - {
-            subtest_dir: "tests/apt"
+            subtest_dir: "tests/installers/apt"
           }
           - {
-            subtest_dir: "tests/apt_get"
+            subtest_dir: "tests/installers/apt_get"
           }
           - {
-            subtest_dir: "tests/aptitude"
+            subtest_dir: "tests/installers/aptitude"
           }
           - {
-            subtest_dir: "tests/gh_release"
+            subtest_dir: "tests/installers/gh_release"
           }
 
 
