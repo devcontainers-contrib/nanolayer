@@ -1,5 +1,7 @@
 # Nanolayer CLI
 
+`nanolayer` helps keep copntainer layers are small as possible
+It automaticly deletes installation leftovers (such as apt-get update lists, ppas, etc)
 
 ## Installation
 
@@ -14,9 +16,15 @@ Usage:
 nanolayer install gh cli/cli gh 
 ```
 
-### Comparisons
+### Example 
 
-#### Nano layer
+```dockerfile
+FROM python:3.10
+
+RUN apt-get -y update && apt-get install -y htop 
+```
+
+layer size:  **22MB**
 
 ```dockerfile
 FROM python:3.10
@@ -27,14 +35,4 @@ RUN curl -sfL https://github.com/devcontainers-contrib/nanolayer/releases/downlo
     rm /nanolayer
 ```
 
-layer size: 1.6MB
-
-#### Regular layer
-
-```dockerfile
-FROM python:3.10
-
-RUN apt-get -y update && apt-get install -y htop 
-```
-
-layer size:  22MB
+Layer size: **1.6MB**
