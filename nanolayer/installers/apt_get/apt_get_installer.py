@@ -83,7 +83,7 @@ class AptGetInstaller:
                 ):
 
             Invoker.invoke(
-                command="apt install -y software-properties-common",
+                command="apt-get install -y software-properties-common",
                 raise_on_failure=True,
                 exception_class=cls.AddPPAsFailed,
             )
