@@ -4,7 +4,7 @@ set -x
 npm install -g @devcontainers/cli
 
 
-pip install -e .[dev,generate]
+pip install -e .[dev]
 
 apt-get -y install qemu binfmt-support qemu-user-static
 
