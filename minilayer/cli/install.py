@@ -27,11 +27,6 @@ def _validate_args(value: Optional[List[str]]) -> Optional[List[str]]:
     return value
 
 
-def _non_empty_string(value: str) -> str:
-    if value == "":
-        raise typer.BadParameter("empty string value")
-    return value
-
 
 @app.command("devcontainer-feature")
 def install_devcontainer_feature(
@@ -136,12 +131,15 @@ def install_aptitude_packages(
 @app.command("gh-release")
 def install_gh_release_binary(
     repo: str,
-    target: str = typer.Option(None, callback=_non_empty_string),
+    target: str,
     version: str = "latest",
     asset_regex: Optional[str] = None,
     force: bool = False,
     arch: Optional[str] = None,
 ) -> None:
+    if target == "":
+        raise typer.BadParameter("target cannot be empty string")
+    
     GHReleaseInstaller.install(
         repo=repo,
         target_name=target,

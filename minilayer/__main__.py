@@ -1,6 +1,5 @@
 import typer
 
-from minilayer.cli.generate import app as generate_app
 from minilayer.cli.install import app as install_app
 from minilayer.utils.version import (
     resolve_own_package_version,
@@ -9,7 +8,6 @@ from minilayer.utils.version import (
 
 app = typer.Typer(pretty_exceptions_show_locals=False, pretty_exceptions_short=False)
 app.add_typer(install_app, name="install")
-app.add_typer(generate_app, name="generate")
 
 
 def version_callback(value: bool) -> None:

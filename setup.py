@@ -30,13 +30,6 @@ with open("requirements-dev.txt", "r") as f:
     ]
 
 
-with open("requirements-generate.txt", "r") as f:
-    REQUIREMENTS_GENERATE = [
-        str(requirement)
-        for requirement in parse_requirements(
-            [fix_requirement_line(line) for line in f.readlines()]
-        )
-    ]
 
 
 setup(
@@ -53,7 +46,6 @@ setup(
     ),
     extras_require={
         "dev": REQUIREMENTS_DEV,
-        "generate": REQUIREMENTS_GENERATE,
     },
     entry_points={"console_scripts": ["minilayer=minilayer.__main__:main"]},
 )

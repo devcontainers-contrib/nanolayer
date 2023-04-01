@@ -75,7 +75,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip 
           python -m pip install --upgrade build setuptools wheel  setuptools-scm
-          pip install -r requirements.txt -r requirements-generate.txt -r requirements-dev.txt
+          pip install -r requirements.txt -r requirements-dev.txt
       - name: "Test with pytest"
         run: |
-          python -m pytest -s -v ${{ matrix.config.subtest_dir }} --ignore=tests/devcontainer/feature_generation
+          python -m pytest -s -v ${{ matrix.config.subtest_dir }}

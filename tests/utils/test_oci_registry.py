@@ -1,8 +1,6 @@
-import os
 import pathlib
 
 import pytest
-from helpers import RESOURCE_DIR
 
 from minilayer.utils.oci_registry import OCIRegistry
 

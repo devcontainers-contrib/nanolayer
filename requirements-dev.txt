@@ -8,3 +8,4 @@ setuptools
 wheel  
 setuptools-scm 
 packaging
+dcontainer>=1.0.0rc4
