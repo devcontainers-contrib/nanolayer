@@ -45,6 +45,7 @@ class AptGetInstaller:
 
     @classmethod
     def _clean_ppas(cls, ppas: List[str], remove_software_properties_common: bool) -> None:
+        
         normalized_ppas = cls.normalize_ppas(ppas)
 
         for ppa in normalized_ppas:
@@ -150,7 +151,7 @@ class AptGetInstaller:
                 )
 
             finally:
-                if clean_ppas:
+                if ppas and clean_ppas:
                     cls._clean_ppas(ppas=ppas, 
                                     remove_software_properties_common=software_properties_common_installed)
 
