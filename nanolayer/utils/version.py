@@ -4,7 +4,7 @@ import urllib.request
 from importlib.metadata import version
 from typing import List, Optional
 
-OWN_REPO = "devcontainers-contrib/cli"
+OWN_REPO = "devcontainers-contrib/nanolayer"
 OWN_PACKAGE = "nanolayer"
 
 

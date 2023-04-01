@@ -21,7 +21,7 @@ nanolayer install gh cli/cli gh
 ```dockerfile
 FROM python:3.10
 
-RUN curl -sfL https://github.com/devcontainers-contrib/cli/releases/download/v0.4.0/nanolayer-x86_64-unknown-linux-gnu.tgz | tar fxvz - -C / && \
+RUN curl -sfL https://github.com/devcontainers-contrib/nanolayer/releases/download/v0.4.0/nanolayer-x86_64-unknown-linux-gnu.tgz | tar fxvz - -C / && \
     chmod 755 /tmp/nanolayer && ls /tmp && \
     /nanolayer install apt-get htop && \
     rm /nanolayer
