@@ -436,8 +436,6 @@ class GHReleaseInstaller:
         version: str = "latest",
         force: bool = False,
         arch: Optional[str] = None,
-        checksum_regex: Optional[str] = None,
-        checksum: Optional[bool] = True,
     ) -> None:
         if "linux" not in platform.system().lower():
             raise cls.BadPlatform(
@@ -473,8 +471,9 @@ class GHReleaseInstaller:
             arch=arch,
             target_name=target_name,
         )
-
-        #
+        
+        logger.warning("resolved asset: %s", resolved_asset.name)
+        
         with tempfile.TemporaryDirectory() as tempdir:
             tempdir = Path(tempdir)
 
@@ -485,6 +484,8 @@ class GHReleaseInstaller:
             )
 
             if tarfile.is_tarfile(temp_asset_path):
+                logger.warning("asset recognized as a tar file")
+
                 with ExtendedTarFile.open(temp_asset_path) as tarf:
                     # resolve target member name
                     if len(tarf.getnames()) == 1:
@@ -501,10 +502,13 @@ class GHReleaseInstaller:
                                 f"no binary named {target_name} found in archive {resolved_asset.name}"
                             )
                         target_member_name = target_member_names[0]
+                    
+                    logger.warning("target binary found in tar as member: %s", target_member_name)
 
                     same_dir_members = tarf.get_names_by_prefix(
                         os.path.dirname(target_member_name)
                     )
+
                     if len(same_dir_members) == 1:
                         # In case of a single file, copy it into bin location and rename it as the target name
                         tarf.extract(target_member_name, temp_extraction_path)
@@ -521,10 +525,11 @@ class GHReleaseInstaller:
                     else:
                         # In case other files in same dir, assume lib dir.
                         # extracting to lib location and soft link the target into bin location
-                        logger.warning(
-                            "extracting %s into %s", resolved_asset.name, lib_location
-                        )
                         target_lib_location = lib_location.joinpath(target_name)
+
+                        logger.warning(
+                            "extracting %s into %s", resolved_asset.name, target_lib_location
+                        )
 
                         if target_lib_location.exists() and not force:
                             raise cls.TargetExists(
@@ -544,7 +549,7 @@ class GHReleaseInstaller:
                                 f"{target_lib_location} already exists"
                             ) from exc
 
-                        lib_binary_location = target_lib_location.joinpath(target_name)
+                        lib_binary_location = target_lib_location.joinpath(target_member_name)
 
                         # execute permissions
                         cls._recursive_chmod(target_lib_location, cls.BIN_PERMISSIONS)

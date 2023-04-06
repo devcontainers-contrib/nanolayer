@@ -9,6 +9,14 @@ from helpers import execute_current_python_in_container
     "test_command,excpected_result,image,repo,target,docker_platform",
     [
         (
+            "upx --version",
+            0,
+            "mcr.microsoft.com/devcontainers/base:debian",
+            "upx/upx",
+            "upx",
+            "linux/amd64",
+        ),
+        (
             "doctl version",
             0,
             "mcr.microsoft.com/devcontainers/base:debian",

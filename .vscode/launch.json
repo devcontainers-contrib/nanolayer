@@ -103,8 +103,8 @@
             "args": [
                 "install",
                 "gh-release",
-                "cli/cli",
-                "gh",
+                "upx/upx",
+                "upx",
                 "--force"
             ] 
         },
