@@ -30,8 +30,6 @@ with open("requirements-dev.txt", "r") as f:
     ]
 
 
-
-
 setup(
     name="nanolayer",
     use_scm_version=True,
