@@ -162,7 +162,7 @@ ARCH_REGEX_MAP = {
 
 
 MISC_REGEX_MAP = {
-    "packages": "(\.deb|\.rpm|\.pkg)",
+    "packages": "(\.deb|\.rpm|\.pkg|\.apk)",
     "checksums": "(\.pub$|\.sig$|\.text$|\.txt$|[Cc]hecksums|sha256)",
 }
 
@@ -195,10 +195,6 @@ class GHReleaseInstaller:
         LinuxInformationDesk.Architecture.ARM64.value,
         LinuxInformationDesk.Architecture.x86_64.value,
     )
-
-    CHECKSUMS_REGEX = "(\.pub$|\.sig$|\.text$|\.txt$|[Cc]hecksums|sha256)"
-
-    DISTRIBUTION_PACKAGES_REGEX = "(\.deb|\.rpm|\.pkg|\.apk)"
 
     class ReleaseAsset(BaseModel):
         class Config:
