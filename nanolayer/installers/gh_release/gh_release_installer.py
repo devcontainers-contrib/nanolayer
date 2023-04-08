@@ -198,7 +198,7 @@ class GHReleaseInstaller:
 
     CHECKSUMS_REGEX = "(\.pub$|\.sig$|\.text$|\.txt$|[Cc]hecksums|sha256)"
 
-    DISTRIBUTION_PACKAGES_REGEX = "(\.deb|\.rpm|\.pkg)"
+    DISTRIBUTION_PACKAGES_REGEX = "(\.deb|\.rpm|\.pkg|\.apk)"
 
     class ReleaseAsset(BaseModel):
         class Config:

@@ -104,6 +104,14 @@ from helpers import execute_current_python_in_container
             "exa",
             "linux/amd64",
         ),
+        (  # .apk file
+            "duf --version",
+            0,
+            "mcr.microsoft.com/devcontainers/base:debian",
+            "muesli/duf",
+            "duf",
+            "linux/amd64",
+        ),
         (
             "pwsh --version",
             1,
