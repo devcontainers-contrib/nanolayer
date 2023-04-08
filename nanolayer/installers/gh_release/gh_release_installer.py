@@ -39,55 +39,57 @@ class AbstractExtendedArchive(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_members(self) -> List[str]:
+    def get_file_members(self) -> List[str]:
         raise NotImplementedError()
 
 
 class ExtendedZipFile(ZipFile, AbstractExtendedArchive):
-    def get_members(self) -> List[str]:
-        return self.namelist()
+    def get_file_members(self) -> List[str]:
+        members = self.namelist()
+        return [member for member in members if not member.endswith('/')]
 
     def get_names_by_prefix(self, prefix: str) -> None:
         subdir_and_files = [
-            name for name in self.get_members() if name.startswith(prefix)
+            name for name in self.get_file_members() if name.startswith(prefix)
         ]
         return subdir_and_files
 
     def get_names_by_suffix(self, suffix: str) -> None:
         subdir_and_files = [
-            name for name in self.get_members() if name.endswith(suffix)
+            name for name in self.get_file_members() if name.endswith(suffix)
         ]
         return subdir_and_files
 
     def names_by_filename(self, filename: str) -> List[str]:
         matching_members = self.get_names_by_suffix(suffix=f"/{filename}")
         # could also be as root member
-        if filename in self.get_members():
+        if filename in self.get_file_members():
             matching_members.append(filename)
 
         return matching_members
 
 
 class ExtendedTarFile(TarFile, AbstractExtendedArchive):
-    def get_members(self) -> List[str]:
-        return self.getnames()
+    def get_file_members(self) -> List[str]:
+        members = self.getmembers()
+        return [member.name for member in members if member.isfile()]
 
     def get_names_by_prefix(self, prefix: str) -> None:
         subdir_and_files = [
-            name for name in self.get_members() if name.startswith(prefix)
+            name for name in self.get_file_members() if name.startswith(prefix)
         ]
         return subdir_and_files
 
     def get_names_by_suffix(self, suffix: str) -> None:
         subdir_and_files = [
-            name for name in self.get_members() if name.endswith(suffix)
+            name for name in self.get_file_members() if name.endswith(suffix)
         ]
         return subdir_and_files
 
     def names_by_filename(self, filename: str) -> List[str]:
         matching_members = self.get_names_by_suffix(suffix=f"/{filename}")
         # could also be as root member
-        if filename in self.get_members():
+        if filename in self.get_file_members():
             matching_members.append(filename)
 
         return matching_members
@@ -129,8 +131,8 @@ class Archive:
     def names_by_filename(self, filename: str) -> None:
         return self._archive.names_by_filename(filename)
 
-    def get_members(self) -> List[str]:
-        return self._archive.get_members()
+    def get_file_members(self) -> List[str]:
+        return self._archive.get_file_members()
 
 
 class PlatformType(Enum):
@@ -579,9 +581,9 @@ class GHReleaseInstaller:
                     logger.warning("asset recognized as an archive file")
 
                     # resolve target member name
-                    if len(archive_file.get_members()) == 1:
+                    if len(archive_file.get_file_members()) == 1:
                         # In case of a single member, use it no matter how its named
-                        target_member_name = archive_file.get_members()[0]
+                        target_member_name = archive_file.get_file_members()[0]
                     else:
                         target_member_names = archive_file.names_by_filename(
                             target_name
