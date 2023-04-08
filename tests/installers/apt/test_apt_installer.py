@@ -47,7 +47,7 @@ def test_apt_install(
     test_command,
     image: str,
     excpected_result: int,
-    docker_platform:str,
+    docker_platform: str,
 ) -> None:
     ppas_cmd = f" --ppas {ppas} " if ppas else ""
     full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install apt {packages} {ppas_cmd} && {test_command}"

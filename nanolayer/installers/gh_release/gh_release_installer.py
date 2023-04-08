@@ -20,31 +20,117 @@ from nanolayer.utils.invoker import Invoker
 from nanolayer.utils.linux_information_desk import LinuxInformationDesk
 
 logger = logging.getLogger(__name__)
-from tarfile import TarFile
+from abc import ABC, abstractmethod
+from tarfile import TarFile, is_tarfile
+from zipfile import ZipFile, is_zipfile
 
 
-class ExtendedTarFile(TarFile):
-    def extract_prefix(self, prefix: str) -> None:
-        subdir_and_files = [
-            tarinfo for tarinfo in self.getmembers() if tarinfo.name.startswith(prefix)
-        ]
-        self.extractall(members=subdir_and_files)
+class AbstractExtendedArchive(ABC):
+    @abstractmethod
+    def get_names_by_prefix(self, prefix: str) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_names_by_suffix(self, suffix: str) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def names_by_filename(self, filename: str) -> List[str]:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_members(self) -> List[str]:
+        raise NotImplementedError()
+
+
+class ExtendedZipFile(ZipFile, AbstractExtendedArchive):
+    def get_members(self) -> List[str]:
+        return self.namelist()
 
     def get_names_by_prefix(self, prefix: str) -> None:
-        subdir_and_files = [name for name in self.getnames() if name.startswith(prefix)]
+        subdir_and_files = [
+            name for name in self.get_members() if name.startswith(prefix)
+        ]
         return subdir_and_files
 
     def get_names_by_suffix(self, suffix: str) -> None:
-        subdir_and_files = [name for name in self.getnames() if name.endswith(suffix)]
+        subdir_and_files = [
+            name for name in self.get_members() if name.endswith(suffix)
+        ]
         return subdir_and_files
 
     def names_by_filename(self, filename: str) -> List[str]:
         matching_members = self.get_names_by_suffix(suffix=f"/{filename}")
         # could also be as root member
-        if filename in self.getnames():
+        if filename in self.get_members():
             matching_members.append(filename)
 
         return matching_members
+
+
+class ExtendedTarFile(TarFile, AbstractExtendedArchive):
+    def get_members(self) -> List[str]:
+        return self.getnames()
+
+    def get_names_by_prefix(self, prefix: str) -> None:
+        subdir_and_files = [
+            name for name in self.get_members() if name.startswith(prefix)
+        ]
+        return subdir_and_files
+
+    def get_names_by_suffix(self, suffix: str) -> None:
+        subdir_and_files = [
+            name for name in self.get_members() if name.endswith(suffix)
+        ]
+        return subdir_and_files
+
+    def names_by_filename(self, filename: str) -> List[str]:
+        matching_members = self.get_names_by_suffix(suffix=f"/{filename}")
+        # could also be as root member
+        if filename in self.get_members():
+            matching_members.append(filename)
+
+        return matching_members
+
+
+class Archive:
+    def __enter__(self) -> None:
+        return self._archive.__enter__()
+
+    def __exit__(self, *args: Any, **kwargs: Any):
+        return self._archive.__exit__(*args, **kwargs)
+
+    @staticmethod
+    def is_archive(name: str) -> bool:
+        return is_tarfile(name) or is_zipfile(name)
+
+    def extract(self, member: str, path: str) -> None:
+        self._archive.extract(member, path)
+
+    def extractall(self, member: str) -> None:
+        self._archive.extractall(
+            member,
+        )
+
+    def __init__(self, name: str) -> None:
+        if is_tarfile(name):
+            self._archive = ExtendedTarFile.open(name)
+        elif is_zipfile(name):
+            self._archive = ExtendedZipFile(name)
+        else:
+            raise ValueError(f"unsupported archive: {name}")
+
+    def get_names_by_prefix(self, prefix: str) -> None:
+        return self._archive.get_names_by_prefix(prefix)
+
+    def get_names_by_suffix(self, suffix: str) -> None:
+        return self._archive.get_names_by_suffix(suffix)
+
+    def names_by_filename(self, filename: str) -> None:
+        return self._archive.names_by_filename(filename)
+
+    def get_members(self) -> List[str]:
+        return self._archive.get_members()
 
 
 class PlatformType(Enum):
@@ -54,7 +140,7 @@ class PlatformType(Enum):
 
 
 PLATFORM_REGEX_MAP = {
-    PlatformType.WINDOWS: "(windows|Windows|WINDOWS|win32|-win-|\.zip$|\.msi$|.msixbundle$|\.exe$)",
+    PlatformType.WINDOWS: "(windows|Windows|WINDOWS|win32|-win-|\.msi$|.msixbundle$|\.exe$)",
     PlatformType.LINUX: "([Ll]inux)",
     PlatformType.MACOS: "(macOS|mac-os|-osx-|_osx_|[Dd]arwin)",
 }
@@ -355,6 +441,11 @@ class GHReleaseInstaller:
                     regex=f".*{target_name}.*",
                     negative=False,
                 ),
+                cls.FindAllRegexFilter(
+                    name="prefer musl",  # musl is compatible across more distros
+                    regex=f".*musl.*",
+                    negative=False,
+                ),
             ]
 
             for positive_filter in positive_filters:
@@ -471,9 +562,9 @@ class GHReleaseInstaller:
             arch=arch,
             target_name=target_name,
         )
-        
+
         logger.warning("resolved asset: %s", resolved_asset.name)
-        
+
         with tempfile.TemporaryDirectory() as tempdir:
             tempdir = Path(tempdir)
 
@@ -483,16 +574,18 @@ class GHReleaseInstaller:
                 url=resolved_asset.browser_download_url, target=temp_asset_path
             )
 
-            if tarfile.is_tarfile(temp_asset_path):
-                logger.warning("asset recognized as a tar file")
+            if Archive.is_archive(temp_asset_path):
+                with Archive(temp_asset_path) as archive_file:
+                    logger.warning("asset recognized as an archive file")
 
-                with ExtendedTarFile.open(temp_asset_path) as tarf:
                     # resolve target member name
-                    if len(tarf.getnames()) == 1:
+                    if len(archive_file.get_members()) == 1:
                         # In case of a single member, use it no matter how its named
-                        target_member_name = tarf.getnames()[0]
+                        target_member_name = archive_file.get_members()[0]
                     else:
-                        target_member_names = tarf.names_by_filename(target_name)
+                        target_member_names = archive_file.names_by_filename(
+                            target_name
+                        )
                         if len(target_member_names) > 1:
                             raise cls.MultipleBinaryMatchesFound(
                                 f"multiple binary matches were found in archive {resolved_asset.name}: {target_member_names}"
@@ -502,16 +595,18 @@ class GHReleaseInstaller:
                                 f"no binary named {target_name} found in archive {resolved_asset.name}"
                             )
                         target_member_name = target_member_names[0]
-                    
-                    logger.warning("target binary found in tar as member: %s", target_member_name)
 
-                    same_dir_members = tarf.get_names_by_prefix(
+                    logger.warning(
+                        "target binary found in tar as member: %s", target_member_name
+                    )
+
+                    same_dir_members = archive_file.get_names_by_prefix(
                         os.path.dirname(target_member_name)
                     )
 
                     if len(same_dir_members) == 1:
                         # In case of a single file, copy it into bin location and rename it as the target name
-                        tarf.extract(target_member_name, temp_extraction_path)
+                        archive_file.extract(target_member_name, temp_extraction_path)
                         if target_member_name != target_name:
                             logger.warning(
                                 "renaming %s to %s", target_member_name, target_name
@@ -528,7 +623,9 @@ class GHReleaseInstaller:
                         target_lib_location = lib_location.joinpath(target_name)
 
                         logger.warning(
-                            "extracting %s into %s", resolved_asset.name, target_lib_location
+                            "extracting %s into %s",
+                            resolved_asset.name,
+                            target_lib_location,
                         )
 
                         if target_lib_location.exists() and not force:
@@ -536,7 +633,7 @@ class GHReleaseInstaller:
                                 f"{target_lib_location} already exists"
                             )
 
-                        tarf.extractall(temp_extraction_path)
+                        archive_file.extractall(temp_extraction_path)
 
                         try:
                             shutil.copytree(
@@ -549,7 +646,9 @@ class GHReleaseInstaller:
                                 f"{target_lib_location} already exists"
                             ) from exc
 
-                        lib_binary_location = target_lib_location.joinpath(target_member_name)
+                        lib_binary_location = target_lib_location.joinpath(
+                            target_member_name
+                        )
 
                         # execute permissions
                         cls._recursive_chmod(target_lib_location, cls.BIN_PERMISSIONS)

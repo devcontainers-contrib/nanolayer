@@ -63,10 +63,11 @@ class AptitudeInstaller:
                     aptitude_installed = True
 
                 if ppas:
-                    software_properties_common_installed = AptGetInstaller._add_ppas(ppas=ppas, 
-                                                                                     update=True, 
-                                                                                     force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu)
-
+                    software_properties_common_installed = AptGetInstaller._add_ppas(
+                        ppas=ppas,
+                        update=True,
+                        force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
+                    )
 
                 Invoker.invoke(
                     command=f"aptitude install -y {' '.join(packages)}",
@@ -76,8 +77,10 @@ class AptitudeInstaller:
 
             finally:
                 if clean_ppas:
-                    AptGetInstaller._clean_ppas(ppas=ppas,
-                                                remove_software_properties_common=software_properties_common_installed)
+                    AptGetInstaller._clean_ppas(
+                        ppas=ppas,
+                        remove_software_properties_common=software_properties_common_installed,
+                    )
 
                 if clean_cache:
                     Invoker.invoke(

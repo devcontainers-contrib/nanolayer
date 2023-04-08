@@ -1,13 +1,12 @@
 import tempfile
 from typing import Dict, List, Optional
 
+from nanolayer.installers.apt_get.apt_get_installer import AptGetInstaller
 from nanolayer.utils.invoker import Invoker
 from nanolayer.utils.linux_information_desk import LinuxInformationDesk
-from nanolayer.installers.apt_get.apt_get_installer import AptGetInstaller
 
 
 class AptInstaller:
-
     class AptUpdateFailed(Invoker.InvokerException):
         pass
 
@@ -22,7 +21,6 @@ class AptInstaller:
                 for line in f.readlines()
                 if not line.startswith("#")
             )
-
 
     @classmethod
     def is_debian_like(cls) -> bool:
@@ -63,9 +61,11 @@ class AptInstaller:
                 )
 
                 if ppas:
-                    software_properties_common_installed = AptGetInstaller._add_ppas(ppas=ppas, 
-                                                                                     update=True, 
-                                                                                     force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu)
+                    software_properties_common_installed = AptGetInstaller._add_ppas(
+                        ppas=ppas,
+                        update=True,
+                        force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
+                    )
 
                 Invoker.invoke(
                     command=f"apt install -y --no-install-recommends {' '.join(packages)}",
@@ -75,8 +75,10 @@ class AptInstaller:
 
             finally:
                 if clean_ppas:
-                    AptGetInstaller._clean_ppas(ppas=ppas,
-                                                remove_software_properties_common=software_properties_common_installed)
+                    AptGetInstaller._clean_ppas(
+                        ppas=ppas,
+                        remove_software_properties_common=software_properties_common_installed,
+                    )
 
                 if clean_cache:
                     Invoker.invoke(

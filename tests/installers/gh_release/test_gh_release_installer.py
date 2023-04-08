@@ -109,8 +109,8 @@ def test_gh_release_install(
     full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install gh-release {repo} {target} && {test_command}"
 
     assert excpected_result == execute_current_python_in_container(
-        test_command=full_test_command, 
-        image=image, 
-        docker_platform=docker_platform, 
-        nanolayer_version="v0.4.0"
+        test_command=full_test_command,
+        image=image,
+        docker_platform=docker_platform,
+        nanolayer_version="v0.4.0",
     )

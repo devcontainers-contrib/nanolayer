@@ -72,14 +72,17 @@ def install_devcontainer_feature(
 
 @app.command("apt-get")
 def install_apt_get_packages(
-    packages: str = typer.Argument(None, help="comma separated list of apt-get packages"),
-    ppas: Optional[str] = typer.Option(None, help="comma separated list of ppas to make use of"),
+    packages: str = typer.Argument(
+        None, help="comma separated list of apt-get packages"
+    ),
+    ppas: Optional[str] = typer.Option(
+        None, help="comma separated list of ppas to make use of"
+    ),
     force_ppas_on_non_ubuntu: bool = False,
     clean_ppas: bool = True,
     clean_cache: bool = True,
     preserve_apt_list: bool = True,
 ) -> None:
-    
     AptGetInstaller.install(
         packages=packages.split(","),
         ppas=ppas.split(",") if ppas else None,
@@ -93,13 +96,14 @@ def install_apt_get_packages(
 @app.command("apt")
 def install_apt_packages(
     packages: str = typer.Argument(None, help="comma separated list of apt packages"),
-    ppas: Optional[str] = typer.Option(None, help="comma separated list of ppas to make use of"),
+    ppas: Optional[str] = typer.Option(
+        None, help="comma separated list of ppas to make use of"
+    ),
     force_ppas_on_non_ubuntu: bool = False,
     clean_ppas: bool = True,
     clean_cache: bool = True,
     preserve_apt_list: bool = True,
 ) -> None:
-    
     AptInstaller.install(
         packages=packages.split(","),
         ppas=ppas.split(",") if ppas else None,
@@ -112,8 +116,12 @@ def install_apt_packages(
 
 @app.command("aptitude")
 def install_aptitude_packages(
-    packages: str = typer.Argument(None, help="comma separated list of aptitude packages"),
-    ppas: Optional[str] = typer.Option(None, help="comma separated list of ppas to make use of"),
+    packages: str = typer.Argument(
+        None, help="comma separated list of aptitude packages"
+    ),
+    ppas: Optional[str] = typer.Option(
+        None, help="comma separated list of ppas to make use of"
+    ),
     force_ppas_on_non_ubuntu: bool = False,
     clean_ppas: bool = True,
     clean_cache: bool = True,
@@ -140,7 +148,7 @@ def install_gh_release_binary(
 ) -> None:
     if target == "":
         raise typer.BadParameter("target cannot be empty string")
-    
+
     GHReleaseInstaller.install(
         repo=repo,
         target_name=target,
