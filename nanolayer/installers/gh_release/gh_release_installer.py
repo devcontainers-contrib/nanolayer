@@ -495,7 +495,7 @@ class GHReleaseInstaller:
                         target_member_names = tarf.names_by_filename(target_name)
                         if len(target_member_names) > 1:
                             raise cls.MultipleBinaryMatchesFound(
-                                f"multiple binary matches were found in archive {resolved_asset.name}: {target_members}"
+                                f"multiple binary matches were found in archive {resolved_asset.name}: {target_member_names}"
                             )
                         if len(target_member_names) == 0:
                             raise cls.MoBinaryMatchesFound(
