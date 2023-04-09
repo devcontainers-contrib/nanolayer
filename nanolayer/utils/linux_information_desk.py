@@ -4,6 +4,17 @@ from enum import Enum
 from typing import Dict
 
 
+class EnvFile:
+    @staticmethod
+    def parse(path: str) -> Dict[str, str]:
+        with open(path, "r") as f:
+            return dict(
+                tuple(line.replace("\n", "").split("="))
+                for line in f.readlines()
+                if not line.startswith("#")
+            )
+
+
 class LinuxInformationDesk:
     OS_RELEASE_PATH = "/etc/os-release"
 
@@ -58,15 +69,7 @@ class LinuxInformationDesk:
     def _get_release_id_str(cls, id_like: bool = False) -> str:
         assert cls.has_root_privileges()
 
-        def _parse_env_file(path: str) -> Dict[str, str]:
-            with open(path, "r") as f:
-                return dict(
-                    tuple(line.replace("\n", "").split("="))
-                    for line in f.readlines()
-                    if not line.startswith("#")
-                )
-
-        parsed_os_release = _parse_env_file(cls.OS_RELEASE_PATH)
+        parsed_os_release = EnvFile.parse(cls.OS_RELEASE_PATH)
 
         if id_like:
             os_release_id = parsed_os_release.get("ID_LIKE", None)
