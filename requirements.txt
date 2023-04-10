@@ -1,5 +1,6 @@
-pydantic==1.10.5
-typer
-invoke
+pydantic==1.10.7
+typer==0.7.0
+invoke>2.0.0
 semver==2.13.0
 sentry-sdk>=1.19.1
+psutil>=5.9.4
