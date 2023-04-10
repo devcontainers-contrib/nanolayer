@@ -12,22 +12,22 @@ from nanolayer.utils.version import resolve_own_package_version
 logger = logging.getLogger(__name__)
 
 try:
+    dsn = NanolayerSettings().analytics_id if not NanolayerSettings().no_analytics else ""
     sentry_sdk.init(
         release=resolve_own_package_version(),
         traces_sample_rate=1.0,
-        dsn=NanolayerSettings().analytics_id
-        if not NanolayerSettings().no_analytics
-        else "",
-        # explicitly turn off any feature which have an
-        # impact on personally identifiable information
+        dsn=dsn,
+        # explicitly turn off personally identifiable information
         send_default_pii=False,
+        # explicitly turn off client reports
         send_client_reports=False,
+        # explicitly turn off client reports
         request_bodies="never",
     )
     # explicitly strip any identifiable user information
     sentry_sdk.set_user(None)
 
-    # ------ add generic non-identifiable hardware metrics -------
+    # ------ add only non-personally-identifiable hardware metrics -------
     sentry_sdk.set_context(
         "nanolayer.python",
         {
@@ -52,5 +52,6 @@ try:
     )
     # true if nanolayer is being used as a binary, false otherwise
     sentry_sdk.set_tag("nanolayer.binary_mode", "__file__" not in globals())
+
 except Exception as e:  # no qa
     logger.warning("usage metrics are disabled")
