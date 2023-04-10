@@ -46,7 +46,7 @@ class AbstractExtendedArchive(ABC):
 class ExtendedZipFile(ZipFile, AbstractExtendedArchive):
     def get_file_members(self) -> List[str]:
         members = self.namelist()
-        return [member for member in members if not member.endswith('/')]
+        return [member for member in members if not member.endswith("/")]
 
     def get_names_by_prefix(self, prefix: str) -> None:
         subdir_and_files = [

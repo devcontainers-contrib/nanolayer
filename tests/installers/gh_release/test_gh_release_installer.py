@@ -8,7 +8,7 @@ from helpers import execute_current_python_in_container
 @pytest.mark.parametrize(
     "test_command,excpected_result,image,repo,target,docker_platform",
     [
-        (  
+        (
             "upx --version",
             0,
             "mcr.microsoft.com/devcontainers/base:debian",
@@ -24,7 +24,7 @@ from helpers import execute_current_python_in_container
             "doctl",
             "linux/amd64",
         ),
-        (# classic
+        (  # classic
             "argocd --help",
             0,
             "mcr.microsoft.com/devcontainers/base:debian",
@@ -48,7 +48,7 @@ from helpers import execute_current_python_in_container
             "argocd",
             "linux/arm64",
         ),
-        ( # two binaries at same repo
+        (  # two binaries at same repo
             "which kubectx",
             0,
             "mcr.microsoft.com/devcontainers/base:debian",
@@ -56,7 +56,7 @@ from helpers import execute_current_python_in_container
             "kubectx",
             "linux/amd64",
         ),
-        (   # two binaries at same repo
+        (  # two binaries at same repo
             "which kubens",
             0,
             "mcr.microsoft.com/devcontainers/base:debian",
