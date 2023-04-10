@@ -10,23 +10,32 @@ from nanolayer.utils.version import resolve_own_package_version
 
 logger = logging.getLogger(__name__)
 
+
 try:
     dsn = NanolayerSettings().analytics_id if not NanolayerSettings().no_analytics else ""
     sentry_sdk.init(
+        # Avoiding sending any metadata (local variables, paths, etc)
+        # Only the exception name and its stacktrace is logged and only
+        # if the exception origins from the `nanolayer` package.
+
+        send_default_pii=False, # don`t submit any personally identifiable information
+        with_locals=False,  # don't submit local variables
+        send_client_reports=False, # don`t submit client reports
+        request_bodies="never", # don`t submit request bodies
+        in_app_include=["nanolayer"],  # only submit errors in this package
+        ignore_errors=[
+            KeyboardInterrupt,  # user hit the interrupt key (Ctrl+C)
+            MemoryError,  # machine is running out of memory
+            NotImplementedError,  # user is using a feature that is not implemented
+        ],
         release=resolve_own_package_version(),
         traces_sample_rate=1.0,
         dsn=dsn,
-        # explicitly turn off personally identifiable information
-        send_default_pii=False,
-        # explicitly turn off client reports
-        send_client_reports=False,
-        # explicitly turn off client reports
-        request_bodies="never",
     )
-    # explicitly strip any identifiable user information
-    sentry_sdk.set_user(None)
+    sentry_sdk.set_user(None) # explicitly strip any user related information whatsoever
 
-    # ------ add only non-personally-identifiable hardware metrics -------
+
+    # ------ add only non-identifiable hardware metrics -------
     os_release_file = EnvFile.parse("/etc/os-release")
     meminfo_file =  ProcFile.parse("/proc/meminfo")
 

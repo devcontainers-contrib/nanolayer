@@ -4,7 +4,14 @@
         {
             "label": "pyoxidizer",
             "type": "shell",
-            "command": "python3 -m build --wheel && pyoxidizer build exe --path ${workspaceFolder} --release --var wheel_location ./dist/$(ls dist | grep .whl) --var run_command 'from nanolayer.__main__ import main; main()'  --var python_version 3.10  --var app_name nanolayer --target-triple x86_64-unknown-linux-musl"
+            "command": "python3 -m build --wheel && pyoxidizer build exe --path ${workspaceFolder} --release --var wheel_location ./dist/$(ls dist | grep .whl) --var run_command 'from nanolayer.__main__ import main; main()'  --var python_version 3.10  --var app_name nanolayer --target-triple x86_64-unknown-linux-musl",
+            "options": {
+                "env":{
+                    "CC":"musl-gcc",
+                    // "LDFLAGS": "-L/usr/include/x86_64-linux-gnu",
+                    // "CFLAGS": "-I/usr/include -I/usr/include/x86_64-linux-gnu${pathSeparator}${env:CFLAGS}"
+                }
+            }
         }
     ]
 }
