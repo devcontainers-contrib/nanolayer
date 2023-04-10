@@ -36,25 +36,25 @@ try:
             # uname -a like
             "uname": str(platform.uname()),
             # num of cores
-            "python.os.cpu_count": os.cpu_count(),
+            "cpu_count": os.cpu_count(),
             # 4GB 8GB 16GB etc
-            "fs.proc.meminfo.MemTotal": meminfo_file['MemTotal'],
+            "total_memory": meminfo_file['MemTotal'],
             # 4GB 8GB etc
-            "fs.proc.meminfo.MemFree": meminfo_file['MemFree'],
+            "free_memory": meminfo_file['MemFree'],
         },
     )
  
-    # x86_64 / ARM
-    sentry_sdk.set_tag("nanolayer.python.platform.machine", platform.machine())
-    # ubuntu / debian / alpine / fedora etc
-    sentry_sdk.set_tag("nanolayer.fs.etc.os-release.ID", os_release_file.get("ID", None))
-    # debian for both ubuntu and debian, etc
-    sentry_sdk.set_tag("nanolayer.fs.etc.os-release.ID_LIKE", os_release_file.get("ID_LIKE", None))
-    # ubuntu 18.04 20.04 22.04 etc
+    # architecture such as x86_64, ARM etc
+    sentry_sdk.set_tag("architecture", platform.machine())
+    # distro id,  eg ubuntu / debian / alpine / fedora
+    sentry_sdk.set_tag("os_release_id", os_release_file.get("ID", None))
+    # distro id category, for example "debian" for both debian and ubuntu
+    sentry_sdk.set_tag("os_release_id_like", os_release_file.get("ID_LIKE", None))
+    # distro version, for example for ubuntu it will be 18.04 20.04 22.04 etc
     sentry_sdk.set_tag(
-        "nanolayer.fs.etc.os-release.VERSION_ID", os_release_file.get("VERSION_ID", None)
+        "os_release_version_id", os_release_file.get("VERSION_ID", None)
     )
-    # true if nanolayer is being used as a binary, false otherwise
+    # boolean - true if nanolayer is being used as a binary, false if used as a python package
     sentry_sdk.set_tag("nanolayer.binary_mode", "__file__" not in globals())
 
 except Exception as e:  # no qa
