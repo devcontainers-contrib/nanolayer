@@ -160,6 +160,10 @@ ARCH_REGEX_MAP = {
     LinuxInformationDesk.Architecture.x86_64: "([Aa]md64|-x64|_x64|x86[_-]64)",
 }
 
+RELEASE_ID_REGEX_MAP = {
+    enum: f"(?i)({enum.value})" for enum in LinuxInformationDesk.LinuxReleaseID
+}
+
 
 MISC_REGEX_MAP = {
     "packages": "(\.deb|\.rpm|\.pkg|\.apk)",
@@ -176,15 +180,17 @@ class GHReleaseInstaller:
 
         def __call__(self, asset: "GHReleaseInstaller.ReleaseAsset") -> bool:
             matches = len(re.findall(self.regex, asset.name))
-            if self.negative:
-                return matches == 0
-            else:
-                return matches > 0
+            return matches > 0 if not self.negative else matches == 0
 
-    X86_X64_REGEX = ""
-    ARM_REGEX = ""
-    X64_APPLE_REGEX = ""
-    ARM_APPLE_REGEX = ""
+    class MatchRegexFilter:
+        def __init__(self, name: str, regex: str, negative: bool) -> None:
+            self.name = name
+            self.regex = regex
+            self.negative = negative
+
+        def __call__(self, asset: "GHReleaseInstaller.ReleaseAsset") -> bool:
+            match = re.match(self.regex, asset.name)
+            return match is not None if not self.negative else match is None
 
     DEFAULT_BIN_LOCATION = "/usr/local/bin"
     DEFAULT_LIB_LOCATION = "/usr/local/lib"
@@ -365,100 +371,140 @@ class GHReleaseInstaller:
         if asset_regex is not None:
             assets = list(
                 filter(
-                    lambda asset: re.match(asset_regex, asset.name) is not None, assets
+                    cls.MatchRegexFilter(
+                        name="user asset regex", regex=asset_regex, negative=False
+                    ),
+                    assets,
                 )
             )
+            if len(assets) == 1:
+                return assets[0]
+
             if len(assets) == 0:
                 raise cls.NoAssetsFound(
                     f"no matches found for asset regex: {asset_regex}"
                 )
-            elif len(assets) >= 2:
-                raise cls.NoAssetsFound(
-                    f"More than one match was found for asset regex: {asset_regex}\n {assets}\n Please narrow down the asset regex"
-                )
-            else:
-                return assets[0]
-        else:
-            # add all non-requested architecture as a negative filters
-            bad_architecture_regexes = deepcopy(ARCH_REGEX_MAP)
-            bad_architecture_regexes.pop(arch)
-            negative_architecture_filters = [
-                cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
-                for name, regex in bad_architecture_regexes.items()
-            ]
 
-            # add misc files like checksums and packages as negative filters
-            negative_misc_filters = [
-                cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
-                for name, regex in MISC_REGEX_MAP.items()
-            ]
-
-            # add all non-current platform as a negative filters
-            bad_platform_regexes = deepcopy(PLATFORM_REGEX_MAP)
-            bad_platform_regexes.pop(PlatformType.LINUX)
-            negative_platform_filters = [
-                cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
-                for name, regex in bad_platform_regexes.items()
-            ]
-
-            # One filter to rule them all
-            assets = filter(
-                lambda asset: all(
-                    f(asset)
-                    for f in (
-                        negative_architecture_filters
-                        + negative_misc_filters
-                        + negative_platform_filters
-                    )
-                ),
-                assets,
+            logger.warning(
+                "asset regex: %s has filtered assets down to %s candidates: %s. Proceding to builtin filters",
+                asset_regex,
+                len(assets),
+                str([asset.name for asset in assets]),
             )
 
-            # actually run the filters...
-            assets = list(assets)
+        # add all non-requested architecture as a negative filters
+        bad_architecture_regexes = deepcopy(ARCH_REGEX_MAP)
+        bad_architecture_regexes.pop(arch)
+        negative_architecture_filters = [
+            cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
+            for name, regex in bad_architecture_regexes.items()
+        ]
 
-            if len(assets) == 1:
-                return assets[0]
-            elif len(assets) == 0:
-                raise cls.NoAssetsFound("No matches found")
+        # add misc files like checksums and packages as negative filters
+        negative_misc_filters = [
+            cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
+            for name, regex in MISC_REGEX_MAP.items()
+        ]
 
-            # positive filters are being run one by one, because we want to discard those
-            # who filter out all of the remaining.
+        # add all non-current platform as a negative filters
+        bad_platform_regexes = deepcopy(PLATFORM_REGEX_MAP)
+        bad_platform_regexes.pop(PlatformType.LINUX)
+        negative_platform_filters = [
+            cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
+            for name, regex in bad_platform_regexes.items()
+        ]
 
-            positive_filters = [
-                cls.FindAllRegexFilter(
-                    name=arch.value, regex=ARCH_REGEX_MAP[arch], negative=False
-                ),
-                cls.FindAllRegexFilter(
-                    name=PlatformType.LINUX.value,
-                    regex=PLATFORM_REGEX_MAP[PlatformType.LINUX],
-                    negative=False,
-                ),
-                cls.FindAllRegexFilter(
-                    name="contains target name",
-                    regex=f".*{target_name}.*",
-                    negative=False,
-                ),
-                cls.FindAllRegexFilter(
-                    name="prefer musl",  # musl is compatible across more distros
-                    regex=f".*musl.*",
-                    negative=False,
-                ),
-            ]
+        # One filter to rule them all
+        assets = filter(
+            lambda asset: all(
+                f(asset)
+                for f in (
+                    negative_architecture_filters
+                    + negative_misc_filters
+                    + negative_platform_filters
+                )
+            ),
+            assets,
+        )
 
-            for positive_filter in positive_filters:
-                filtered_assets = list(filter(positive_filter, assets))
+        # actually run the filters...
+        assets = list(assets)
 
-                if len(filtered_assets) == 0:
-                    # filter is too aggressive. ignoring it
-                    continue
-                else:
-                    assets = filtered_assets
-
-            if len(assets) > 1:
-                raise cls.TooManyAssetsFound(f"Too many matches found: {assets}")
-
+        if len(assets) == 1:
             return assets[0]
+
+        elif len(assets) == 0:
+            raise cls.NoAssetsFound("No matches found")
+
+        # positive filters are being run one by one, because we want to discard those
+        # who filter out all of the remaining.
+
+        positive_filters = [
+            cls.FindAllRegexFilter(
+                name=arch.value, regex=ARCH_REGEX_MAP[arch], negative=False
+            ),
+            cls.FindAllRegexFilter(
+                name=PlatformType.LINUX.value,
+                regex=PLATFORM_REGEX_MAP[PlatformType.LINUX],
+                negative=False,
+            ),
+            cls.FindAllRegexFilter(
+                name="contains target name",
+                regex=f".*{target_name}.*",
+                negative=False,
+            ),
+            cls.FindAllRegexFilter(
+                name="prefer musl",  # musl is compatible across more distros
+                regex=f".*musl.*",
+                negative=False,
+            ),
+            cls.FindAllRegexFilter(
+                name="prefer own distro",  # prefer own exact distro
+                regex=RELEASE_ID_REGEX_MAP[LinuxInformationDesk.get_release_id()],
+                negative=False,
+            ),
+            cls.FindAllRegexFilter(
+                name="prefer own distro-like",  # prefer own distro like
+                regex=RELEASE_ID_REGEX_MAP[
+                    LinuxInformationDesk.get_release_id(id_like=True)
+                ],
+                negative=False,
+            ),
+        ]
+
+        bad_distros_regexes = {
+            key: val
+            for key, val in RELEASE_ID_REGEX_MAP.items()
+            if key
+            not in (
+                LinuxInformationDesk.get_release_id(),
+                LinuxInformationDesk.get_release_id(id_like=True),
+            )
+        }
+        for bad_distro_id, bad_distro_regex in bad_distros_regexes.items():
+            positive_filters.append(
+                cls.FindAllRegexFilter(
+                    name=f"prefer non {bad_distro_id}",  # prefer own distro like
+                    regex=bad_distro_regex,
+                    negative=True,
+                )
+            )
+
+        for positive_filter in positive_filters:
+            filtered_assets = list(filter(positive_filter, assets))
+
+            if len(filtered_assets) == 0:
+                # filter is too aggressive. ignoring it
+                continue
+            else:
+                assets = filtered_assets
+
+        if len(assets) > 1:
+            raise cls.TooManyAssetsFound(
+                f"Too many matches found: {str([asset.name for asset in assets])}"
+            )
+
+        return assets[0]
 
     @classmethod
     def resolve_and_validate_dir(
