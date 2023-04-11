@@ -30,7 +30,7 @@ class Invoker:
     @staticmethod
     def invoke(
         command: str,
-        raise_on_failure: bool,
+        raise_on_failure: bool = True,
         exception_class: Type["Invoker.InvokerException"] = InvokerException,
         clean_history: bool = True,
         envs: Optional[Dict[str, str]] = None,

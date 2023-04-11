@@ -9,18 +9,6 @@ class AptGetInstaller:
     class PPASOnNonUbuntu(Exception):
         pass
 
-    class AptGetUpdateFailed(Invoker.InvokerException):
-        pass
-
-    class AddPPAsFailed(Invoker.InvokerException):
-        pass
-
-    class RemovePPAsFailed(Invoker.InvokerException):
-        pass
-
-    class CleanUpFailed(Invoker.InvokerException):
-        pass
-
     @staticmethod
     def normalize_ppas(ppas: List[str]) -> List[str]:
         # normalize ppas to have the ppa: initials
@@ -81,26 +69,14 @@ class AptGetInstaller:
             Invoker.invoke("dpkg -s software-properties-common", raise_on_failure=False)
             != 0
         ):
-            Invoker.invoke(
-                command="apt-get install -y software-properties-common",
-                raise_on_failure=True,
-                exception_class=cls.AddPPAsFailed,
-            )
+            Invoker.invoke(command="apt-get install -y software-properties-common")
             software_properties_common_installed = True
 
         for ppa in normalized_ppas:
-            Invoker.invoke(
-                command=f"add-apt-repository -y {ppa}",
-                raise_on_failure=True,
-                exception_class=cls.AddPPAsFailed,
-            )
+            Invoker.invoke(command=f"add-apt-repository -y {ppa}")
 
         if update:
-            Invoker.invoke(
-                command="apt-get update -y",
-                raise_on_failure=True,
-                exception_class=cls.AptGetUpdateFailed,
-            )
+            Invoker.invoke(command="apt-get update -y")
 
         return software_properties_common_installed
 
@@ -118,34 +94,23 @@ class AptGetInstaller:
             cls.is_debian_like()
         ), "apt-get should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
 
-        if ppas and not cls.is_ubuntu() and not force_ppas_on_non_ubuntu:
-            raise cls.PPASOnNonUbuntu()
-
         software_properties_common_installed = False
         with tempfile.TemporaryDirectory() as tempdir:
             if preserve_apt_list:
-                Invoker.invoke(
-                    command=f"cp -p -R /var/lib/apt/lists {tempdir}",
-                    raise_on_failure=True,
-                    exception_class=cls.AptGetUpdateFailed,
-                )
+                Invoker.invoke(command=f"cp -p -R /var/lib/apt/lists {tempdir}")
 
             try:
-                Invoker.invoke(
-                    command="apt-get update -y",
-                    raise_on_failure=True,
-                    exception_class=cls.AptGetUpdateFailed,
-                )
+                Invoker.invoke(command="apt-get update -y")
 
                 if ppas:
                     software_properties_common_installed = cls._add_ppas(
-                        ppas, update=True
+                        ppas,
+                        update=True,
+                        force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
                     )
 
                 Invoker.invoke(
-                    command=f"apt-get install -y --no-install-recommends {' '.join(packages)}",
-                    raise_on_failure=True,
-                    exception_class=cls.AptGetUpdateFailed,
+                    command=f"apt-get install -y --no-install-recommends {' '.join(packages)}"
                 )
 
             finally:
@@ -156,16 +121,10 @@ class AptGetInstaller:
                     )
 
                 if clean_cache:
-                    Invoker.invoke(
-                        command="apt-get clean",
-                        raise_on_failure=True,
-                        exception_class=cls.CleanUpFailed,
-                    )
+                    Invoker.invoke(command="apt-get clean")
 
                 if preserve_apt_list:
                     # Note: not using dir/* syntax as that doesnt work on 'sh' shell (alpine)
                     Invoker.invoke(
-                        command=f"rm -r /var/lib/apt/lists && mv {tempdir} /var/lib/apt/lists",
-                        raise_on_failure=True,
-                        exception_class=cls.CleanUpFailed,
+                        command=f"rm -r /var/lib/apt/lists && mv {tempdir} /var/lib/apt/lists"
                     )

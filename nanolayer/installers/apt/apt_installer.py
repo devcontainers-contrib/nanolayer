@@ -7,12 +7,6 @@ from nanolayer.utils.linux_information_desk import LinuxInformationDesk
 
 
 class AptInstaller:
-    class AptUpdateFailed(Invoker.InvokerException):
-        pass
-
-    class CleanUpFailed(Invoker.InvokerException):
-        pass
-
     @staticmethod
     def _parse_env_file(path: str) -> Dict[str, str]:
         with open(path, "r") as f:
@@ -47,18 +41,10 @@ class AptInstaller:
 
         with tempfile.TemporaryDirectory() as tempdir:
             if preserve_apt_list:
-                Invoker.invoke(
-                    command=f"cp -p -R /var/lib/apt/lists {tempdir}",
-                    raise_on_failure=True,
-                    exception_class=cls.AptUpdateFailed,
-                )
+                Invoker.invoke(command=f"cp -p -R /var/lib/apt/lists {tempdir}")
 
             try:
-                Invoker.invoke(
-                    command="apt update -y",
-                    raise_on_failure=True,
-                    exception_class=cls.AptUpdateFailed,
-                )
+                Invoker.invoke(command="apt update -y")
 
                 if ppas:
                     software_properties_common_installed = AptGetInstaller._add_ppas(
@@ -68,9 +54,7 @@ class AptInstaller:
                     )
 
                 Invoker.invoke(
-                    command=f"apt install -y --no-install-recommends {' '.join(packages)}",
-                    raise_on_failure=True,
-                    exception_class=cls.AptUpdateFailed,
+                    command=f"apt install -y --no-install-recommends {' '.join(packages)}"
                 )
 
             finally:
@@ -81,14 +65,6 @@ class AptInstaller:
                     )
 
                 if clean_cache:
-                    Invoker.invoke(
-                        command="apt clean",
-                        raise_on_failure=True,
-                        exception_class=cls.CleanUpFailed,
-                    )
+                    Invoker.invoke(command="apt clean")
                 if preserve_apt_list:
-                    Invoker.invoke(
-                        command=f"mv {tempdir} /var/lib/apt/lists",
-                        raise_on_failure=True,
-                        exception_class=cls.CleanUpFailed,
-                    )
+                    Invoker.invoke(command=f"mv {tempdir} /var/lib/apt/lists")

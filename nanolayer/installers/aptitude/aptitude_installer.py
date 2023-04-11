@@ -7,15 +7,6 @@ from nanolayer.utils.linux_information_desk import LinuxInformationDesk
 
 
 class AptitudeInstaller:
-    class InstallAptitude(Exception):
-        pass
-
-    class AptUpdateFailed(Invoker.InvokerException):
-        pass
-
-    class CleanUpFailed(Invoker.InvokerException):
-        pass
-
     @classmethod
     def is_debian_like(cls) -> bool:
         return (
@@ -44,11 +35,7 @@ class AptitudeInstaller:
         with tempfile.TemporaryDirectory() as tempdir:
             try:
                 if preserve_apt_list:
-                    Invoker.invoke(
-                        command=f"cp -p -R /var/lib/apt/lists {tempdir}",
-                        raise_on_failure=True,
-                        exception_class=cls.AptUpdateFailed,
-                    )
+                    Invoker.invoke(command=f"cp -p -R /var/lib/apt/lists {tempdir}")
 
                 # ensure aptitude existance
                 if Invoker.invoke("dpkg -s aptitude", raise_on_failure=False) != 0:
@@ -69,11 +56,7 @@ class AptitudeInstaller:
                         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
                     )
 
-                Invoker.invoke(
-                    command=f"aptitude install -y {' '.join(packages)}",
-                    raise_on_failure=True,
-                    exception_class=cls.AptUpdateFailed,
-                )
+                Invoker.invoke(command=f"aptitude install -y {' '.join(packages)}")
 
             finally:
                 if clean_ppas:
@@ -83,22 +66,10 @@ class AptitudeInstaller:
                     )
 
                 if clean_cache:
-                    Invoker.invoke(
-                        command="aptitude clean",
-                        raise_on_failure=True,
-                        exception_class=cls.CleanUpFailed,
-                    )
+                    Invoker.invoke(command="aptitude clean")
 
                 if aptitude_installed and remove_installer_if_not_exists:
-                    Invoker.invoke(
-                        command="apt-get -y purge aptitude --auto-remove",
-                        raise_on_failure=True,
-                        exception_class=cls.CleanUpFailed,
-                    )
+                    Invoker.invoke(command="apt-get -y purge aptitude --auto-remove")
 
                 if preserve_apt_list:
-                    Invoker.invoke(
-                        command=f"mv {tempdir} /var/lib/apt/lists",
-                        raise_on_failure=True,
-                        exception_class=cls.CleanUpFailed,
-                    )
+                    Invoker.invoke(command=f"mv {tempdir} /var/lib/apt/lists")
