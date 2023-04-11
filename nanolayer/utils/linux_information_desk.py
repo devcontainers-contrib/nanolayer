@@ -14,8 +14,8 @@ class EnvFile:
                 if not line.startswith("#")
             )
 
-class ProcFile:
 
+class ProcFile:
     @staticmethod
     def parse(path: str) -> Dict[str, str]:
         items = {}
@@ -25,6 +25,7 @@ class ProcFile:
                 if len(splitted_values) == 2:
                     items[splitted_values[0].strip()] = splitted_values[1].strip()
         return items
+
 
 class LinuxInformationDesk:
     OS_RELEASE_PATH = "/etc/os-release"

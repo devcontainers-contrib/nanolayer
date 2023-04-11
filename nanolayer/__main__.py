@@ -1,6 +1,8 @@
 import typer
 
 from nanolayer.cli.install import app as install_app
+from nanolayer.utils.analytics import setup_analytics
+from nanolayer.utils.settings import NanolayerSettings
 from nanolayer.utils.version import (
     resolve_own_package_version,
     resolve_own_release_version,
@@ -31,6 +33,9 @@ def version(
         None, "--release-version", callback=release_version_callback, is_eager=True
     ),
 ):
+    if NanolayerSettings().enable_analytics:
+        setup_analytics()
+
     return
 
 
