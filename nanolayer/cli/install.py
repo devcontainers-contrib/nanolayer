@@ -143,6 +143,8 @@ def install_gh_release_binary(
     target: str,
     version: str = "latest",
     asset_regex: Optional[str] = None,
+    bin_location: Optional[str] = None,
+    lib_location: Optional[str] = None,
     force: bool = False,
     arch: Optional[str] = None,
 ) -> None:
@@ -153,6 +155,8 @@ def install_gh_release_binary(
         repo=repo,
         target_name=target,
         arch=arch,
+        bin_location=bin_location,
+        lib_location=lib_location,
         version=version,
         asset_regex=asset_regex,
         force=force,
