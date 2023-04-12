@@ -140,20 +140,22 @@ def install_aptitude_packages(
 @app.command("gh-release")
 def install_gh_release_binary(
     repo: str,
-    target: str,
+    binary_name: str,
     version: str = "latest",
+    lib_name: Optional[str] = None,
     asset_regex: Optional[str] = None,
     bin_location: Optional[str] = None,
     lib_location: Optional[str] = None,
     force: bool = False,
     arch: Optional[str] = None,
 ) -> None:
-    if target == "":
+    if binary_name == "":
         raise typer.BadParameter("target cannot be empty string")
 
     GHReleaseInstaller.install(
         repo=repo,
-        target_name=target,
+        binary_name=binary_name,
+        lib_name=lib_name,
         arch=arch,
         bin_location=bin_location,
         lib_location=lib_location,

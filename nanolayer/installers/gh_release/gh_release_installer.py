@@ -567,8 +567,8 @@ class GHReleaseInstaller:
     def install(
         cls,
         repo: str,
-        target_name: str,
-        lib_target_name: Optional[str] = None,
+        binary_name: str,
+        lib_name: Optional[str] = None,
         bin_location: Optional[Union[str, Path]] = None,
         lib_location: Optional[Union[str, Path]] = None,
         asset_regex: Optional[str] = None,
@@ -576,8 +576,9 @@ class GHReleaseInstaller:
         force: bool = False,
         arch: Optional[str] = None,
     ) -> None:
-        if lib_target_name is None:
-            lib_target_name = target_name
+        if lib_name is None or lib_name == "":
+            lib_name = binary_name
+        
         if "linux" not in platform.system().lower():
             raise cls.BadPlatform(
                 f"Currently only the Linux platform is supported (got {platform.system().lower()})"
@@ -597,7 +598,7 @@ class GHReleaseInstaller:
             lib_location, cls.DEFAULT_LIB_LOCATION
         )
 
-        final_binary_location = bin_location.joinpath(target_name)
+        final_binary_location = bin_location.joinpath(binary_name)
         if final_binary_location.exists() and not force:
             raise cls.TargetExists(f"target {final_binary_location} already exists")
 
@@ -610,7 +611,7 @@ class GHReleaseInstaller:
             tag=version,
             asset_regex=asset_regex,
             arch=arch,
-            target_name=target_name,
+            target_name=binary_name,
         )
 
         logger.warning("resolved asset: %s", resolved_asset.name)
@@ -634,7 +635,7 @@ class GHReleaseInstaller:
                         target_member_name = archive_file.get_file_members()[0]
                     else:
                         target_member_names = archive_file.names_by_filename(
-                            target_name
+                            binary_name
                         )
                         if len(target_member_names) > 1:
                             raise cls.MultipleBinaryMatchesFound(
@@ -642,7 +643,7 @@ class GHReleaseInstaller:
                             )
                         if len(target_member_names) == 0:
                             raise cls.MoBinaryMatchesFound(
-                                f"no binary named {target_name} found in archive {resolved_asset.name}"
+                                f"no binary named {binary_name} found in archive {resolved_asset.name}"
                             )
                         target_member_name = target_member_names[0]
 
@@ -657,9 +658,9 @@ class GHReleaseInstaller:
                     if len(same_dir_members) == 1:
                         # In case of a single file, copy it into bin location and rename it as the target name
                         archive_file.extract(target_member_name, temp_extraction_path)
-                        if target_member_name != target_name:
+                        if target_member_name != binary_name:
                             logger.warning(
-                                "renaming %s to %s", target_member_name, target_name
+                                "renaming %s to %s", target_member_name, binary_name
                             )
                         shutil.copyfile(
                             temp_extraction_path.joinpath(target_member_name),
@@ -670,7 +671,7 @@ class GHReleaseInstaller:
                     else:
                         # In case other files in same dir, assume lib dir.
                         # extracting to lib location and soft link the target into bin location
-                        target_lib_location = lib_location.joinpath(lib_target_name)
+                        target_lib_location = lib_location.joinpath(lib_name)
 
                         logger.warning(
                             "extracting %s into %s",
