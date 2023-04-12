@@ -521,7 +521,7 @@ class GHReleaseInstaller:
 
         assert not dir_location.is_file(), f"{dir_location} should be a folder - got file"
 
-        dir_location.mkdir(parents=True, exists_ok=True)
+        dir_location.mkdir(parents=True, exist_ok=True)
 
         return dir_location
 
