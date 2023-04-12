@@ -568,6 +568,7 @@ class GHReleaseInstaller:
         cls,
         repo: str,
         target_name: str,
+        lib_target_name: Optional[str] = None,
         bin_location: Optional[Union[str, Path]] = None,
         lib_location: Optional[Union[str, Path]] = None,
         asset_regex: Optional[str] = None,
@@ -575,6 +576,8 @@ class GHReleaseInstaller:
         force: bool = False,
         arch: Optional[str] = None,
     ) -> None:
+        if lib_target_name is None:
+            lib_target_name = target_name
         if "linux" not in platform.system().lower():
             raise cls.BadPlatform(
                 f"Currently only the Linux platform is supported (got {platform.system().lower()})"
@@ -667,7 +670,7 @@ class GHReleaseInstaller:
                     else:
                         # In case other files in same dir, assume lib dir.
                         # extracting to lib location and soft link the target into bin location
-                        target_lib_location = lib_location.joinpath(target_name)
+                        target_lib_location = lib_location.joinpath(lib_target_name)
 
                         logger.warning(
                             "extracting %s into %s",
