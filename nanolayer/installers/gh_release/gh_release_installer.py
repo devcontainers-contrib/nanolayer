@@ -519,7 +519,9 @@ class GHReleaseInstaller:
         if isinstance(dir_location, str):
             dir_location = Path(dir_location)
 
-        assert dir_location.is_dir()
+        assert not dir_location.is_file(), f"{dir_location} should be a folder - got file"
+
+        dir_location.mkdir(parents=True, exists_ok=True)
 
         return dir_location
 
