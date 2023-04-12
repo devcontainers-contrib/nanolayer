@@ -168,6 +168,7 @@ RELEASE_ID_REGEX_MAP = {
 MISC_REGEX_MAP = {
     "packages": "(\.deb|\.rpm|\.pkg|\.apk)",
     "checksums": "(\.pub$|\.sig$|\.text$|\.txt$|[Cc]hecksums|sha256)",
+    "metadata": "(\.json$)",
 }
 
 
