@@ -6,12 +6,11 @@ import tempfile
 from pathlib import Path
 from typing import Dict, Optional, Union
 
-import invoke
-
 from nanolayer.installers.devcontainer_feature.models.devcontainer_feature import (
     Feature,
 )
 from nanolayer.installers.devcontainer_feature.oci_feature import OCIFeature
+from nanolayer.utils.invoker import Invoker
 from nanolayer.utils.settings import (
     ENV_CLI_LOCATION,
     ENV_FORCE_CLI_INSTALLATION,
@@ -106,26 +105,21 @@ class OCIFeatureInstaller:
                 oci_feature_ref=feature_ref, output_dir=tempdir
             )
 
-            sys.stdout.reconfigure(
-                encoding="utf-8"
-            )  # some processes will print in utf-8 while original stdout accept only ascii, causing a "UnicodeEncodeError: 'ascii' codec can't encode characters" error
-            sys.stderr.reconfigure(
-                encoding="utf-8"
-            )  # some processes will print in utf-8 while original stdout accept only ascii, causing a "UnicodeEncodeError: 'ascii' codec can't encode characters" error
+            command = f"cd {tempdir} && chmod +x -R . && sudo {env_variables_cmd} bash "
 
-            response = invoke.run(
-                f"cd {tempdir} && \
-                chmod +x -R . && \
-                sudo {env_variables_cmd} bash -i {'-x' if verbose else ''} ./{cls._FEATURE_ENTRYPOINT}",
-                out_stream=sys.stdout,
-                err_stream=sys.stderr,
-                pty=True,
-            )
+            # will make sure it will get the env variable that are
+            # defined in various rc files
+            command += " -i "
 
-            if not response.ok:
-                raise OCIFeatureInstaller.FeatureInstallationException(
-                    f"feature {feature_ref} failed to install. return_code: {response.return_code}. see logs for error reason."
-                )
+            # most scripts assume non interactive (plain #!/bin/bash shebang),
+            # disabling history expansion will make scripts behave closer to non-interactive way
+            command += " +H "
+
+            command += " -x " if verbose else ""
+
+            command += f"./{cls._FEATURE_ENTRYPOINT}"
+
+            Invoker.invoke(command)
 
             cls._set_permanent_envs(feature_obj)
 
