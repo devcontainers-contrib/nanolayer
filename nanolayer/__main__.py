@@ -1,5 +1,7 @@
-import typer
 import os
+
+import typer
+
 from nanolayer.cli.install import app as install_app
 from nanolayer.utils.analytics import setup_analytics
 from nanolayer.utils.settings import NanolayerSettings
