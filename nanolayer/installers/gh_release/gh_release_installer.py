@@ -179,7 +179,7 @@ RELEASE_ID_REGEX_MAP[LinuxInformationDesk.LinuxReleaseID.alpine] = "(?i)(alpine|
 MISC_REGEX_MAP = {
     "packages": "(\.deb|\.rpm|\.pkg|\.apk)",
     "checksums": "(\.sig$|\.text$|\.txt$|[Cc]hecksums|sha256)",
-    "certificates": "(\.pub$|\.pem$|pivkey|pkcs11key)",
+    "certificates": "(\.pub$|\.pem$|\.crt$|pivkey|pkcs11key)",
     "metadata": "(\.json$|\.sbom$)",
 }
 
