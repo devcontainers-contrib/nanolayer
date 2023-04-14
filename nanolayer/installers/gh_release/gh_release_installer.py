@@ -134,15 +134,27 @@ class Archive:
 
 
 class PlatformType(Enum):
-    WINDOWS = "windows"
-    LINUX = "linux"
-    MACOS = "macos"
+    WINDOWS = "WINDOWS"
+    LINUX = "LINUX"
+    OSX = "OSX"
+    IOS = "IOS"
+    ANDROID = "ANDROID"
+    TVOS = "TVOS"
+    ILLUMOS = "ILLUMOS"
+    SOLARIS = "SOLARIS"
+
+    FREEBSD = "FREEBSD"
+    NETBSD = "NETBSD"
+    WASI = "WASI"
+    BROWSER = "BROWSER"
+    MACCATALYST = "MACCATALYST"
 
 
 PLATFORM_REGEX_MAP = {
     PlatformType.WINDOWS: "(windows|Windows|WINDOWS|win32|-win-|\.msi$|.msixbundle$|\.exe$)",
     PlatformType.LINUX: "([Ll]inux)",
-    PlatformType.MACOS: "(macOS|mac-os|-osx-|_osx_|[Dd]arwin)",
+    PlatformType.OSX: "(macOS|mac-os|-osx-|_osx_|[Dd]arwin)",
+    PlatformType.ILLUMOS: "([Ii]llumos|[Oo]mni[oO][sS]|[Oo]pen[Ii]ndiana|[Tt]ribblix)",
 }
 
 
