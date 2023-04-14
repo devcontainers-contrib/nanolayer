@@ -453,6 +453,11 @@ class GHReleaseInstaller:
                 negative=False,
             ),
             cls.FindAllRegexFilter(
+                name="prefer static",  # less dynamic linking, more portability
+                regex=".*static.*",
+                negative=False,
+            ),
+            cls.FindAllRegexFilter(
                 name="prefer own distro-like",  # prefer own distro like
                 regex=RELEASE_ID_REGEX_MAP[
                     LinuxInformationDesk.get_release_id(id_like=True)
