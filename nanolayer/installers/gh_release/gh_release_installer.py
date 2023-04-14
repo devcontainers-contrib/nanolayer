@@ -173,6 +173,7 @@ ARCH_REGEX_MAP = {
 RELEASE_ID_REGEX_MAP = {
     enum: f"(?i)({enum.value})" for enum in LinuxInformationDesk.LinuxReleaseID
 }
+RELEASE_ID_REGEX_MAP[LinuxInformationDesk.LinuxReleaseID.alpine] = "(?i)(alpine|musl)" # adding musl to alpine "tells" 
 
 
 MISC_REGEX_MAP = {
@@ -444,11 +445,6 @@ class GHReleaseInstaller:
             cls.FindAllRegexFilter(
                 name=PlatformType.LINUX.value,
                 regex=PLATFORM_REGEX_MAP[PlatformType.LINUX],
-                negative=False,
-            ),
-            cls.FindAllRegexFilter(
-                name="prefer musl",  # musl is compatible across more distros
-                regex=".*musl.*",
                 negative=False,
             ),
             cls.FindAllRegexFilter(
