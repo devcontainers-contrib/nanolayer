@@ -41,7 +41,9 @@ class AptGetInstaller:
             Invoker.invoke(command=f"add-apt-repository -y --remove {ppa}")
 
         if remove_software_properties_common:
-            Invoker.invoke(command="apt-get -y purge software-properties-common --auto-remove")
+            Invoker.invoke(
+                command="apt-get -y purge software-properties-common --auto-remove"
+            )
 
     @classmethod
     def _add_ppas(
@@ -53,7 +55,9 @@ class AptGetInstaller:
             return software_properties_common_installed
 
         if not cls.is_ubuntu() and not force_ppas_on_non_ubuntu:
-            raise cls.AptGetInstallerError("in order to install ppas on non-ubuntu distros use the force-ppas-on-non-ubuntu flag")
+            raise cls.AptGetInstallerError(
+                "in order to install ppas on non-ubuntu distros use the force-ppas-on-non-ubuntu flag"
+            )
 
         normalized_ppas = cls.normalize_ppas(ppas)
 

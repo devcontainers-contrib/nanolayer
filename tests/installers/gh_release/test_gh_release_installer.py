@@ -120,7 +120,7 @@ from helpers import execute_current_python_in_container
             "caddy",
             "linux/amd64",
         ),
-        (  # has positive "static" 
+        (  # has positive "static"
             "cas --version",
             0,
             "mcr.microsoft.com/devcontainers/base:debian",
@@ -136,7 +136,7 @@ from helpers import execute_current_python_in_container
             "gitsign",
             "linux/amd64",
         ),
-        (  # has negative "musl" 
+        (  # has negative "musl"
             "cyclonedx --version",
             0,
             "mcr.microsoft.com/devcontainers/base:debian",
