@@ -1,12 +1,12 @@
 import tempfile
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from nanolayer.utils.invoker import Invoker
 from nanolayer.utils.linux_information_desk import LinuxInformationDesk
 
 
 class AptGetInstaller:
-    class PPASOnNonUbuntu(Exception):
+    class AptGetInstallerError(Exception):
         pass
 
     @staticmethod
@@ -38,18 +38,10 @@ class AptGetInstaller:
         normalized_ppas = cls.normalize_ppas(ppas)
 
         for ppa in normalized_ppas:
-            Invoker.invoke(
-                command=f"add-apt-repository -y --remove {ppa}",
-                raise_on_failure=True,
-                exception_class=cls.RemovePPAsFailed,
-            )
+            Invoker.invoke(command=f"add-apt-repository -y --remove {ppa}")
 
         if remove_software_properties_common:
-            Invoker.invoke(
-                command="apt-get -y purge software-properties-common --auto-remove",
-                raise_on_failure=True,
-                exception_class=cls.RemovePPAsFailed,
-            )
+            Invoker.invoke(command="apt-get -y purge software-properties-common --auto-remove")
 
     @classmethod
     def _add_ppas(
@@ -61,7 +53,7 @@ class AptGetInstaller:
             return software_properties_common_installed
 
         if not cls.is_ubuntu() and not force_ppas_on_non_ubuntu:
-            raise cls.PPASOnNonUbuntu()
+            raise cls.AptGetInstallerError("in order to install ppas on non-ubuntu distros use the force-ppas-on-non-ubuntu flag")
 
         normalized_ppas = cls.normalize_ppas(ppas)
 
