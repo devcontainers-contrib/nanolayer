@@ -140,7 +140,9 @@ def install_aptitude_packages(
 @app.command("gh-release")
 def install_gh_release_binary(
     repo: str,
-    binary_names: str = typer.Argument(None, help="comma separated list of binary names"),
+    binary_names: str = typer.Argument(
+        None, help="comma separated list of binary names"
+    ),
     version: str = "latest",
     lib_name: Optional[str] = None,
     asset_regex: Optional[str] = None,
