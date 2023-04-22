@@ -105,7 +105,7 @@ class OCIFeatureInstaller:
                 oci_feature_ref=feature_ref, output_dir=tempdir
             )
 
-            command = f"cd {tempdir} && chmod +x -R . && sudo {env_variables_cmd} bash "
+            command = f"cd {tempdir} && chmod +x -R . && {env_variables_cmd} bash "
 
             # will make sure it will get the env variable that are
             # defined in various rc files
