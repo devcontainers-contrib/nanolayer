@@ -168,5 +168,5 @@ def test_gh_release_install(
         test_command=full_test_command,
         image=image,
         docker_platform=docker_platform,
-        nanolayer_version="v0.4.0",
+        nanolayer_version="v0.4.25",
     )

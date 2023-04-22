@@ -122,5 +122,5 @@ class AptGetInstaller:
                 if preserve_apt_list:
                     # Note: not using dir/* syntax as that doesnt work on 'sh' shell (alpine)
                     Invoker.invoke(
-                        command=f"rm -r /var/lib/apt/lists && mv {tempdir} /var/lib/apt/lists"
+                        command=f"rm -r /var/lib/apt/lists && mv {tempdir}/lists /var/lib/apt/lists"
                     )
