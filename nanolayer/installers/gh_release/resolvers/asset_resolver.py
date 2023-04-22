@@ -15,15 +15,15 @@ logger = logging.getLogger(__name__)
 
 class AssetResolver:
     ARCH_REGEX_MAP = {
-        LinuxInformationDesk.Architecture.ARMV6: "([Aa]rmv6)",
-        LinuxInformationDesk.Architecture.ARMV7: "([Aa]rmv7)",
-        LinuxInformationDesk.Architecture.ARMHF: "([Aa]rmhf)",
+        LinuxInformationDesk.Architecture.ARMV6: "([Aa][Rr][Mm]v6)",
+        LinuxInformationDesk.Architecture.ARMV7: "([Aa][Rr][Mm]v7)",
+        LinuxInformationDesk.Architecture.ARMHF: "([Aa][Rr][Mm]hf)",
         LinuxInformationDesk.Architecture.I386: "(i386|-386|_386)",
-        LinuxInformationDesk.Architecture.ARM32: "([Aa]rm32)",
-        LinuxInformationDesk.Architecture.ARM64: "([Aa]rm64)",
+        LinuxInformationDesk.Architecture.ARM32: "([Aa]rm32|ARM32)",
+        LinuxInformationDesk.Architecture.ARM64: "([Aa]rm64|ARM64|-ARM)",
         LinuxInformationDesk.Architecture.S390: "(s390x|s390)",
-        LinuxInformationDesk.Architecture.PPC64: "(-ppc|ppc64|_ppc)",
-        LinuxInformationDesk.Architecture.x86_64: "([Aa]md64|-x64|_x64|x86[_-]64)",
+        LinuxInformationDesk.Architecture.PPC64: "(-ppc|ppc64|PPC64|_ppc)",
+        LinuxInformationDesk.Architecture.x86_64: "([Aa]md64|-x64|x64|x86[_-]64)",
     }
 
     class PlatformType(Enum):
@@ -40,6 +40,11 @@ class AssetResolver:
         WASI = "WASI"
         BROWSER = "BROWSER"
         MACCATALYST = "MACCATALYST"
+
+    BITNESS_REGEX_MAP = {
+        LinuxInformationDesk.Bitness.B32BIT: r"(32[Bb]it)",
+        LinuxInformationDesk.Bitness.B64BIT: r"(64[Bb]it)",
+    }
 
     PLATFORM_REGEX_MAP = {
         PlatformType.WINDOWS: r"(windows|Windows|WINDOWS|win32|-win-|\.msi$|.msixbundle$|\.exe$)",
@@ -58,7 +63,7 @@ class AssetResolver:
     MISC_REGEX_MAP = {
         "packages": r"(\.deb|\.rpm|\.pkg|\.apk)",
         "checksums": r"(\.sig$|\.text$|\.txt$|[Cc]hecksums|sha256)",
-        "certificates": r"(\.pub$|\.pem$|\.crt$|pivkey|pkcs11key)",
+        "certificates": r"(\.pub$|\.pem$|\.crt$|\.asc$|pivkey|pkcs11key)",
         "metadata": r"(\.json$|\.sbom$)",
     }
 
@@ -167,6 +172,14 @@ class AssetResolver:
         negative_platform_filters = [
             cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
             for name, regex in bad_platform_regexes.items()
+        ]
+
+        # add all non-current bitness as a negative filters
+        bad_bitness_regexes = deepcopy(cls.BITNESS_REGEX_MAP)
+        bad_bitness_regexes.pop(LinuxInformationDesk.get_bitness())
+        negative_platform_filters = [
+            cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
+            for name, regex in bad_bitness_regexes.items()
         ]
 
         # One filter to rule them all

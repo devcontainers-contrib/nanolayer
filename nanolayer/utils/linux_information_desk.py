@@ -30,6 +30,10 @@ class ProcFile:
 class LinuxInformationDesk:
     OS_RELEASE_PATH = "/etc/os-release"
 
+    class Bitness(Enum):
+        B32BIT = "32bit"
+        B64BIT = "64bit"
+
     class Architecture(Enum):
         ARM64 = "arm64"
         x86_64 = "x86_64"
@@ -91,6 +95,17 @@ class LinuxInformationDesk:
             os_release_id = parsed_os_release["ID"]
 
         return os_release_id
+
+    @classmethod
+    def get_bitness(cls) -> "LinuxInformationDesk.Bitness":
+        bitness = platform.architecture()[0]
+
+        if "32" in bitness:
+            return cls.Bitness.B32BIT
+        elif "64" in bitness:
+            return cls.Bitness.B64BIT
+        else:
+            raise ValueError(f"could not resolve bitness: {bitness}")
 
     @classmethod
     def get_release_id(
