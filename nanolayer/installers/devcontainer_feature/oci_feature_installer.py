@@ -11,6 +11,7 @@ from nanolayer.installers.devcontainer_feature.models.devcontainer_feature impor
 )
 from nanolayer.installers.devcontainer_feature.oci_feature import OCIFeature
 from nanolayer.utils.invoker import Invoker
+from nanolayer.utils.linux_information_desk import LinuxInformationDesk
 from nanolayer.utils.settings import (
     ENV_CLI_LOCATION,
     ENV_FORCE_CLI_INSTALLATION,
@@ -24,6 +25,9 @@ logger = logging.getLogger(__name__)
 
 class OCIFeatureInstaller:
     class FeatureInstallationException(Exception):
+        pass
+
+    class NoPremissions(PermissionError):
         pass
 
     _ORDERED_BASE_REMOTE_USERS = ("vscode", "node", "codespace")
@@ -48,6 +52,11 @@ class OCIFeatureInstaller:
         remote_user: Optional[str] = None,
         verbose: bool = False,
     ) -> None:
+        if not LinuxInformationDesk.has_root_privileges():
+            raise cls.NoPremissions(
+                "Installer must be run as root. Use sudo, su, or add 'USER root' to your Dockerfile before running this command."
+            )
+
         if options is None:
             options = {}
 
