@@ -15,7 +15,7 @@ It does so by automatically deleting any installation leftovers (such as apt-get
 Usage:
 
 ```shell
-nanolayer install gh cli/cli gh 
+nanolayer install gh-release cli/cli gh 
 ```
 
 ### Example 
