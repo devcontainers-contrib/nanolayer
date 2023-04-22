@@ -86,6 +86,7 @@ class AssetResolver:
             self.negative = negative
 
         def __call__(self, asset: "AssetResolver.ReleaseAsset") -> bool:
+            print(self.name)
             matches = len(re.findall(self.regex, asset.name))
             return matches > 0 if not self.negative else matches == 0
 
@@ -177,7 +178,7 @@ class AssetResolver:
         # add all non-current bitness as a negative filters
         bad_bitness_regexes = deepcopy(cls.BITNESS_REGEX_MAP)
         bad_bitness_regexes.pop(LinuxInformationDesk.get_bitness())
-        negative_platform_filters = [
+        negative_bitness_filters = [
             cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
             for name, regex in bad_bitness_regexes.items()
         ]
@@ -190,6 +191,7 @@ class AssetResolver:
                     negative_architecture_filters
                     + negative_misc_filters
                     + negative_platform_filters
+                    + negative_bitness_filters
                 )
             ),
             assets,
