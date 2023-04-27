@@ -50,7 +50,7 @@ class AssetResolver:
         PlatformType.WINDOWS: r"(windows|Windows|WINDOWS|win32|-win-|\.msi$|.msixbundle$|\.exe$)",
         PlatformType.LINUX: r"([Ll]inux)",
         PlatformType.ANDROID: r"([Aa]ndroid)",
-        PlatformType.OSX: r"(macOS|mac-os|-osx-|_osx_|[Dd]arwin)",
+        PlatformType.OSX: r"(macOS|mac-os|-osx-|_osx_|[Dd]arwin|\.dmg)",
         PlatformType.ILLUMOS: r"([Ii]llumos|[Oo]mni[oO][sS]|[Oo]pen[Ii]ndiana|[Tt]ribblix)",
     }
 
@@ -62,10 +62,10 @@ class AssetResolver:
     ] = r"(?i)(alpine|musl)"  # adding musl to alpine "tells"
 
     MISC_REGEX_MAP = {
-        "packages": r"(\.deb|\.rpm|\.pkg|\.apk)",
+        "packages": r"(\.deb|\.rpm|\.pkg|\.apk|\.[Aa]ppImage|\.snap)",
         "checksums": r"(\.sig$|\.text$|\.txt$|[Cc]hecksums|sha256)",
         "certificates": r"(\.pub$|\.pem$|\.crt$|\.asc$|pivkey|pkcs11key)",
-        "metadata": r"(\.json$|\.sbom$)",
+        "metadata": r"(\.json$|\.sbom$|\.blockmap$)",
     }
 
     class AssetResolverError(Exception):
