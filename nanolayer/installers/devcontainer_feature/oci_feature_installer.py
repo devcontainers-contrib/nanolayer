@@ -130,11 +130,11 @@ class OCIFeatureInstaller:
 
             Invoker.invoke(command)
 
-            cls._set_permanent_envs(feature_obj)
+            cls._set_entrypoint(feature_obj)
 
     @classmethod
-    def _set_permanent_envs(cls, feature: Feature) -> None:
-        if feature.containerEnv is None:
+    def _set_entrypoint(cls, feature: Feature) -> None:
+        if feature.containerEnv is None and feature.entrypoint is None:
             return
 
         feature_profile_dir = Path(cls._PROFILE_DIR)
@@ -150,13 +150,19 @@ class OCIFeatureInstaller:
             current_content = f.read()
 
         modified = False
-        for env_name, env_value in feature.containerEnv.items():
-            statement = f"export {env_name}={env_value}"
+        if feature.containerEnv is not None:
+            for env_name, env_value in feature.containerEnv.items():
+                statement = f"export {env_name}={env_value}"
+                if statement not in current_content:
+                    current_content += f"\n{statement}"
+                    modified = True
+        
+        if feature.entrypoint is not None:
+            statement = f"/bin/sh {feature.entrypoint}" # /bin/sh to be compatible with https://github.com/devcontainers/cli/blob/3b8e16506456b4d50d05a6056eb65cf8a28ee834/src/spec-node/singleContainer.ts#L367
             if statement not in current_content:
                 current_content += f"\n{statement}"
-
                 modified = True
-
+                
         if modified:
             with open(feature_profile_file, "w") as f:
                 f.write(current_content)
