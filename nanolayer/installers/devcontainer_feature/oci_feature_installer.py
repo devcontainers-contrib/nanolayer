@@ -6,8 +6,6 @@ import tempfile
 from pathlib import Path
 from typing import Dict, Optional, Union
 
-from sklearn.pipeline import FeatureUnion_Self
-
 from nanolayer.installers.devcontainer_feature.models.devcontainer_feature import (
     Feature,
 )
@@ -141,7 +139,7 @@ class OCIFeatureInstaller:
             Invoker.invoke(feature_obj.entrypoint)
 
     @classmethod
-    def _set_envs(cls, feature: FeatureUnion_Self) -> None:
+    def _set_envs(cls, feature: Feature) -> None:
         if feature.containerEnv is None and feature.entrypoint is None:
             return
 
