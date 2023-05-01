@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class OCIFeatureInstaller:
     FEATURE_ENTRYPOINT_HEADER = """if [ "$(id -un)" != "{username}" ]; then
-    echo "not vscode, exiting!"                                                                              
+    echo "not {remote_user_name}, exiting!"                                                                              
     exit 0
 fi
     """
@@ -76,11 +76,13 @@ fi
         options = cls._resolve_options(feature_obj=feature_obj, options=options)
         logger.info("resolved options: %s", str(options))
 
-        remote_user = cls._resolve_remote_user(remote_user)
+        remote_user: pwd.struct_passwd = cls._resolve_remote_user(remote_user)
+        remote_user_name = remote_user.pw_name
+        remote_user_home = remote_user.pw_dir
         logger.info("resolved remote user: %s", remote_user)
 
-        envs[cls._REMOTE_USER_ENV] = remote_user.pw_name
-        envs[cls._REMOTE_USER_HOME_ENV] = remote_user.pw_dir
+        envs[cls._REMOTE_USER_ENV] = remote_user_name
+        envs[cls._REMOTE_USER_HOME_ENV] = remote_user_home
         for option_name, option_value in options.items():
             if isinstance(option_value, bool):
                 option_value = "true" if option_value else "false"
@@ -136,10 +138,10 @@ fi
 
             Invoker.invoke(command)
 
-            cls._set_entrypoint(feature_obj, remote_user)
+            cls._set_entrypoint(feature_obj, remote_user_name)
 
     @classmethod
-    def _set_entrypoint(cls, feature: Feature, remote_user: str) -> None:
+    def _set_entrypoint(cls, feature: Feature, remote_user_name: str) -> None:
         if feature.containerEnv is None and feature.entrypoint is None:
             return
 
@@ -157,7 +159,7 @@ fi
 
         modified = False
 
-        header = cls.FEATURE_ENTRYPOINT_HEADER.format(username=remote_user)
+        header = cls.FEATURE_ENTRYPOINT_HEADER.format(username=remote_user_name)
         if header not in current_content:
             current_content = header + f"\n{current_content}"
 
