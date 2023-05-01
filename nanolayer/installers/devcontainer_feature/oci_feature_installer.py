@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class OCIFeatureInstaller:
     FEATURE_ENTRYPOINT_HEADER = """if [ "$(id -un)" != "{username}" ]; then
-    echo "not {remote_user_name}, exiting!"                                                                              
+    echo "not {username}, exiting!"                                                                              
     exit 0
 fi
     """
