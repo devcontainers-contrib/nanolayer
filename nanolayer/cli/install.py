@@ -34,6 +34,7 @@ def install_devcontainer_feature(
     remote_user: Optional[str] = typer.Option(None, callback=_validate_args),
     env: Optional[List[str]] = typer.Option(None, callback=_validate_args),
     verbose: bool = False,
+    invoke_entrypoint: bool = False,
 ) -> None:
     def _key_val_arg_to_dict(args: Optional[List[str]]) -> Dict[str, str]:
         if args is None:
@@ -67,6 +68,7 @@ def install_devcontainer_feature(
         options=options_dict,
         remote_user=remote_user,
         verbose=verbose,
+        invoke_entrypoint=invoke_entrypoint,
     )
 
 

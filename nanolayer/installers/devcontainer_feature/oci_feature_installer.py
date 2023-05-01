@@ -6,6 +6,8 @@ import tempfile
 from pathlib import Path
 from typing import Dict, Optional, Union
 
+from sklearn.pipeline import FeatureUnion_Self
+
 from nanolayer.installers.devcontainer_feature.models.devcontainer_feature import (
     Feature,
 )
@@ -24,12 +26,6 @@ logger = logging.getLogger(__name__)
 
 
 class OCIFeatureInstaller:
-    FEATURE_ENTRYPOINT_HEADER = """if [ "$(id -un)" != "{username}" ]; then
-    echo "not {username}, exiting!"                                                                              
-    exit 0
-fi
-    """
-
     class FeatureInstallationException(Exception):
         pass
 
@@ -57,6 +53,7 @@ fi
         envs: Optional[Dict[str, str]] = None,
         remote_user: Optional[str] = None,
         verbose: bool = False,
+        invoke_entrypoint: bool = False,
     ) -> None:
         if not LinuxInformationDesk.has_root_privileges():
             raise cls.NoPremissions(
@@ -76,9 +73,9 @@ fi
         options = cls._resolve_options(feature_obj=feature_obj, options=options)
         logger.info("resolved options: %s", str(options))
 
-        remote_user: pwd.struct_passwd = cls._resolve_remote_user(remote_user)
-        remote_user_name = remote_user.pw_name
-        remote_user_home = remote_user.pw_dir
+        remote_user_struct: pwd.struct_passwd = cls._resolve_remote_user(remote_user)
+        remote_user_name = remote_user_struct.pw_name
+        remote_user_home = remote_user_struct.pw_dir
         logger.info("resolved remote user: %s", remote_user)
 
         envs[cls._REMOTE_USER_ENV] = remote_user_name
@@ -138,10 +135,13 @@ fi
 
             Invoker.invoke(command)
 
-            cls._set_entrypoint(feature_obj, remote_user_name)
+            cls._set_envs(feature_obj)
+
+        if invoke_entrypoint and feature_obj.entrypoint is not None:
+            Invoker.invoke(feature_obj.entrypoint)
 
     @classmethod
-    def _set_entrypoint(cls, feature: Feature, remote_user_name: str) -> None:
+    def _set_envs(cls, feature: FeatureUnion_Self) -> None:
         if feature.containerEnv is None and feature.entrypoint is None:
             return
 
@@ -159,22 +159,12 @@ fi
 
         modified = False
 
-        header = cls.FEATURE_ENTRYPOINT_HEADER.format(username=remote_user_name)
-        if header not in current_content:
-            current_content = header + f"\n{current_content}"
-
         if feature.containerEnv is not None:
             for env_name, env_value in feature.containerEnv.items():
                 statement = f"export {env_name}={env_value}"
                 if statement not in current_content:
                     current_content += f"\n{statement}"
                     modified = True
-
-        if feature.entrypoint is not None:
-            statement = f"/bin/sh {feature.entrypoint}"  # /bin/sh to be compatible with https://github.com/devcontainers/cli/blob/3b8e16506456b4d50d05a6056eb65cf8a28ee834/src/spec-node/singleContainer.ts#L367
-            if statement not in current_content:
-                current_content += f"\n{statement}"
-                modified = True
 
         if modified:
             with open(feature_profile_file, "w") as f:
