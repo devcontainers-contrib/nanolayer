@@ -24,6 +24,12 @@ logger = logging.getLogger(__name__)
 
 
 class OCIFeatureInstaller:
+    FEATURE_ENTRYPOINT_HEADER = """if [ "$(id -un)" != "{username}" ]; then
+    echo "not vscode, exiting!"                                                                              
+    exit 0
+fi
+    """
+
     class FeatureInstallationException(Exception):
         pass
 
@@ -130,10 +136,10 @@ class OCIFeatureInstaller:
 
             Invoker.invoke(command)
 
-            cls._set_entrypoint(feature_obj)
+            cls._set_entrypoint(feature_obj, remote_user)
 
     @classmethod
-    def _set_entrypoint(cls, feature: Feature) -> None:
+    def _set_entrypoint(cls, feature: Feature, remote_user: str) -> None:
         if feature.containerEnv is None and feature.entrypoint is None:
             return
 
@@ -150,19 +156,24 @@ class OCIFeatureInstaller:
             current_content = f.read()
 
         modified = False
+
+        header = cls.FEATURE_ENTRYPOINT_HEADER.format(username=remote_user)
+        if header not in current_content:
+            current_content = header + f"\n{current_content}"
+
         if feature.containerEnv is not None:
             for env_name, env_value in feature.containerEnv.items():
                 statement = f"export {env_name}={env_value}"
                 if statement not in current_content:
                     current_content += f"\n{statement}"
                     modified = True
-        
+
         if feature.entrypoint is not None:
-            statement = f"/bin/sh {feature.entrypoint}" # /bin/sh to be compatible with https://github.com/devcontainers/cli/blob/3b8e16506456b4d50d05a6056eb65cf8a28ee834/src/spec-node/singleContainer.ts#L367
+            statement = f"/bin/sh {feature.entrypoint}"  # /bin/sh to be compatible with https://github.com/devcontainers/cli/blob/3b8e16506456b4d50d05a6056eb65cf8a28ee834/src/spec-node/singleContainer.ts#L367
             if statement not in current_content:
                 current_content += f"\n{statement}"
                 modified = True
-                
+
         if modified:
             with open(feature_profile_file, "w") as f:
                 f.write(current_content)
