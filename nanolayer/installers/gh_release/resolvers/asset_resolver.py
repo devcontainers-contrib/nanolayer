@@ -43,8 +43,8 @@ class AssetResolver:
         MACCATALYST = "MACCATALYST"
 
     BITNESS_REGEX_MAP = {
-        LinuxInformationDesk.Bitness.B32BIT: r"(32[Bb]it|(32\-[Bb]it)",
-        LinuxInformationDesk.Bitness.B64BIT: r"(64[Bb]it|(64\-[Bb]it)",
+        LinuxInformationDesk.Bitness.B32BIT: r"(32[Bb]it|32\-[Bb]it)",
+        LinuxInformationDesk.Bitness.B64BIT: r"(64[Bb]it|64\-[Bb]it)",
     }
 
     PLATFORM_REGEX_MAP = {
