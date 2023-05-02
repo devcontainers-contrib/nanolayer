@@ -37,6 +37,7 @@ class LinuxInformationDesk:
     class Architecture(Enum):
         ARM64 = "arm64"
         x86_64 = "x86_64"
+        ARMV5 = "armv5"
         ARMV6 = "armv6"
         ARMV7 = "armv7"
         ARMHF = "armhf"
@@ -53,6 +54,8 @@ class LinuxInformationDesk:
             return cls.Architecture.x86_64
         if "arm64" in architecture or "aarch64" in architecture:
             return cls.Architecture.ARM64
+        if "armv5" in architecture:
+            return cls.Architecture.ARMV5
         if "armv6" in architecture:
             return cls.Architecture.ARMV6
         if "armv7" in architecture:

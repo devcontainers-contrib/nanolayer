@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class AssetResolver:
     ARCH_REGEX_MAP = {
+        LinuxInformationDesk.Architecture.ARMV5: "([Aa][Rr][Mm]v5)",
         LinuxInformationDesk.Architecture.ARMV6: "([Aa][Rr][Mm]v6)",
         LinuxInformationDesk.Architecture.ARMV7: "([Aa][Rr][Mm]v7)",
         LinuxInformationDesk.Architecture.ARMHF: "([Aa][Rr][Mm]hf)",
@@ -42,8 +43,8 @@ class AssetResolver:
         MACCATALYST = "MACCATALYST"
 
     BITNESS_REGEX_MAP = {
-        LinuxInformationDesk.Bitness.B32BIT: r"(32[Bb]it)",
-        LinuxInformationDesk.Bitness.B64BIT: r"(64[Bb]it)",
+        LinuxInformationDesk.Bitness.B32BIT: r"(32[Bb]it|(32\-[Bb]it)",
+        LinuxInformationDesk.Bitness.B64BIT: r"(64[Bb]it|(64\-[Bb]it)",
     }
 
     PLATFORM_REGEX_MAP = {
