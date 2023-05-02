@@ -48,10 +48,10 @@ class AssetResolver:
     }
 
     PLATFORM_REGEX_MAP = {
-        PlatformType.WINDOWS: r"(windows|Windows|WINDOWS|win32|-win-|\.msi$|.msixbundle$|\.exe$)",
+        PlatformType.WINDOWS: r"(windows|Windows|WINDOWS|win32|\-win\-|\.msi$|.msixbundle$|\.exe$)",
         PlatformType.LINUX: r"([Ll]inux)",
         PlatformType.ANDROID: r"([Aa]ndroid)",
-        PlatformType.OSX: r"(macOS|mac-os|-osx-|_osx_|[Dd]arwin|\.dmg)",
+        PlatformType.OSX: r"([Mm]ac[Oo][Ss]|[Mm]ac\-[Oo][Ss]|\-osx\-|_osx_|[Dd]arwin|\.dmg)",
         PlatformType.ILLUMOS: r"([Ii]llumos|[Oo]mni[oO][sS]|[Oo]pen[Ii]ndiana|[Tt]ribblix)",
     }
 
