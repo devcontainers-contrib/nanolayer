@@ -82,26 +82,34 @@ class AssetResolver:
         size: int
 
     class FindAllRegexFilter:
-        def __init__(self, name: str, regex: str, negative: bool) -> None:
+        def __init__(self, name: str, regex: str, negative: bool, verbose: bool = True) -> None:
             self.name = name
             self.regex = regex
             self.negative = negative
+            self.verbose = verbose
 
         def __call__(self, asset: "AssetResolver.ReleaseAsset") -> bool:
             print(self.name)
             matches = len(re.findall(self.regex, asset.name))
-            return matches > 0 if not self.negative else matches == 0
+            result = matches > 0 if not self.negative else matches == 0
+            if self.verbose:
+                print(f" asset {asset.name} on filter {self.name} returned {result} ")
+            return result
 
     class MatchRegexFilter:
-        def __init__(self, name: str, regex: str, negative: bool) -> None:
+        def __init__(self, name: str, regex: str, negative: bool, verbose: bool = True) -> None:
             self.name = name
             self.regex = regex
             self.negative = negative
+            self.verbose = verbose
 
         def __call__(self, asset: "AssetResolver.ReleaseAsset") -> bool:
             match = re.match(self.regex, asset.name)
-            return match is not None if not self.negative else match is None
-
+            result = match is not None if not self.negative else match is None
+            if self.verbose:
+                print(f" asset {asset.name} on filter {self.name} returned {result} ")
+            return result
+        
     @classmethod
     def _get_release_dict(cls, repo: str, tag: str) -> Dict[str, Any]:
         response = urllib.request.urlopen(
