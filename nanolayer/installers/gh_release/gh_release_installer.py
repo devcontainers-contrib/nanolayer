@@ -162,14 +162,30 @@ class GHReleaseInstaller:
             asked_version=version, repo=repo, release_tag_regex=release_tag_regex
         )
 
-        # will raise an exception if more or less than a single asset can meet the requirments
-        resolved_asset = AssetResolver.resolve(
-            repo=repo,
-            release_version=release_version,
-            asset_regex=asset_regex,
-            arch=arch,
-            binary_names=binary_names,
-        )
+        try:
+            # will raise an exception if more or less than a single asset can meet the requirments
+            resolved_asset = AssetResolver.resolve(
+                repo=repo,
+                release_version=release_version,
+                asset_regex=asset_regex,
+                arch=arch,
+                binary_names=binary_names,
+            )
+        except AssetResolver.NoReleaseError as e:
+            release_version = ReleaseResolver.resolve(
+                asked_version=version,
+                repo=repo,
+                release_tag_regex=release_tag_regex,
+                use_github_api=True,
+            )
+            # will raise an exception if more or less than a single asset can meet the requirments
+            resolved_asset = AssetResolver.resolve(
+                repo=repo,
+                release_version=release_version,
+                asset_regex=asset_regex,
+                arch=arch,
+                binary_names=binary_names,
+            )
 
         logger.warning("resolved asset: %s", resolved_asset.name)
 

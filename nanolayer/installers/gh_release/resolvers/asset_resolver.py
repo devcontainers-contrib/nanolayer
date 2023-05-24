@@ -5,6 +5,7 @@ import urllib
 from copy import deepcopy
 from enum import Enum
 from typing import Any, Dict, List, Optional
+from urllib.error import HTTPError
 
 from pydantic import BaseModel, Extra
 
@@ -72,6 +73,9 @@ class AssetResolver:
     class AssetResolverError(Exception):
         pass
 
+    class NoReleaseError(Exception):
+        pass
+
     class ReleaseAsset(BaseModel):
         class Config:
             extra = Extra.ignore
@@ -119,9 +123,15 @@ class AssetResolver:
 
     @classmethod
     def _get_release_dict(cls, repo: str, tag: str) -> Dict[str, Any]:
-        response = urllib.request.urlopen(
-            f"https://api.github.com/repos/{repo}/releases/tags/{tag}"
-        )  # nosec
+        try:
+            response = urllib.request.urlopen(
+                f"https://api.github.com/repos/{repo}/releases/tags/{tag}"
+            )  # nosec
+        except HTTPError as e:
+            if e.code == 404:
+                raise cls.NoReleaseError(
+                    f"no release exists for repo:{repo} and tag: {tag}"
+                ) from e
         return json.loads(response.read())
 
     @classmethod
