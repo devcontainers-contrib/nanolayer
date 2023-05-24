@@ -136,6 +136,14 @@ from helpers import execute_current_python_in_container
             "gitsign",
             "linux/amd64",
         ),
+        (  # date based version
+            "youtubeuploader -version",
+            0,
+            "mcr.microsoft.com/devcontainers/base:debian",
+            "porjo/youtubeuploader",
+            "youtubeuploader",
+            "linux/amd64",
+        ),
         (  # has negative "musl"
             "cyclonedx --version",
             0,
