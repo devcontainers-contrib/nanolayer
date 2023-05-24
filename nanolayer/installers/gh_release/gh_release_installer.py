@@ -179,15 +179,28 @@ class GHReleaseInstaller:
                 url=resolved_asset.browser_download_url, target=temp_asset_path
             )
             if not Archive.is_archive(temp_asset_path):
-                logger.warning("asset recognized as a binary")
+                from nanolayer.installers.gh_release.utils.compressed_file import (
+                    get_compressed_file,
+                )
 
-                if len(binary_names) > 1:
-                    raise cls.GHReleaseInstallerError(
-                        "multiple binary names given but the resolved asset is a single binary file"
+                compressed_file = get_compressed_file(temp_asset_path)
+                if compressed_file is None:
+                    logger.warning("asset recognized as a binary")
+
+                    if len(binary_names) > 1:
+                        raise cls.GHReleaseInstallerError(
+                            "multiple binary names given but the resolved asset is a single binary file"
+                        )
+
+                    # assumes regular binary
+                    shutil.copyfile(temp_asset_path, final_binary_locations[0])
+                else:
+                    logger.warning(
+                        "asset recognized as a %s file", compressed_file.mime_type
                     )
+                    with open(final_binary_locations[0], "wb") as f:
+                        f.write(compressed_file.accessor.read())
 
-                # assumes regular binary
-                shutil.copyfile(temp_asset_path, final_binary_locations[0])
                 cls._recursive_chmod(final_binary_locations[0], cls.BIN_PERMISSIONS)
 
             else:

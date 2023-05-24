@@ -144,6 +144,14 @@ from helpers import execute_current_python_in_container
             "youtubeuploader",
             "linux/amd64",
         ),
+        (  # gz (not tar)
+            "chisel --version",
+            0,
+            "mcr.microsoft.com/devcontainers/base:debian",
+            "jpillora/chisel",
+            "chisel",
+            "linux/amd64",
+        ),
         (  # has negative "musl"
             "cyclonedx --version",
             0,
