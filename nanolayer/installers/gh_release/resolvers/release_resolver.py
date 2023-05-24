@@ -3,7 +3,6 @@ from typing import Any, Dict, List, Optional
 
 import invoke
 from natsort import natsorted
-from numpy import str_
 
 
 class ReleaseResolver:
