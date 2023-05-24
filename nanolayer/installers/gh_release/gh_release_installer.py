@@ -123,6 +123,7 @@ class GHReleaseInstaller:
         version: str = "latest",
         force: bool = False,
         arch: Optional[str] = None,
+        release_tag_regex: Optional[str] = None,
     ) -> None:
         if lib_name is None or lib_name == "":
             if len(binary_names) > 1:
@@ -157,7 +158,9 @@ class GHReleaseInstaller:
             final_binary_locations.append(final_binary_location)
 
         # Will raise an exception if release for the requested version does not exists
-        release_version = ReleaseResolver.resolve(asked_version=version, repo=repo)
+        release_version = ReleaseResolver.resolve(
+            asked_version=version, repo=repo, release_tag_regex=release_tag_regex
+        )
 
         # will raise an exception if more or less than a single asset can meet the requirments
         resolved_asset = AssetResolver.resolve(
