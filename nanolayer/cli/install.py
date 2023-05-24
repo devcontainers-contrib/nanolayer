@@ -152,6 +152,7 @@ def install_gh_release_binary(
     lib_location: Optional[str] = None,
     force: bool = False,
     arch: Optional[str] = None,
+    release_tag_regex: Optional[str] = None,
 ) -> None:
     if binary_names == "":
         raise typer.BadParameter("binary names cannot be empty string")
@@ -166,4 +167,5 @@ def install_gh_release_binary(
         version=version,
         asset_regex=asset_regex,
         force=force,
+        release_tag_regex=release_tag_regex,
     )

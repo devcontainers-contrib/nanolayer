@@ -6,7 +6,7 @@ from helpers import execute_current_python_in_container
 
 # @pytest.mark.skip(reason="not implemented yet")
 @pytest.mark.parametrize(
-    "test_command,excpected_result,image,repo,target,docker_platform",
+    "test_command,excpected_result,image,repo,target,flags,docker_platform",
     [
         (
             "upx --version",
@@ -14,6 +14,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "upx/upx",
             "upx",
+            "",
             "linux/amd64",
         ),
         (
@@ -22,6 +23,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "digitalocean/doctl",
             "doctl",
+            "",
             "linux/amd64",
         ),
         (  # classic
@@ -30,6 +32,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "argoproj/argo-cd",
             "argocd",
+            "",
             "linux/amd64",
         ),
         (  # alpine
@@ -38,6 +41,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:alpine",
             "argoproj/argo-cd",
             "argocd",
+            "",
             "linux/amd64",
         ),
         (  # arm
@@ -46,6 +50,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "argoproj/argo-cd",
             "argocd",
+            "",
             "linux/arm64",
         ),
         (  # two binaries at same repo
@@ -54,6 +59,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "ahmetb/kubectx",
             "kubectx",
+            "",
             "linux/amd64",
         ),
         (  # two binaries at same repo
@@ -62,6 +68,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "ahmetb/kubectx",
             "kubens",
+            "",
             "linux/amd64",
         ),
         (  # control group for arm
@@ -70,6 +77,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "tenable/terrascan",
             "terrascan",
+            "",
             "linux/amd64",
         ),
         (  # arm
@@ -78,6 +86,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "tenable/terrascan",
             "terrascan",
+            "",
             "linux/arm64",
         ),
         (
@@ -86,6 +95,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "cli/cli",
             "gh",
+            "",
             "linux/amd64",
         ),
         (  # folder named btop in archive
@@ -94,6 +104,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "aristocratos/btop",
             "btop",
+            "",
             "linux/amd64",
         ),
         (  # zip archive for linux
@@ -102,6 +113,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "ogham/exa",
             "exa",
+            "",
             "linux/amd64",
         ),
         (  # .apk file
@@ -110,6 +122,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "muesli/duf",
             "duf",
+            "",
             "linux/amd64",
         ),
         (  # .pem file
@@ -118,6 +131,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "caddyserver/caddy",
             "caddy",
+            "",
             "linux/amd64",
         ),
         (  # has positive "static"
@@ -126,6 +140,16 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "codenotary/cas",
             "cas",
+            "",
+            "linux/amd64",
+        ),
+        (  # release regex
+            "bw --version",
+            0,
+            "mcr.microsoft.com/devcontainers/base:debian",
+            "bitwarden/clients",
+            "bw",
+            "--release-tag-regex 'cli\\-'",
             "linux/amd64",
         ),
         (  # .sbom file
@@ -134,6 +158,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "sigstore/gitsign",
             "gitsign",
+            "",
             "linux/amd64",
         ),
         (  # date based version
@@ -142,6 +167,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "porjo/youtubeuploader",
             "youtubeuploader",
+            "",
             "linux/amd64",
         ),
         (  # gz (not tar)
@@ -150,6 +176,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "jpillora/chisel",
             "chisel",
+            "",
             "linux/amd64",
         ),
         (  # has negative "musl"
@@ -158,6 +185,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "CycloneDX/cyclonedx-cli",
             "cyclonedx",
+            "",
             "linux/amd64",
         ),
         (
@@ -166,6 +194,7 @@ from helpers import execute_current_python_in_container
             "mcr.microsoft.com/devcontainers/base:debian",
             "PowerShell/PowerShell",
             "pwsh",
+            "",
             "linux/amd64",
         ),
     ],
@@ -176,13 +205,14 @@ def test_gh_release_install(
     image: str,
     repo: List[str],
     target: str,
+    flags: str,
     docker_platform: str,
 ) -> None:
-    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install gh-release {repo} {target} && {test_command}"
+    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install gh-release {repo} {target} {flags} && {test_command}"
 
     assert excpected_result == execute_current_python_in_container(
         test_command=full_test_command,
         image=image,
         docker_platform=docker_platform,
-        nanolayer_version="v0.4.25",
+        nanolayer_version="v0.4.40",
     )
