@@ -19,11 +19,10 @@ def setup_analytics() -> None:
             else ""
         )
         sentry_sdk.init(
-            # Avoiding sending any metadata (local variables, paths, etc)
+            # Avoiding sending any identifiable metadata.
             # Only the exception name and its stacktrace is logged and only
             # if the exception origins from the `nanolayer` package.
             send_default_pii=False,  # don`t submit any personally identifiable information
-            with_locals=False,  # don't submit local variables
             send_client_reports=False,  # don`t submit client reports
             request_bodies="never",  # don`t submit request bodies
             ignore_errors=[
