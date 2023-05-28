@@ -1,14 +1,20 @@
 import logging
 import os
 import platform
+import sys
 
 import sentry_sdk
+from sentry_sdk.integrations.atexit import AtexitIntegration
 
 from nanolayer.utils.linux_information_desk import EnvFile, ProcFile
 from nanolayer.utils.settings import NanolayerSettings
 from nanolayer.utils.version import resolve_own_package_version
 
 logger = logging.getLogger(__name__)
+
+
+def at_exit_callback(pending: int, timeout: int) -> None:
+    sys.stderr.flush()
 
 
 def setup_analytics() -> None:
@@ -30,6 +36,7 @@ def setup_analytics() -> None:
                 MemoryError,  # machine is running out of memory
                 NotImplementedError,  # user is using a feature that is not implemented
             ],
+            integrations=[AtexitIntegration(callback=at_exit_callback)],
             release=resolve_own_package_version(),
             traces_sample_rate=1.0,
             dsn=dsn,
