@@ -16,16 +16,17 @@ logger = logging.getLogger(__name__)
 
 class AssetResolver:
     ARCH_REGEX_MAP = {
-        LinuxInformationDesk.Architecture.ARMV5: "([Aa][Rr][Mm]v5)",
-        LinuxInformationDesk.Architecture.ARMV6: "([Aa][Rr][Mm]v6)",
-        LinuxInformationDesk.Architecture.ARMV7: "([Aa][Rr][Mm]v7)",
-        LinuxInformationDesk.Architecture.ARMHF: "([Aa][Rr][Mm]hf)",
-        LinuxInformationDesk.Architecture.I386: "(i386|-386|_386)",
-        LinuxInformationDesk.Architecture.ARM32: "([Aa]rm32|ARM32)",
-        LinuxInformationDesk.Architecture.ARM64: "([Aa]rm64|ARM64|-ARM)",
-        LinuxInformationDesk.Architecture.S390: "(s390x|s390)",
-        LinuxInformationDesk.Architecture.PPC64: "(-ppc|ppc64|PPC64|_ppc)",
-        LinuxInformationDesk.Architecture.x86_64: "([Aa]md64|-x64|x64|x86[_-]64)",
+        LinuxInformationDesk.Architecture.ARMV5: r"([Aa][Rr][Mm]v5)",
+        LinuxInformationDesk.Architecture.ARMV6: r"([Aa][Rr][Mm]v6)",
+        LinuxInformationDesk.Architecture.ARMV7: r"([Aa][Rr][Mm]v7)",
+        LinuxInformationDesk.Architecture.ARMHF: r"([Aa][Rr][Mm]hf)",
+        LinuxInformationDesk.Architecture.I386: r"(i386|\-386|_386)",
+        LinuxInformationDesk.Architecture.I686: r"(i686|\-686|_686)",
+        LinuxInformationDesk.Architecture.ARM32: r"([Aa]rm32|ARM32)",
+        LinuxInformationDesk.Architecture.ARM64: r"([Aa]rm64|ARM64|\-ARM|\-arm\-)",
+        LinuxInformationDesk.Architecture.S390: r"(s390x|s390)",
+        LinuxInformationDesk.Architecture.PPC64: r"(\-ppc|ppc64|PPC64|_ppc)",
+        LinuxInformationDesk.Architecture.x86_64: r"([Aa]md64|\-x64|x64|x86[_-]64)",
     }
 
     class PlatformType(Enum):

@@ -43,6 +43,7 @@ class LinuxInformationDesk:
         ARMHF = "armhf"
         ARM32 = "arm32"
         I386 = "i386"
+        I686 = "i686"
         PPC64 = "ppc64"
         S390 = "s390"
         OTHER = "other"
@@ -64,6 +65,8 @@ class LinuxInformationDesk:
             return cls.Architecture.ARMHF
         if "i386" in architecture:
             return cls.Architecture.I386
+        if "i686" in architecture:
+            return cls.Architecture.I686
         if "ppc" in architecture:
             return cls.Architecture.PPC64
         if "arm32" in architecture:
