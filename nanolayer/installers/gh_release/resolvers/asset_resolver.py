@@ -133,6 +133,7 @@ class AssetResolver:
                 raise cls.NoReleaseError(
                     f"no release exists for repo:{repo} and tag: {tag}"
                 ) from e
+            raise e
         return json.loads(response.read())
 
     @classmethod
