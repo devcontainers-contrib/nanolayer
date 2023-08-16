@@ -29,7 +29,8 @@ class AptitudeInstaller:
             cls.is_debian_like()
         ), "aptitude should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
 
-        software_properties_common_installed = False
+        support_packages_installed: List[str] = []
+        installed_ppas: List[str] = []
         aptitude_installed = False
 
         with tempfile.TemporaryDirectory() as tempdir:
@@ -37,20 +38,22 @@ class AptitudeInstaller:
                 if preserve_apt_list:
                     Invoker.invoke(command=f"cp -p -R /var/lib/apt/lists {tempdir}")
 
+                Invoker.invoke(command="apt-get update -y")
+
                 # ensure aptitude existance
                 if Invoker.invoke("dpkg -s aptitude", raise_on_failure=False) != 0:
                     AptGetInstaller.install(
                         packages=["aptitude"],
-                        ppas=ppas,
-                        force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
-                        clean_ppas=clean_ppas,
                         clean_cache=clean_cache,
                         preserve_apt_list=preserve_apt_list,
                     )
                     aptitude_installed = True
 
                 if ppas:
-                    software_properties_common_installed = AptGetInstaller._add_ppas(
+                    (
+                        installed_ppas,
+                        support_packages_installed,
+                    ) = AptGetInstaller._add_ppas(
                         ppas=ppas,
                         update=True,
                         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
@@ -61,8 +64,8 @@ class AptitudeInstaller:
             finally:
                 if clean_ppas:
                     AptGetInstaller._clean_ppas(
-                        ppas=ppas,
-                        remove_software_properties_common=software_properties_common_installed,
+                        ppas=installed_ppas,
+                        purge_packages=support_packages_installed,
                     )
 
                 if clean_cache:

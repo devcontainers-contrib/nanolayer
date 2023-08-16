@@ -42,6 +42,9 @@ class Invoker:
         if clean_history:
             envs["HISTFILE"] = "/dev/null"
 
+        if "DEBIAN_FRONTEND" not in envs:
+            envs["DEBIAN_FRONTEND"] = "noninteractive"
+
         response = invoke.run(
             command,
             out_stream=sys.stdout,

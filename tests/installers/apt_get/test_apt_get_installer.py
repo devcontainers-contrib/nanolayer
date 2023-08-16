@@ -5,11 +5,11 @@ from helpers import execute_current_python_in_container
 
 
 @pytest.mark.parametrize(
-    "packages,ppas,test_command,image,excpected_result,docker_platform",
+    "packages,additional_flags,test_command,image,excpected_result,docker_platform",
     [
         (
             "neovim",
-            "ppa:neovim-ppa/stable",
+            "--ppas ppa:neovim-ppa/stable",
             "nvim --version",
             "mcr.microsoft.com/devcontainers/base:ubuntu",
             0,
@@ -17,9 +17,17 @@ from helpers import execute_current_python_in_container
         ),
         (
             "neovim",
-            "ppa:neovim-ppa/stable",
+            "--ppas ppa:neovim-ppa/stable",
             "nvim --version",
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",  # debian based
+            0,
+            "linux/amd64",
+        ),
+        (
+            "neovim",
+            "--ppas ppa:neovim-ppa/stable --force-ppas-on-non-ubuntu",
+            "nvim --version",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",  # debian based
             1,
             "linux/amd64",
         ),
@@ -27,7 +35,7 @@ from helpers import execute_current_python_in_container
             "neovim",
             "",
             "nvim --version",
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             0,
             "linux/amd64",
         ),
@@ -35,7 +43,7 @@ from helpers import execute_current_python_in_container
             "neovim",
             "",
             "nvim --version",
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             0,
             "linux/arm64",
         ),
@@ -43,14 +51,13 @@ from helpers import execute_current_python_in_container
 )
 def test_apt_get_install(
     packages: str,
-    ppas: str,
+    additional_flags: str,
     test_command,
     image: str,
     excpected_result: int,
     docker_platform: str,
 ) -> None:
-    ppas_cmd = f" --ppas {ppas} " if ppas else ""
-    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install apt-get {packages} {ppas_cmd} && {test_command}"
+    full_test_command = f"sudo PYTHONPATH=$PYTHONPATH python3 -m nanolayer install apt-get {packages} {additional_flags} && {test_command}"
 
     assert excpected_result == execute_current_python_in_container(
         test_command=full_test_command, image=image, docker_platform=docker_platform
