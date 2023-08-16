@@ -37,7 +37,8 @@ class AptInstaller:
             cls.is_debian_like()
         ), "apt should be used on debian-like linux distribution (debian, ubuntu, raspian  etc)"
 
-        software_properties_common_installed = False
+        support_packages_installed: List[str] = []
+        installed_ppas: List[str] = []
 
         with tempfile.TemporaryDirectory() as tempdir:
             if preserve_apt_list:
@@ -47,7 +48,10 @@ class AptInstaller:
                 Invoker.invoke(command="apt update -y")
 
                 if ppas:
-                    software_properties_common_installed = AptGetInstaller._add_ppas(
+                    (
+                        installed_ppas,
+                        support_packages_installed,
+                    ) = AptGetInstaller._add_ppas(
                         ppas=ppas,
                         update=True,
                         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
@@ -60,8 +64,8 @@ class AptInstaller:
             finally:
                 if clean_ppas:
                     AptGetInstaller._clean_ppas(
-                        ppas=ppas,
-                        remove_software_properties_common=software_properties_common_installed,
+                        ppas=installed_ppas,
+                        purge_packages=support_packages_installed,
                     )
 
                 if clean_cache:
