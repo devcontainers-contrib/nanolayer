@@ -11,7 +11,7 @@ from helpers import execute_current_python_in_container
         (
             "upx --version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "upx/upx",
             "upx",
             "",
@@ -20,7 +20,7 @@ from helpers import execute_current_python_in_container
         (
             "doctl version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "digitalocean/doctl",
             "doctl",
             "",
@@ -29,7 +29,7 @@ from helpers import execute_current_python_in_container
         (  # classic
             "argocd --help",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "argoproj/argo-cd",
             "argocd",
             "",
@@ -47,7 +47,7 @@ from helpers import execute_current_python_in_container
         (  # arm
             "argocd --help",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "argoproj/argo-cd",
             "argocd",
             "",
@@ -56,7 +56,7 @@ from helpers import execute_current_python_in_container
         (  # two binaries at same repo
             "which kubectx",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "ahmetb/kubectx",
             "kubectx",
             "",
@@ -65,7 +65,7 @@ from helpers import execute_current_python_in_container
         (  # two binaries at same repo
             "which kubens",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "ahmetb/kubectx",
             "kubens",
             "",
@@ -74,7 +74,7 @@ from helpers import execute_current_python_in_container
         (  # control group for arm
             "terrascan version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "tenable/terrascan",
             "terrascan",
             "",
@@ -83,7 +83,7 @@ from helpers import execute_current_python_in_container
         (  # arm
             "terrascan version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "tenable/terrascan",
             "terrascan",
             "",
@@ -92,7 +92,7 @@ from helpers import execute_current_python_in_container
         (
             "gh --version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "cli/cli",
             "gh",
             "",
@@ -101,7 +101,7 @@ from helpers import execute_current_python_in_container
         (  # folder named btop in archive
             "btop --version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "aristocratos/btop",
             "btop",
             "",
@@ -110,7 +110,7 @@ from helpers import execute_current_python_in_container
         (  # zip archive for linux
             "exa --version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "ogham/exa",
             "exa",
             "",
@@ -119,7 +119,7 @@ from helpers import execute_current_python_in_container
         (  # .apk file
             "duf --version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "muesli/duf",
             "duf",
             "",
@@ -128,7 +128,7 @@ from helpers import execute_current_python_in_container
         (  # .pem file
             "caddy --version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "caddyserver/caddy",
             "caddy",
             "",
@@ -137,7 +137,7 @@ from helpers import execute_current_python_in_container
         (  # has positive "static"
             "cas --version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "codenotary/cas",
             "cas",
             "",
@@ -146,7 +146,7 @@ from helpers import execute_current_python_in_container
         (  # release regex
             "bw --version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "bitwarden/clients",
             "bw",
             "--release-tag-regex 'cli\\-'",
@@ -155,7 +155,7 @@ from helpers import execute_current_python_in_container
         (  # .sbom file
             "gitsign version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "sigstore/gitsign",
             "gitsign",
             "",
@@ -164,7 +164,7 @@ from helpers import execute_current_python_in_container
         (  # date based version
             "youtubeuploader -version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "porjo/youtubeuploader",
             "youtubeuploader",
             "",
@@ -173,7 +173,7 @@ from helpers import execute_current_python_in_container
         (  # gz (not tar)
             "chisel --version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "jpillora/chisel",
             "chisel",
             "",
@@ -182,7 +182,7 @@ from helpers import execute_current_python_in_container
         (  # has negative "musl"
             "cyclonedx --version",
             0,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "CycloneDX/cyclonedx-cli",
             "cyclonedx",
             "",
@@ -191,7 +191,7 @@ from helpers import execute_current_python_in_container
         (
             "pwsh --version",
             1,
-            "mcr.microsoft.com/devcontainers/base:debian",
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "PowerShell/PowerShell",
             "pwsh",
             "",
