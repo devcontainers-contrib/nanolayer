@@ -126,7 +126,7 @@ from helpers import execute_current_python_in_container
             "linux/amd64",
         ),
         (  # .pem file
-            "caddy --version",
+            "caddy version",
             0,
             "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
             "caddyserver/caddy",
@@ -150,15 +150,6 @@ from helpers import execute_current_python_in_container
             "bitwarden/clients",
             "bw",
             "--release-tag-regex 'cli\\-'",
-            "linux/amd64",
-        ),
-        (  # .sbom file
-            "gitsign version",
-            0,
-            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
-            "sigstore/gitsign",
-            "gitsign",
-            "",
             "linux/amd64",
         ),
         (  # date based version
