@@ -81,17 +81,12 @@ def install_apt_get_packages(
         None, help="comma separated list of ppas to make use of"
     ),
     force_ppas_on_non_ubuntu: bool = False,
-    clean_ppas: bool = True,
-    clean_cache: bool = True,
-    preserve_apt_list: bool = True,
 ) -> None:
     AptGetInstaller.install(
         packages=packages.split(","),
         ppas=ppas.split(",") if ppas else None,
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
-        clean_ppas=clean_ppas,
-        clean_cache=clean_cache,
-        preserve_apt_list=preserve_apt_list,
+
     )
 
 
@@ -102,17 +97,12 @@ def install_apt_packages(
         None, help="comma separated list of ppas to make use of"
     ),
     force_ppas_on_non_ubuntu: bool = False,
-    clean_ppas: bool = True,
-    clean_cache: bool = True,
-    preserve_apt_list: bool = True,
+
 ) -> None:
     AptInstaller.install(
         packages=packages.split(","),
         ppas=ppas.split(",") if ppas else None,
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
-        clean_ppas=clean_ppas,
-        clean_cache=clean_cache,
-        preserve_apt_list=preserve_apt_list,
     )
 
 
@@ -125,17 +115,11 @@ def install_aptitude_packages(
         None, help="comma separated list of ppas to make use of"
     ),
     force_ppas_on_non_ubuntu: bool = False,
-    clean_ppas: bool = True,
-    clean_cache: bool = True,
-    preserve_apt_list: bool = True,
 ) -> None:
     AptitudeInstaller.install(
         packages=packages.split(","),
         ppas=ppas.split(",") if ppas else None,
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
-        clean_ppas=clean_ppas,
-        clean_cache=clean_cache,
-        preserve_apt_list=preserve_apt_list,
     )
 
 

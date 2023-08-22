@@ -102,9 +102,6 @@ class AptGetInstaller:
         packages: List[str],
         ppas: Optional[List[str]] = None,
         force_ppas_on_non_ubuntu: bool = False,
-        clean_ppas: bool = True,
-        clean_cache: bool = True,
-        preserve_apt_list: bool = True,
     ) -> None:
         if ppas is None:
             ppas = []
@@ -117,8 +114,8 @@ class AptGetInstaller:
         installed_ppas: List[str] = []
 
         with tempfile.TemporaryDirectory() as tempdir:
-            if preserve_apt_list:
-                Invoker.invoke(command=f"cp -p -R /var/lib/apt/lists {tempdir}")
+            # preserving previuse cache
+            Invoker.invoke(command=f"cp -p -R /var/lib/apt/lists {tempdir}")
 
             try:
                 Invoker.invoke(command="apt-get update -y")
@@ -132,17 +129,18 @@ class AptGetInstaller:
                 )
 
             finally:
-                if ppas and clean_ppas:
-                    cls._clean_ppas(
-                        ppas=installed_ppas,
-                        purge_packages=support_packages_installed,
-                    )
+                # remove ppa indexes
+                cls._clean_ppas(
+                    ppas=installed_ppas,
+                    purge_packages=support_packages_installed,
+                )
 
-                if clean_cache:
-                    Invoker.invoke(command="apt-get clean")
+                # remove archives cache
+                Invoker.invoke(command="apt-get clean")
 
-                if preserve_apt_list:
-                    # Note: not using dir/* syntax as that doesnt work on 'sh' shell (alpine)
-                    Invoker.invoke(
-                        command=f"rm -r /var/lib/apt/lists && mv {tempdir}/lists /var/lib/apt/lists"
-                    )
+                # restore lists cache
+                # Note: The reason for not using the dir/* syntax is because 
+                # that doesnt work on ash based shell (alpine)
+                Invoker.invoke(
+                    command=f"rm -r /var/lib/apt/lists && mv {tempdir}/lists /var/lib/apt/lists"
+                )

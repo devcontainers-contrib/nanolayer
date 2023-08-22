@@ -20,10 +20,6 @@ class AptitudeInstaller:
         packages: List[str],
         ppas: Optional[List[str]] = None,
         force_ppas_on_non_ubuntu: bool = False,
-        clean_ppas: bool = True,
-        clean_cache: bool = True,
-        preserve_apt_list: bool = True,
-        remove_installer_if_not_exists: bool = True,
     ) -> None:
         assert (
             cls.is_debian_like()
@@ -35,8 +31,8 @@ class AptitudeInstaller:
 
         with tempfile.TemporaryDirectory() as tempdir:
             try:
-                if preserve_apt_list:
-                    Invoker.invoke(command=f"cp -p -R /var/lib/apt/lists {tempdir}")
+                # preserving previuse cache
+                Invoker.invoke(command=f"cp -p -R /var/lib/apt/lists {tempdir}")
 
                 Invoker.invoke(command="apt-get update -y")
 
@@ -44,8 +40,6 @@ class AptitudeInstaller:
                 if Invoker.invoke("dpkg -s aptitude", raise_on_failure=False) != 0:
                     AptGetInstaller.install(
                         packages=["aptitude"],
-                        clean_cache=clean_cache,
-                        preserve_apt_list=preserve_apt_list,
                     )
                     aptitude_installed = True
 
@@ -62,17 +56,20 @@ class AptitudeInstaller:
                 Invoker.invoke(command=f"aptitude install -y {' '.join(packages)}")
 
             finally:
-                if clean_ppas:
-                    AptGetInstaller._clean_ppas(
-                        ppas=installed_ppas,
-                        purge_packages=support_packages_installed,
-                    )
+                
+                AptGetInstaller._clean_ppas(
+                    ppas=installed_ppas,
+                    purge_packages=support_packages_installed,
+                )
 
-                if clean_cache:
-                    Invoker.invoke(command="aptitude clean")
+                Invoker.invoke(command="aptitude clean")
 
-                if aptitude_installed and remove_installer_if_not_exists:
+                if aptitude_installed:
                     Invoker.invoke(command="apt-get -y purge aptitude --auto-remove")
 
-                if preserve_apt_list:
-                    Invoker.invoke(command=f"mv {tempdir} /var/lib/apt/lists")
+                # restore lists cache
+                # Note: The reason for not using the dir/* syntax is because 
+                # that doesnt work on ash based shell (alpine)
+                Invoker.invoke(
+                                    command=f"rm -r /var/lib/apt/lists && mv {tempdir}/lists /var/lib/apt/lists"
+                                )

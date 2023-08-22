@@ -29,9 +29,6 @@ class AptInstaller:
         packages: List[str],
         ppas: Optional[List[str]] = None,
         force_ppas_on_non_ubuntu: bool = False,
-        clean_ppas: bool = True,
-        clean_cache: bool = True,
-        preserve_apt_list: bool = True,
     ) -> None:
         assert (
             cls.is_debian_like()
@@ -41,8 +38,8 @@ class AptInstaller:
         installed_ppas: List[str] = []
 
         with tempfile.TemporaryDirectory() as tempdir:
-            if preserve_apt_list:
-                Invoker.invoke(command=f"cp -p -R /var/lib/apt/lists {tempdir}")
+            # preserving previuse cache
+            Invoker.invoke(command=f"cp -p -R /var/lib/apt/lists {tempdir}")
 
             try:
                 Invoker.invoke(command="apt update -y")
@@ -62,13 +59,18 @@ class AptInstaller:
                 )
 
             finally:
-                if clean_ppas:
-                    AptGetInstaller._clean_ppas(
-                        ppas=installed_ppas,
-                        purge_packages=support_packages_installed,
-                    )
+                # remove ppa indexes
+                AptGetInstaller._clean_ppas(
+                    ppas=installed_ppas,
+                    purge_packages=support_packages_installed,
+                )
 
-                if clean_cache:
-                    Invoker.invoke(command="apt clean")
-                if preserve_apt_list:
-                    Invoker.invoke(command=f"mv {tempdir} /var/lib/apt/lists")
+                # remove archives cache
+                Invoker.invoke(command="apt clean")
+
+                # restore lists cache
+                # Note: The reason for not using the dir/* syntax is because 
+                # that doesnt work on ash based shell (alpine)
+                Invoker.invoke(
+                    command=f"rm -r /var/lib/apt/lists && mv {tempdir}/lists /var/lib/apt/lists"
+                )
