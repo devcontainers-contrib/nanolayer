@@ -3,6 +3,7 @@ from typing import Dict, List, Optional
 
 import typer
 
+from nanolayer.installers.apk.apk_installer import ApkInstaller
 from nanolayer.installers.apt.apt_installer import AptInstaller
 from nanolayer.installers.apt_get.apt_get_installer import AptGetInstaller
 from nanolayer.installers.aptitude.aptitude_installer import AptitudeInstaller
@@ -118,6 +119,15 @@ def install_aptitude_packages(
         packages=packages.split(","),
         ppas=ppas.split(",") if ppas else None,
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
+    )
+
+
+@app.command("apk")
+def install_apk_packages(
+    packages: str = typer.Argument(None, help="comma separated list of apk packages")
+) -> None:
+    ApkInstaller.install(
+        packages=packages.split(","),
     )
 
 
