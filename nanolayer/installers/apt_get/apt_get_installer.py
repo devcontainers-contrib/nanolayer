@@ -10,9 +10,6 @@ class AptGetInstaller:
     PPA_SUPPORT_PACKAGES = ("software-properties-common",)
     PPA_SUPPORT_PACKAGES_DEBIAN = ("python3-launchpadlib",)
 
-    class AptGetInstallerError(Exception):
-        pass
-
     @staticmethod
     def normalize_ppas(ppas: List[str]) -> List[str]:
         # normalize ppas to have the ppa: initials
