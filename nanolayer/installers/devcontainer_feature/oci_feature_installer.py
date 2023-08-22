@@ -24,9 +24,6 @@ logger = logging.getLogger(__name__)
 
 
 class OCIFeatureInstaller:
-    class FeatureInstallationException(Exception):
-        pass
-
     class NoPremissions(PermissionError):
         pass
 
