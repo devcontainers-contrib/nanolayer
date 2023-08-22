@@ -86,7 +86,6 @@ def install_apt_get_packages(
         packages=packages.split(","),
         ppas=ppas.split(",") if ppas else None,
         force_ppas_on_non_ubuntu=force_ppas_on_non_ubuntu,
-
     )
 
 
@@ -97,7 +96,6 @@ def install_apt_packages(
         None, help="comma separated list of ppas to make use of"
     ),
     force_ppas_on_non_ubuntu: bool = False,
-
 ) -> None:
     AptInstaller.install(
         packages=packages.split(","),

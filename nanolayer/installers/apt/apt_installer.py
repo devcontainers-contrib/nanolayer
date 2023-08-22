@@ -69,7 +69,7 @@ class AptInstaller:
                 Invoker.invoke(command="apt clean")
 
                 # restore lists cache
-                # Note: The reason for not using the dir/* syntax is because 
+                # Note: The reason for not using the dir/* syntax is because
                 # that doesnt work on ash based shell (alpine)
                 Invoker.invoke(
                     command=f"rm -r /var/lib/apt/lists && mv {tempdir}/lists /var/lib/apt/lists"

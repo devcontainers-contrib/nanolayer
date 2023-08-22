@@ -56,7 +56,6 @@ class AptitudeInstaller:
                 Invoker.invoke(command=f"aptitude install -y {' '.join(packages)}")
 
             finally:
-                
                 AptGetInstaller._clean_ppas(
                     ppas=installed_ppas,
                     purge_packages=support_packages_installed,
@@ -68,8 +67,8 @@ class AptitudeInstaller:
                     Invoker.invoke(command="apt-get -y purge aptitude --auto-remove")
 
                 # restore lists cache
-                # Note: The reason for not using the dir/* syntax is because 
+                # Note: The reason for not using the dir/* syntax is because
                 # that doesnt work on ash based shell (alpine)
                 Invoker.invoke(
-                                    command=f"rm -r /var/lib/apt/lists && mv {tempdir}/lists /var/lib/apt/lists"
-                                )
+                    command=f"rm -r /var/lib/apt/lists && mv {tempdir}/lists /var/lib/apt/lists"
+                )
