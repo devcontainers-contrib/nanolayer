@@ -29,7 +29,7 @@ on:
         description: 'aws instance type'
         required: true
         type: string
-        default: "c6i.xlarge"
+        default: "c6i.2xlarge"
 
 
   workflow_call:
@@ -55,7 +55,7 @@ on:
         description: 'aws instance type'
         required: true
         type: string
-        default: "c6i.xlarge"
+        default: "c6i.2xlarge"
         
 permissions:
   contents: write

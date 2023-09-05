@@ -16,7 +16,7 @@ jobs:
     with:
       triple_target: "x86_64-unknown-linux-gnu"
       binary_name: "nanolayer"
-      instance_type: "c6i.xlarge"
+      instance_type: "c6i.2xlarge"
       # ami_id: ami-0b0ea68c435eb488d # ubuntu 16.04
       ami_id: ami-05bdb9a595eeef95a # ubuntu 18.04
       # ami_id: ami-07a72d328538fc075 # ubuntu 20.04 
@@ -30,7 +30,7 @@ jobs:
     with:
       triple_target: "x86_64-unknown-linux-musl"
       binary_name: "nanolayer"
-      instance_type: "c6i.xlarge"
+      instance_type: "c6i.2xlarge"
       # ami_id: ami-0b0ea68c435eb488d # ubuntu 16.04
       ami_id: ami-05bdb9a595eeef95a # ubuntu 18.04
       # ami_id: ami-07a72d328538fc075 # ubuntu 20.04 
@@ -43,7 +43,7 @@ jobs:
     with:
       triple_target: "aarch64-unknown-linux-gnu"
       binary_name: "nanolayer"
-      instance_type: "c7g.xlarge"
+      instance_type: "c7g.2xlarge"
       # ami_id: ami-04b3c39a8a1c62b76 # ubuntu 16.04
       ami_id: ami-0ccbd1a24ded2a2a8 # ubuntu 18.04
       # ami_id: ami-094bbbc35cbcb6a1a # ubuntu 20.04
