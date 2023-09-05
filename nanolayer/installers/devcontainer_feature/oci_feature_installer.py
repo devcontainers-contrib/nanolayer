@@ -7,7 +7,6 @@ import tempfile
 from pathlib import Path
 from typing import Dict, Optional, Union
 
-from nanolayer.installers.apk.apk_installer import ApkInstaller
 from nanolayer.installers.devcontainer_feature.models.devcontainer_feature import (
     Feature,
 )
@@ -133,23 +132,7 @@ class OCIFeatureInstaller:
 
             command += f"./{cls._FEATURE_ENTRYPOINT}"
 
-            # ensure existance of bash in order to succesfully run the command
-            bash_installed = False
-            if distutils.spawn.find_executable("bash") is None:
-                if ApkInstaller.is_alpine():
-                    ApkInstaller.install(packages=["bash"])
-                    bash_installed = True
-                else:
-                    raise cls.OCIFeatureInstallerError(
-                        "no bash detected. please make sure bash is installed"
-                    )
-
             Invoker.invoke(command)
-
-            # now that its no longer needed we remove bash if it was installed by us
-            if bash_installed:
-                if ApkInstaller.is_alpine():
-                    ApkInstaller.delete(packages=["bash"])
 
             cls._set_envs(feature_obj)
 
