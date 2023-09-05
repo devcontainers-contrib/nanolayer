@@ -1,10 +1,13 @@
 import json
+import logging
 import re
 import urllib
 from typing import Any, Dict, List, Optional
 
 import invoke
 from natsort import natsorted
+
+logger = logging.getLogger(__name__)
 
 
 class ReleaseResolver:
@@ -45,12 +48,25 @@ class ReleaseResolver:
         return []
 
     @classmethod
+    def valid_version(cls, value: str) -> bool:
+        normalized_value = value.lstrip("v")
+        return normalized_value[0].isalpha() or normalized_value[0].isdigit()
+
+    @classmethod
     def get_latest_git_version_tag(
         cls, repo: str, release_tag_regex: Optional[str] = None
     ) -> str:
         all_version_tags = cls.get_version_tags(repo, release_tag_regex)
 
-        return natsorted(all_version_tags)[-1]
+        valid_versions = list(filter(cls.valid_version, all_version_tags))
+
+        if len(valid_versions) != len(all_version_tags):
+            logger.warning(
+                "The following release versions were filtered out as invalid: %s",
+                str(set(all_version_tags) - set(valid_versions)),
+            )
+
+        return natsorted(valid_versions)[-1]
 
     @classmethod
     def get_latest_release_tag(
