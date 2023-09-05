@@ -126,6 +126,7 @@ def install_aptitude_packages(
 def install_apk_packages(
     packages: str = typer.Argument(None, help="comma separated list of apk packages")
 ) -> None:
+    print("hoii", flush=True)
     ApkInstaller.install(
         packages=packages.split(","),
     )
