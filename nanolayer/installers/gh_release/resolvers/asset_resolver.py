@@ -23,7 +23,7 @@ class AssetResolver:
         LinuxInformationDesk.Architecture.I386: r"(i386|\-386|_386)",
         LinuxInformationDesk.Architecture.I686: r"(i686|\-686|_686)",
         LinuxInformationDesk.Architecture.ARM32: r"([Aa]rm32|ARM32)",
-        LinuxInformationDesk.Architecture.ARM64: r"([Aa]rm64|ARM64|\-ARM|\-arm\-)",
+        LinuxInformationDesk.Architecture.ARM64: r"([Aa]rm64|ARM64)",
         LinuxInformationDesk.Architecture.S390: r"(s390x|s390)",
         LinuxInformationDesk.Architecture.PPC64: r"(\-ppc|ppc64|PPC64|_ppc)",
         LinuxInformationDesk.Architecture.x86_64: r"([Aa]md64|\-x64|x64|x86[_-]64)",
@@ -285,6 +285,16 @@ class AssetResolver:
                 negative=False,
             ),
         ]
+
+        # if arm64 - accept also simple "arm/ARM" mentions
+        if arch == LinuxInformationDesk.Architecture.ARM64:
+            positive_filters += [
+                cls.FindAllRegexFilter(
+                    name="prefer own distro-like",  # prefer own distro like
+                    regex=r"\-ARM\-?|\-arm\-",
+                    negative=False,
+                )
+            ]
 
         bad_distros_regexes = {
             key: val
