@@ -66,7 +66,7 @@ class AssetResolver:
 
     MISC_REGEX_MAP = {
         "packages": r"(\.deb|\.rpm|\.pkg|\.apk|\.[Aa]ppImage|\.snap)",
-        "checksums": r"(\.sig$|\.text$|\.txt$|[Cc]hecksums|sha256|\.sha1$|\.md5$)",
+        "checksums": r"(\.sig$|\.text$|\.txt$|[Cc]hecksums|sha256|sha512|\.sha1$|\.md5$)",
         "certificates": r"(\.pub$|\.pem$|\.crt$|\.asc$|pivkey|pkcs11key)",
         "metadata": r"(\.json$|\.sbom$|\.blockmap$)",
     }
