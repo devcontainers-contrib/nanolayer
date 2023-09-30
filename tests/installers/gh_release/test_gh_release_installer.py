@@ -188,6 +188,24 @@ from helpers import execute_current_python_in_container
             "",
             "linux/amd64",
         ),
+        (
+            "type extractor",
+            0,
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
+            "Azure/apiops",
+            "extractor",
+            "--asset-regex '^extractor\.linux-.+\.exe$' --no-filter-assets-by-platform",
+            "linux/amd64",
+        ),
+        (
+            "type extractor",
+            0,
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
+            "Azure/apiops",
+            "extractor",
+            "--asset-regex '^extractor\.linux-.+\.exe$' --no-filter-assets-by-platform",
+            "linux/arm64",
+        ),
     ],
 )
 def test_gh_release_install(
