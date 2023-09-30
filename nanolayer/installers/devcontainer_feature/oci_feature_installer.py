@@ -1,4 +1,3 @@
-import distutils
 import logging
 import os
 import pwd

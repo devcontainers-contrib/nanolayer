@@ -79,28 +79,6 @@ class GHReleaseInstaller:
         return dir_location
 
     @classmethod
-    def _resolve_and_validate_architecture(
-        cls, arch: Optional[Union[str, LinuxInformationDesk.Architecture]] = None
-    ) -> Path:
-        # todo: return based on linux distro
-        if isinstance(arch, str):
-            try:
-                arch = LinuxInformationDesk.Architecture(arch.lower())
-            except ValueError:
-                raise cls.GHReleaseInstallerError(
-                    f"architecture {arch} is not supported. (supported architectures are: {cls.SUPPORTED_ARCH})"
-                )
-        if arch is None:
-            arch = LinuxInformationDesk.get_architecture()
-
-        if arch.value not in cls.SUPPORTED_ARCH:
-            raise cls.GHReleaseInstallerError(
-                f"architecture {platform.machine()} is currently not supported. (supported architectures are: {cls.SUPPORTED_ARCH})"
-            )
-
-        return arch
-
-    @classmethod
     def _recursive_chmod(cls, dir_location: str, permissions: str) -> None:
         octal_permissions = int(permissions, base=8)
         os.chmod(dir_location, octal_permissions)
@@ -122,8 +100,11 @@ class GHReleaseInstaller:
         asset_regex: Optional[str] = None,
         version: str = "latest",
         force: bool = False,
-        arch: Optional[str] = None,
         release_tag_regex: Optional[str] = None,
+        filter_assets_by_architecture: bool = True,
+        filter_assets_by_platform: bool = True,
+        filter_assets_by_misc: bool = True,
+        filter_assets_by_bitness: bool = True,
     ) -> None:
         if lib_name is None or lib_name == "":
             if len(binary_names) > 1:
@@ -136,9 +117,6 @@ class GHReleaseInstaller:
             raise ValueError(
                 f"Currently only the Linux platform is supported (got {platform.system().lower()})"
             )
-
-        # will raise an exception if arch is invalid
-        arch = cls._resolve_and_validate_architecture(arch)
 
         # will raise an exception if bin_location is given and is not a directory
         bin_location = cls._resolve_and_validate_dir(
@@ -168,8 +146,11 @@ class GHReleaseInstaller:
                 repo=repo,
                 release_version=release_version,
                 asset_regex=asset_regex,
-                arch=arch,
                 binary_names=binary_names,
+                filter_assets_by_architecture=filter_assets_by_architecture,
+                filter_assets_by_bitness=filter_assets_by_bitness,
+                filter_assets_by_platform=filter_assets_by_platform,
+                filter_assets_by_misc=filter_assets_by_misc,
             )
         except AssetResolver.NoReleaseError as e:
             release_version = ReleaseResolver.resolve(
@@ -183,8 +164,11 @@ class GHReleaseInstaller:
                 repo=repo,
                 release_version=release_version,
                 asset_regex=asset_regex,
-                arch=arch,
                 binary_names=binary_names,
+                filter_assets_by_architecture=filter_assets_by_architecture,
+                filter_assets_by_bitness=filter_assets_by_bitness,
+                filter_assets_by_platform=filter_assets_by_platform,
+                filter_assets_by_misc=filter_assets_by_misc,
             )
 
         logger.warning("resolved asset: %s", resolved_asset.name)

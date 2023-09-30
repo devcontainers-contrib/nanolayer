@@ -144,8 +144,11 @@ def install_gh_release_binary(
     bin_location: Optional[str] = None,
     lib_location: Optional[str] = None,
     force: bool = False,
-    arch: Optional[str] = None,
     release_tag_regex: Optional[str] = None,
+    filter_assets_by_architecture: bool = True,
+    filter_assets_by_platform: bool = True,
+    filter_assets_by_misc: bool = True,
+    filter_assets_by_bitness: bool = True,
 ) -> None:
     if binary_names == "":
         raise typer.BadParameter("binary names cannot be empty string")
@@ -154,11 +157,14 @@ def install_gh_release_binary(
         repo=repo,
         binary_names=binary_names.split(","),
         lib_name=lib_name,
-        arch=arch,
         bin_location=bin_location,
         lib_location=lib_location,
         version=version,
         asset_regex=asset_regex,
         force=force,
         release_tag_regex=release_tag_regex,
+        filter_assets_by_architecture=filter_assets_by_architecture,
+        filter_assets_by_platform=filter_assets_by_platform,
+        filter_assets_by_misc=filter_assets_by_misc,
+        filter_assets_by_bitness=filter_assets_by_bitness,
     )

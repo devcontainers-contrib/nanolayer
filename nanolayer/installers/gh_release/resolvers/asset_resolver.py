@@ -57,10 +57,10 @@ class AssetResolver:
         PlatformType.ILLUMOS: r"([Ii]llumos|[Oo]mni[oO][sS]|[Oo]pen[Ii]ndiana|[Tt]ribblix)",
     }
 
-    RELEASE_ID_REGEX_MAP = {
+    DISTRO_REGEX_MAP = {
         enum: f"(?i)({enum.value})" for enum in LinuxInformationDesk.LinuxReleaseID
     }
-    RELEASE_ID_REGEX_MAP[
+    DISTRO_REGEX_MAP[
         LinuxInformationDesk.LinuxReleaseID.alpine
     ] = r"(?i)(alpine|musl)"  # adding musl to alpine "tells"
 
@@ -150,11 +150,12 @@ class AssetResolver:
         release_version: str,
         binary_names: List[str],
         asset_regex: Optional[str] = None,
-        arch: Optional[LinuxInformationDesk.Architecture] = None,
+        filter_assets_by_architecture: bool = True,
+        filter_assets_by_platform: bool = True,
+        filter_assets_by_misc: bool = True,
+        filter_assets_by_bitness: bool = True,
     ) -> "AssetResolver.ReleaseAsset":
-        assert not (
-            asset_regex is None and arch is None
-        ), "at least one of 'asset_regex','arch' arguments must be given"
+        arch = LinuxInformationDesk.get_architecture()
 
         assets = cls._get_release_assets(repo=repo, release_version=release_version)
 
@@ -182,35 +183,47 @@ class AssetResolver:
                 str([asset.name for asset in assets]),
             )
 
-        # add all non-requested architecture as a negative filters
-        bad_architecture_regexes = deepcopy(cls.ARCH_REGEX_MAP)
-        bad_architecture_regexes.pop(arch)
-        negative_architecture_filters = [
-            cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
-            for name, regex in bad_architecture_regexes.items()
-        ]
+        if filter_assets_by_architecture:
+            # add all non-valid architecture as a negative filters
+            bad_architecture_regexes = deepcopy(cls.ARCH_REGEX_MAP)
+            bad_architecture_regexes.pop(arch)
+            negative_architecture_filters = [
+                cls.FindAllRegexFilter(name=name.value, regex=regex, negative=True)
+                for name, regex in bad_architecture_regexes.items()
+            ]
+        else:
+            negative_architecture_filters = []
 
-        # add misc files like checksums and packages as negative filters
-        negative_misc_filters = [
-            cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
-            for name, regex in cls.MISC_REGEX_MAP.items()
-        ]
+        if filter_assets_by_misc:
+            # add misc files like checksums and packages as negative filters
+            negative_misc_filters = [
+                cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
+                for name, regex in cls.MISC_REGEX_MAP.items()
+            ]
+        else:
+            negative_misc_filters = []
 
-        # add all non-current platform as a negative filters
-        bad_platform_regexes = deepcopy(cls.PLATFORM_REGEX_MAP)
-        bad_platform_regexes.pop(cls.PlatformType.LINUX)
-        negative_platform_filters = [
-            cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
-            for name, regex in bad_platform_regexes.items()
-        ]
+        if filter_assets_by_platform:
+            # add all non-valid platforms as a negative filters
+            bad_platform_regexes = deepcopy(cls.PLATFORM_REGEX_MAP)
+            bad_platform_regexes.pop(cls.PlatformType.LINUX)
+            negative_platform_filters = [
+                cls.FindAllRegexFilter(name=name.value, regex=regex, negative=True)
+                for name, regex in bad_platform_regexes.items()
+            ]
+        else:
+            negative_platform_filters = []
 
-        # add all non-current bitness as a negative filters
-        bad_bitness_regexes = deepcopy(cls.BITNESS_REGEX_MAP)
-        bad_bitness_regexes.pop(LinuxInformationDesk.get_bitness())
-        negative_bitness_filters = [
-            cls.FindAllRegexFilter(name=name, regex=regex, negative=True)
-            for name, regex in bad_bitness_regexes.items()
-        ]
+        if filter_assets_by_bitness:
+            # add all non-current bitness as a negative filters
+            bad_bitness_regexes = deepcopy(cls.BITNESS_REGEX_MAP)
+            bad_bitness_regexes.pop(LinuxInformationDesk.get_bitness())
+            negative_bitness_filters = [
+                cls.FindAllRegexFilter(name=name.value, regex=regex, negative=True)
+                for name, regex in bad_bitness_regexes.items()
+            ]
+        else:
+            bad_bitness_regexes = []
 
         # One filter to rule them all
         assets = filter(
@@ -256,7 +269,7 @@ class AssetResolver:
             ),
             cls.FindAllRegexFilter(
                 name="prefer own distro",  # prefer own exact distro
-                regex=cls.RELEASE_ID_REGEX_MAP[LinuxInformationDesk.get_release_id()],
+                regex=cls.DISTRO_REGEX_MAP[LinuxInformationDesk.get_release_id()],
                 negative=False,
             ),
             cls.FindAllRegexFilter(
@@ -266,7 +279,7 @@ class AssetResolver:
             ),
             cls.FindAllRegexFilter(
                 name="prefer own distro-like",  # prefer own distro like
-                regex=cls.RELEASE_ID_REGEX_MAP[
+                regex=cls.DISTRO_REGEX_MAP[
                     LinuxInformationDesk.get_release_id(id_like=True)
                 ],
                 negative=False,
@@ -275,7 +288,7 @@ class AssetResolver:
 
         bad_distros_regexes = {
             key: val
-            for key, val in cls.RELEASE_ID_REGEX_MAP.items()
+            for key, val in cls.DISTRO_REGEX_MAP.items()
             if key
             not in (
                 LinuxInformationDesk.get_release_id(),
