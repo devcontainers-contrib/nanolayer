@@ -3,6 +3,7 @@ import logging
 import re
 import urllib
 from typing import Any, Dict, List, Optional
+import distutils.spawn
 
 import invoke
 from natsort import natsorted
@@ -82,6 +83,10 @@ class ReleaseResolver:
         return natsorted(release_tags)[-1]
 
     @classmethod
+    def _git_exists(cls) -> bool:
+        return distutils.spawn.find_executable("git") is not None
+
+    @classmethod
     def resolve(
         cls,
         asked_version: str,
@@ -90,9 +95,10 @@ class ReleaseResolver:
         use_github_api: bool = False,
     ) -> str:
         if asked_version == "latest":
-            if use_github_api:
+            if use_github_api or not cls._git_exists():
                 return cls.get_latest_release_tag(repo, release_tag_regex)
-            return cls.get_latest_git_version_tag(repo, release_tag_regex)
+            else:
+                return cls.get_latest_git_version_tag(repo, release_tag_regex)
 
         else:
             versions = cls.get_version_tags(repo, release_tag_regex)
