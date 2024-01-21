@@ -1,3 +1,5 @@
+import os
+import ssl
 import hashlib
 import http.client
 import json
@@ -120,7 +122,7 @@ class OCIRegistry:
         url: str, headers: Optional[Dict[str, str]] = None
     ) -> http.client.HTTPResponse:
         if not url.startswith("http"):
-            raise ValueError("only http/https links are permited")
+            raise ValueError("only http/https links are permitted")
 
         if headers is None:
             headers = {}
@@ -128,16 +130,24 @@ class OCIRegistry:
         if "User-Agent" not in headers:
             headers["User-Agent"] = "nanolayer"
 
+        # Create SSLContext
+        context = ssl.create_default_context()
+
+        # Load custom CA certificates if SSL_CERT_FILE is set
+        cafile = os.environ.get('SSL_CERT_FILE')
+        if cafile:
+            context.load_verify_locations(cafile=cafile)
+
         request = urllib.request.Request(url=url, headers=headers)
 
         try:
-            response = urllib.request.urlopen(request)  # nosec
+            response = urllib.request.urlopen(request, context=context)  # nosec
             return response
 
         except urllib.error.HTTPError as e:
             token = OCIRegistry._generate_token(e.headers.as_string())
             request.add_header("Authorization", f"Bearer {token}")
-            return urllib.request.urlopen(request)  # nosec
+            return urllib.request.urlopen(request, context=context)  # nosec
 
     @staticmethod
     def download_layer(
