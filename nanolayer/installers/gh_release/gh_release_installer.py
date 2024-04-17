@@ -96,6 +96,7 @@ class GHReleaseInstaller:
         binary_names: List[str],
         lib_name: Optional[str] = None,
         bin_location: Optional[Union[str, Path]] = None,
+        source_binaries_filter_regex: Optional[str] = None,
         lib_location: Optional[Union[str, Path]] = None,
         asset_regex: Optional[str] = None,
         version: str = "latest",
@@ -210,7 +211,7 @@ class GHReleaseInstaller:
                 logger.warning("asset recognized as an archive file")
 
                 archive_member_names = BinaryResolver.resolve(
-                    temp_asset_path, binary_names
+                    temp_asset_path, binary_names, source_binaries_filter_regex
                 )
                 assert len(archive_member_names) == len(
                     binary_names

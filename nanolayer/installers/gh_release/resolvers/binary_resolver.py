@@ -1,3 +1,4 @@
+import re
 import stat
 from typing import List
 
@@ -33,10 +34,11 @@ class BinaryResolver:
         pass
 
     @classmethod
-    def resolve(cls, archive_path: str, binary_names: List[str]) -> List[str]:
+    def resolve(cls, archive_path: str, binary_names: List[str], source_binaries_filter_regex: str = None) -> List[str]:
         binary_members = []
         with Archive(archive_path) as archive_file:
             # resolve target member name
+            archive_file: Archive = archive_file
             if len(archive_file.get_file_members()) == 1:
                 if len(binary_names) > 1:
                     raise cls.BinaryResolverError(
@@ -48,6 +50,13 @@ class BinaryResolver:
             else:
                 for binary_name in binary_names:
                     target_member_names = archive_file.names_by_filename(binary_name)
+
+                    if source_binaries_filter_regex:
+                        target_member_names = [
+                            name for name in target_member_names
+                            if re.match(source_binaries_filter_regex, name)
+                        ]
+
                     if len(target_member_names) > 1:
                         # try narrow it down to single binary using filters
                         filtered_target_member_names = list(

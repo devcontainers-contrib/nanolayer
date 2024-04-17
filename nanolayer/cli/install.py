@@ -139,6 +139,7 @@ def install_gh_release_binary(
         None, help="comma separated list of binary names"
     ),
     version: str = "latest",
+    source_binaries_filter_regex: Optional[str] = None,
     lib_name: Optional[str] = None,
     asset_regex: Optional[str] = None,
     bin_location: Optional[str] = None,
@@ -158,6 +159,7 @@ def install_gh_release_binary(
         binary_names=binary_names.split(","),
         lib_name=lib_name,
         bin_location=bin_location,
+        source_binaries_filter_regex=source_binaries_filter_regex,
         lib_location=lib_location,
         version=version,
         asset_regex=asset_regex,
