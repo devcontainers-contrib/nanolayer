@@ -42,7 +42,7 @@ class OCIRegistry:
         resource: str
         path: str
 
-    WWW_AUTHENTICATE_REGEX = r'.*[Ww]ww-[Aa]uthenticate:\sBearer\srealm="([\w:/\.]+)",service="([\w:/\.]+)",scope="([\w:/\-,]+)".*'
+    WWW_AUTHENTICATE_REGEX = r'.*[Ww]ww-[Aa]uthenticate:\sBearer\srealm="([\w:/\.]+)",service="([\w:/\-\.]+)",scope="([\w:/\-,]+)".*'
 
     @staticmethod
     def parse_oci(oci_input: str) -> "OCIRegistry.ParsedOCIRef":
