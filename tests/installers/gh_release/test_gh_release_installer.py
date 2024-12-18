@@ -215,6 +215,15 @@ from helpers import execute_current_python_in_container
             "",
             "linux/arm64",
         ),
+        (
+            "rg --version",
+            0,
+            "mcr.microsoft.com/vscode/devcontainers/python:3.10-bullseye",
+            "BurntSushi/ripgrep",
+            "rg",
+            "",
+            "linux/arm64",
+        ),
     ],
 )
 def test_gh_release_install(

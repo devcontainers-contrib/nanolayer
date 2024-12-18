@@ -23,7 +23,7 @@ class AssetResolver:
         LinuxInformationDesk.Architecture.I386: r"(i386|\-386|_386)",
         LinuxInformationDesk.Architecture.I686: r"(i686|\-686|_686)",
         LinuxInformationDesk.Architecture.ARM32: r"([Aa]rm32|ARM32)",
-        LinuxInformationDesk.Architecture.ARM64: r"([Aa]rm64|ARM64)",
+        LinuxInformationDesk.Architecture.ARM64: r"([Aa]rm64|ARM64)|(aarch64)",
         LinuxInformationDesk.Architecture.S390: r"(s390x|s390)",
         LinuxInformationDesk.Architecture.PPC64: r"(\-ppc|ppc64|PPC64|_ppc)",
         LinuxInformationDesk.Architecture.x86_64: r"([Aa]md64|\-x64|x64|x86[_-]64)",
